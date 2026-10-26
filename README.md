@@ -6,6 +6,9 @@
   `remotion-to-hyperframes`, `slideshow`, `figma`) — тоже свежие, из [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes).
   Для озвучки/аватаров нужны свои ключи (`HEYGEN_API_KEY`, `GEMINI_API_KEY`, `ELEVENLABS_API_KEY`);
   `media-use` шлёт анонимную статистику в PostHog — отключается `HYPERFRAMES_NO_TELEMETRY=1`;
+- **скиллы Эмиля Ковальски** (анимации и UI-полировка: `emil-design-eng`, `animate`, `review-animations`,
+  `improve-animations`, `apple-design`, `prototype`, `break-ui`, `pick-ui-library` и др.) — свежие, из
+  [emilkowalski/skills](https://github.com/emilkowalski/skills);
 - **сторонние скиллы из этого репозитория** (`.claude/skills/`):
   - [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill): `ui-ux-pro-max`, `ui-styling`, `design`, `design-system`, `brand`, `banner-design`, `slides`;
   - [aidea-team/claude-skill-scraper](https://github.com/aidea-team/claude-skill-scraper): `scrape`.
@@ -43,7 +46,7 @@ cd my-skills && ./install.sh
 
 ## Лицензии
 Сторонние скиллы распространяются под MIT (файл `LICENSE` в папке скилла).
-Скиллы Anthropic и HyperFrames здесь не хранятся, их лицензии — в исходных репозиториях.
+Скиллы Anthropic, HyperFrames и Эмиля Ковальски здесь не хранятся, их лицензии — в исходных репозиториях.
 
 ## Скилл `scrape`
 Скиллу нужен Python с пакетами `playwright` и `requests`; при первом запуске он сам создаёт

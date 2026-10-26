@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Устанавливает скиллы в ~/.claude/skills, чтобы Claude Code видел их в любом проекте:
 #   1. часто обновляемые наборы — свежие, напрямую из их репозиториев
-#      (anthropics/skills, heygen-com/hyperframes);
+#      (anthropics/skills, heygen-com/hyperframes, emilkowalski/skills);
 #   2. сторонние скиллы из этого репозитория (.claude/skills).
 #
 # Локально:        ./install.sh
@@ -37,6 +37,7 @@ install_upstream() {
 
 install_upstream anthropics/skills
 install_upstream heygen-com/hyperframes
+install_upstream emilkowalski/skills
 
 install_dir "$SRC" ""
 
