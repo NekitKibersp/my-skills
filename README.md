@@ -15,6 +15,8 @@
 - **ElevenLabs** (официальные: `text-to-speech`, `speech-to-text`, `music`, `sound-effects`, `dubbing`, `voice-changer`,
   `voice-isolator`, `agents`, `realtime`, `speech-engine`, `onboarding`, `setup-api-key`) — свежие, из
   [elevenlabs/skills](https://github.com/elevenlabs/skills). Нужен свой ключ `ELEVENLABS_API_KEY`;
+- **Remotion** (официальные: `remotion-best-practices`, `remotion-create`, `remotion-render`, `remotion-captions`,
+  `remotion-markup`, `remotion-maps` и др.) — свежие, из [remotion-dev/skills](https://github.com/remotion-dev/skills);
 - **сторонние скиллы из этого репозитория** (`.claude/skills/`):
   - [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill): `ui-ux-pro-max`, `ui-styling`, `design`, `design-system`, `brand`, `banner-design`, `slides`;
   - [aidea-team/claude-skill-scraper](https://github.com/aidea-team/claude-skill-scraper): `scrape`.
@@ -55,7 +57,7 @@ cd my-skills && ./install.sh
 
 ## Лицензии
 Сторонние скиллы распространяются под MIT (файл `LICENSE` в папке скилла).
-Скиллы Anthropic, HyperFrames, Эмиля Ковальски, Impeccable и ElevenLabs здесь не хранятся, их лицензии — в исходных репозиториях.
+Скиллы Anthropic, HyperFrames, Эмиля Ковальски, Impeccable, ElevenLabs и Remotion здесь не хранятся, их лицензии — в исходных репозиториях.
 
 ## Скилл `scrape`
 Скиллу нужен Python с пакетами `playwright` и `requests`; при первом запуске он сам создаёт
