@@ -1,11 +1,12 @@
 # Мои скиллы для Claude Code
 
-Собрано из:
-- [anthropics/skills](https://github.com/anthropics/skills)
-- [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
-- [aidea-team/claude-skill-scraper](https://github.com/aidea-team/claude-skill-scraper) (скилл `scrape`)
+`install.sh` ставит в `~/.claude/skills`:
+- **все скиллы Anthropic** — всегда свежие, скачиваются напрямую из [anthropics/skills](https://github.com/anthropics/skills);
+- **сторонние скиллы из этого репозитория** (`.claude/skills/`):
+  - [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill): `ui-ux-pro-max`, `ui-styling`, `design`, `design-system`, `brand`, `banner-design`, `slides`;
+  - [aidea-team/claude-skill-scraper](https://github.com/aidea-team/claude-skill-scraper): `scrape`.
 
-Все скиллы лежат в `.claude/skills/`.
+Чтобы добавить свой скилл, положите его папку в `.claude/skills/`.
 
 ## Как сделать, чтобы скиллы подключались сами
 
@@ -14,14 +15,14 @@
 - в **Repositories** добавьте этот репозиторий (если он приватный);
 - в **Setup script** вставьте:
   ```bash
-  git clone --depth 1 https://github.com/<ваш-логин>/claude-skills /tmp/claude-skills && /tmp/claude-skills/install.sh
+  git clone --depth 1 https://github.com/NekitKibersp/my-skills /tmp/my-skills && /tmp/my-skills/install.sh
   ```
 Теперь в каждой новой сессии этого окружения скиллы установятся автоматически, какой бы проект вы ни открыли.
 
 ### 2. Свой компьютер, один раз для всех проектов
 ```bash
-git clone https://github.com/<ваш-логин>/claude-skills
-cd claude-skills && ./install.sh
+git clone https://github.com/NekitKibersp/my-skills
+cd my-skills && ./install.sh
 ```
 Скиллы попадут в `~/.claude/skills/` и будут доступны во всех проектах.
 Обновить: `git pull && ./install.sh`.
@@ -31,9 +32,8 @@ cd claude-skills && ./install.sh
 Новые проекты создавайте кнопкой **Use this template**: папка `.claude/skills` окажется внутри проекта.
 
 ## Лицензии
-Скиллы в этом репозитории распространяются под Apache 2.0 или MIT (файл `LICENSE` в папке скилла).
-Скиллы `docx`, `pdf`, `pptx`, `xlsx` от Anthropic проприетарные, поэтому в репозитории их нет:
-`install.sh` скачивает их напрямую из [anthropics/skills](https://github.com/anthropics/skills).
+Сторонние скиллы распространяются под MIT (файл `LICENSE` в папке скилла).
+Скиллы Anthropic здесь не хранятся, их лицензии — в [anthropics/skills](https://github.com/anthropics/skills).
 
 ## Скилл `scrape`
 Скиллу нужен Python с пакетами `playwright` и `requests`; при первом запуске он сам создаёт

@@ -1,32 +1,32 @@
 #!/usr/bin/env bash
-# Устанавливает скиллы из этого репозитория в ~/.claude/skills,
-# чтобы Claude Code видел их в любом проекте.
+# Устанавливает скиллы в ~/.claude/skills, чтобы Claude Code видел их в любом проекте:
+#   1. все скиллы Anthropic — свежие, напрямую из официального anthropics/skills;
+#   2. сторонние скиллы из этого репозитория (.claude/skills).
 #
 # Локально:        ./install.sh
-# Облачный setup:  git clone --depth 1 https://github.com/<you>/claude-skills /tmp/claude-skills && /tmp/claude-skills/install.sh
+# Облачный setup:  git clone --depth 1 https://github.com/NekitKibersp/my-skills /tmp/my-skills && /tmp/my-skills/install.sh
 set -euo pipefail
 
 SRC="$(cd "$(dirname "$0")" && pwd)/.claude/skills"
 DEST="$HOME/.claude/skills"
 mkdir -p "$DEST"
 
-for dir in "$SRC"/*/; do
-  name="$(basename "$dir")"
-  rm -rf "${DEST:?}/$name"
-  cp -r "$dir" "$DEST/$name"
-  echo "installed: $name"
-done
+install_dir() {
+  local dir="$1" label="$2" name
+  for skill in "$dir"/*/; do
+    name="$(basename "$skill")"
+    rm -rf "${DEST:?}/$name"
+    cp -r "$skill" "$DEST/$name"
+    echo "installed: $name$label"
+  done
+}
 
-# docx/pdf/pptx/xlsx под проприетарной лицензией Anthropic, поэтому их нет
-# в этом репозитории: скачиваем напрямую из официального anthropics/skills.
 TMP="$(mktemp -d)"
 if git clone --quiet --depth 1 https://github.com/anthropics/skills "$TMP/anthropic"; then
-  for name in docx pdf pptx xlsx; do
-    rm -rf "${DEST:?}/$name"
-    cp -r "$TMP/anthropic/skills/$name" "$DEST/$name"
-    echo "installed: $name (from anthropics/skills)"
-  done
+  install_dir "$TMP/anthropic/skills" " (from anthropics/skills)"
 else
-  echo "warning: не удалось скачать anthropics/skills, docx/pdf/pptx/xlsx пропущены" >&2
+  echo "warning: не удалось скачать anthropics/skills, скиллы Anthropic пропущены" >&2
 fi
 rm -rf "$TMP"
+
+install_dir "$SRC" ""
