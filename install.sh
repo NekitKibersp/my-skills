@@ -30,3 +30,14 @@ fi
 rm -rf "$TMP"
 
 install_dir "$SRC" ""
+
+# Общие инструкции для Claude: блок между маркерами в ~/.claude/CLAUDE.md
+# обновляется при каждом запуске, остальное содержимое файла не трогаем.
+INSTR="$(cd "$(dirname "$0")" && pwd)/user-instructions.md"
+CLAUDE_MD="$HOME/.claude/CLAUDE.md"
+BEGIN="<!-- my-skills:begin -->"
+END="<!-- my-skills:end -->"
+touch "$CLAUDE_MD"
+sed -i "/$BEGIN/,/$END/d" "$CLAUDE_MD"
+{ echo "$BEGIN"; cat "$INSTR"; echo "$END"; } >> "$CLAUDE_MD"
+echo "installed: user instructions -> $CLAUDE_MD"
