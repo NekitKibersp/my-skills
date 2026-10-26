@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Устанавливает скиллы в ~/.claude/skills, чтобы Claude Code видел их в любом проекте:
 #   1. часто обновляемые наборы — свежие, напрямую из их репозиториев
-#      (anthropics/skills, heygen-com/hyperframes, emilkowalski/skills);
+#      (anthropics/skills, heygen-com/hyperframes, emilkowalski/skills, pbakaus/impeccable);
 #   2. сторонние скиллы из этого репозитория (.claude/skills).
 #
 # Локально:        ./install.sh
@@ -22,13 +22,13 @@ install_dir() {
   done
 }
 
-# Скачивает только папку skills/ репозитория и ставит все скиллы из неё.
+# Скачивает только папку со скиллами репозитория (по умолчанию skills/) и ставит все скиллы из неё.
 install_upstream() {
-  local repo="$1" tmp
+  local repo="$1" path="${2:-skills}" tmp
   tmp="$(mktemp -d)"
   if git clone --quiet --depth 1 --filter=blob:none --sparse "https://github.com/$repo" "$tmp/r" \
-      && git -C "$tmp/r" sparse-checkout set skills; then
-    install_dir "$tmp/r/skills" " (from $repo)"
+      && git -C "$tmp/r" sparse-checkout set "$path"; then
+    install_dir "$tmp/r/$path" " (from $repo)"
   else
     echo "warning: не удалось скачать $repo, его скиллы пропущены" >&2
   fi
@@ -38,6 +38,7 @@ install_upstream() {
 install_upstream anthropics/skills
 install_upstream heygen-com/hyperframes
 install_upstream emilkowalski/skills
+install_upstream pbakaus/impeccable plugin/skills
 
 install_dir "$SRC" ""
 

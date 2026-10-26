@@ -9,6 +9,9 @@
 - **скиллы Эмиля Ковальски** (анимации и UI-полировка: `emil-design-eng`, `animate`, `review-animations`,
   `improve-animations`, `apple-design`, `prototype`, `break-ui`, `pick-ui-library` и др.) — свежие, из
   [emilkowalski/skills](https://github.com/emilkowalski/skills);
+- **Impeccable** (`impeccable`: 24 команды `/impeccable audit|critique|polish|animate|…` для дизайна интерфейсов) — свежий, из
+  [pbakaus/impeccable](https://github.com/pbakaus/impeccable). При первом запуске скачивает свою программу из релизов
+  этого репозитория на GitHub (с проверкой sha256);
 - **сторонние скиллы из этого репозитория** (`.claude/skills/`):
   - [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill): `ui-ux-pro-max`, `ui-styling`, `design`, `design-system`, `brand`, `banner-design`, `slides`;
   - [aidea-team/claude-skill-scraper](https://github.com/aidea-team/claude-skill-scraper): `scrape`.
@@ -46,7 +49,7 @@ cd my-skills && ./install.sh
 
 ## Лицензии
 Сторонние скиллы распространяются под MIT (файл `LICENSE` в папке скилла).
-Скиллы Anthropic, HyperFrames и Эмиля Ковальски здесь не хранятся, их лицензии — в исходных репозиториях.
+Скиллы Anthropic, HyperFrames, Эмиля Ковальски и Impeccable здесь не хранятся, их лицензии — в исходных репозиториях.
 
 ## Скилл `scrape`
 Скиллу нужен Python с пакетами `playwright` и `requests`; при первом запуске он сам создаёт
