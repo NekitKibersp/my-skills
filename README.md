@@ -9,7 +9,8 @@
 - **сторонние скиллы из этого репозитория** (`.claude/skills/`):
   - [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill): `ui-ux-pro-max`, `ui-styling`, `design`, `design-system`, `brand`, `banner-design`, `slides`;
   - [aidea-team/claude-skill-scraper](https://github.com/aidea-team/claude-skill-scraper): `scrape`.
-  - [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills): `database-designer`.
+  - [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills): `database-designer`;
+  - [haidrrrry/claude-remotion-skill](https://github.com/haidrrrry/claude-remotion-skill): `remotion-motion-graphics`.
 
 Чтобы добавить свой скилл, положите его папку в `.claude/skills/`.
 
