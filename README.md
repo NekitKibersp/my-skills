@@ -23,6 +23,12 @@
   - [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills): `database-designer`;
   - [haidrrrry/claude-remotion-skill](https://github.com/haidrrrry/claude-remotion-skill): `remotion-motion-graphics`;
   - [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill): `design-taste-frontend` (папка `taste-skill`).
+  - [blader/humanizer](https://github.com/blader/humanizer): `humanizer` — убирает признаки «ИИ-текста»;
+  - [mvanhorn/last30days-skill](https://github.com/mvanhorn/last30days-skill): `last30days` — что обсуждают о теме за последние 30 дней
+    (Reddit, X, YouTube, HN, Polymarket, GitHub и др.; нужен Python 3, часть источников требует своих API-ключей;
+    на своём компьютере может брать cookies X из браузера для поиска по X; демо-картинки `assets/` не включены);
+  - [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills): маркетинг, `ab-testing`, `ad-creative`, `ads`, `ai-seo`, `analytics`, `aso`, `attribution`, `churn-prevention`, `co-marketing`, `cold-email`, `community-marketing`, `competitor-profiling`, `competitors`, `content-strategy`, `conversion-tracking`, `copy-editing`, `copywriting`, `cro`, `customer-research`, `directory-submissions`, `emails`, `events`, `free-tools`, `image`, `influencer-marketing`, `launch`, `lead-magnets`, `link-building`, `marketing-council`, `marketing-ideas`, `marketing-loops`, `marketing-plan`, `marketing-psychology`, `offers`, `marketing-onboarding`, `paywalls`, `popups`, `pricing`, `product-marketing`, `programmatic-seo`, `prospecting`, `public-relations`, `referrals`, `revops`, `sales-enablement`, `schema`, `seo-audit`, `signup`, `site-architecture`, `sms`, `social`, `video`.
+    Скилл `onboarding` переименован в `marketing-onboarding`, чтобы не конфликтовать с `onboarding` от ElevenLabs.
 
 - **свои скиллы:** `ru-voiceover` — русская озвучка видео голосом `ru-RU-DmitryNeural` через edge-tts + ffmpeg
   (`install.sh` ставит `edge-tts` через pip; в облаке нужен доступ к `speech.platform.bing.com`).
