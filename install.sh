@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Устанавливает скиллы в ~/.claude/skills, чтобы Claude Code видел их в любом проекте:
 #   1. часто обновляемые наборы — свежие, напрямую из их репозиториев
-#      (anthropics/skills, heygen-com/hyperframes, emilkowalski/skills, pbakaus/impeccable);
+#      (anthropics/skills, heygen-com/hyperframes, emilkowalski/skills, pbakaus/impeccable,
+#      elevenlabs/skills);
 #   2. сторонние скиллы из этого репозитория (.claude/skills).
 #
 # Локально:        ./install.sh
@@ -15,6 +16,7 @@ mkdir -p "$DEST"
 install_dir() {
   local dir="$1" label="$2" name
   for skill in "$dir"/*/; do
+    [ -f "$skill/SKILL.md" ] || continue
     name="$(basename "$skill")"
     rm -rf "${DEST:?}/$name"
     cp -r "$skill" "$DEST/$name"
@@ -22,12 +24,14 @@ install_dir() {
   done
 }
 
-# Скачивает только папку со скиллами репозитория (по умолчанию skills/) и ставит все скиллы из неё.
+# Скачивает только папку со скиллами репозитория (по умолчанию skills/, "." — корень)
+# и ставит все скиллы из неё (папки с SKILL.md).
 install_upstream() {
   local repo="$1" path="${2:-skills}" tmp
   tmp="$(mktemp -d)"
   if git clone --quiet --depth 1 --filter=blob:none --sparse "https://github.com/$repo" "$tmp/r" \
-      && git -C "$tmp/r" sparse-checkout set "$path"; then
+      && if [ "$path" = "." ]; then git -C "$tmp/r" sparse-checkout disable; \
+         else git -C "$tmp/r" sparse-checkout set "$path"; fi; then
     install_dir "$tmp/r/$path" " (from $repo)"
   else
     echo "warning: не удалось скачать $repo, его скиллы пропущены" >&2
@@ -39,6 +43,7 @@ install_upstream anthropics/skills
 install_upstream heygen-com/hyperframes
 install_upstream emilkowalski/skills
 install_upstream pbakaus/impeccable plugin/skills
+install_upstream elevenlabs/skills .
 
 install_dir "$SRC" ""
 
