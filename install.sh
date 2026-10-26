@@ -47,6 +47,14 @@ install_upstream elevenlabs/skills .
 
 install_dir "$SRC" ""
 
+# Python-зависимости скиллов (ru-voiceover).
+if python3 -m pip install --quiet edge-tts 2>/dev/null \
+    || python3 -m pip install --quiet --break-system-packages edge-tts 2>/dev/null; then
+  echo "installed: edge-tts (pip)"
+else
+  echo "warning: не удалось установить edge-tts через pip" >&2
+fi
+
 # Общие инструкции для Claude: блок между маркерами в ~/.claude/CLAUDE.md
 # обновляется при каждом запуске, остальное содержимое файла не трогаем.
 INSTR="$(cd "$(dirname "$0")" && pwd)/user-instructions.md"

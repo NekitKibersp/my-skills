@@ -22,6 +22,9 @@
   - [haidrrrry/claude-remotion-skill](https://github.com/haidrrrry/claude-remotion-skill): `remotion-motion-graphics`;
   - [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill): `design-taste-frontend` (папка `taste-skill`).
 
+- **свои скиллы:** `ru-voiceover` — русская озвучка видео голосом `ru-RU-DmitryNeural` через edge-tts + ffmpeg
+  (`install.sh` ставит `edge-tts` через pip; в облаке нужен доступ к `speech.platform.bing.com`).
+
 Чтобы добавить свой скилл, положите его папку в `.claude/skills/`.
 
 Ещё `install.sh` записывает в `~/.claude/CLAUDE.md` правила из `user-instructions.md`
