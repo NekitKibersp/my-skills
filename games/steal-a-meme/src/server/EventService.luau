@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
+local DataService = require(script.Parent.DataService)
 local MemeFactory = require(script.Parent.MemeFactory)
 local PlotService = require(script.Parent.PlotService)
 local Remotes = require(script.Parent.Remotes)
@@ -132,8 +133,9 @@ local function returnCarried(state: MonsterState)
 	state.Carry = nil
 	state.Model:SetAttribute("Carrying", "")
 	setFace(state, ":)")
-	if carry.Owner.Parent and PlotService.GetPlot(carry.Owner) and PlotService.GetEntry(carry.Owner, carry.Slot) then
-		PlotService.PlaceModel(carry.Owner, carry.Slot, carry.Model)
+	if carry.Owner.Parent and PlotService.GetPlot(carry.Owner) and DataService.IsLoaded(carry.Owner)
+		and PlotService.GetEntry(carry.Owner, carry.Slot) then
+		PlotService.ReturnModel(carry.Owner, carry.Slot, carry.Model)
 		PlotService.SetAway(carry.Owner, carry.Slot, false)
 		Remotes.Notify:FireClient(carry.Owner, "MemeReturned", { Meme = carry.Id }, "success")
 	else
@@ -155,7 +157,8 @@ local function rewardBest(state: MonsterState)
 	local best: Player? = nil
 	local bestDamage = 0
 	for player, damage in state.Damage do
-		if player.Parent and damage > bestDamage then
+		-- Награду кладём в данные игрока — без загруженных данных (или базы) выдать её нельзя
+		if player.Parent and DataService.IsLoaded(player) and damage > bestDamage then
 			best, bestDamage = player, damage
 		end
 	end
@@ -280,6 +283,10 @@ end
 
 local function monsterBrain(state: MonsterState)
 	while monster == state and not state.Defeated do
+		task.wait() -- страховка: ни одна ветка ниже не должна крутить цикл без паузы
+		if monster ~= state or state.Defeated then
+			break
+		end
 		local owner, slot = pickTarget()
 		if not owner or not slot then
 			-- Все базы закрыты — бродим по дорожке
@@ -333,7 +340,7 @@ local function monsterBrain(state: MonsterState)
 			state.Carry = nil
 			state.Model:SetAttribute("Carrying", "")
 			carry.Model:Destroy()
-			if carry.Owner.Parent and PlotService.GetPlot(carry.Owner) then
+			if carry.Owner.Parent and PlotService.GetPlot(carry.Owner) and DataService.IsLoaded(carry.Owner) then
 				PlotService.RemoveEntry(carry.Owner, carry.Slot)
 				Remotes.Notify:FireClient(carry.Owner, "MonsterEscaped", { Meme = carry.Id }, "error")
 			end

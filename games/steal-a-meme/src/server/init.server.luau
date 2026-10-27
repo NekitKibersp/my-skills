@@ -76,9 +76,11 @@ for _, player in Players:GetPlayers() do
 end
 
 Players.PlayerRemoving:Connect(function(player)
-	-- Сначала возвращаем всё «в пути» по местам, потом сохраняем и освобождаем базу
+	-- Сначала возвращаем всё «в пути» по местам, потом освобождаем базу и сохраняем.
+	-- База освобождается ДО сохранения: Save ждёт DataStore, и за это время вор успел бы
+	-- начать новую кражу с базы уходящего игрока (а его данные потом пропадут из памяти).
 	StealService.OnPlayerRemoving(player)
 	EventService.OnPlayerRemoving(player)
-	DataService.Release(player)
 	PlotService.Release(player)
+	DataService.Release(player)
 end)

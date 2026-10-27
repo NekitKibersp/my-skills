@@ -87,6 +87,10 @@ local function grantProduct(player: Player, key: string): boolean
 	return false
 end
 
+-- Чеки, которые выдаются прямо сейчас: выдача может ждать (загрузка модели Мем-Бога),
+-- а повторный вызов ProcessReceipt с тем же PurchaseId не должен выдать товар второй раз
+local inFlight: { [string]: boolean } = {}
+
 local function processReceipt(receipt): Enum.ProductPurchaseDecision
 	local player = Players:GetPlayerByUserId(receipt.PlayerId)
 	if not player or not DataService.IsLoaded(player) then
@@ -95,6 +99,9 @@ local function processReceipt(receipt): Enum.ProductPurchaseDecision
 	local purchaseId = tostring(receipt.PurchaseId)
 	if DataService.HasReceipt(player, purchaseId) then
 		return Enum.ProductPurchaseDecision.PurchaseGranted
+	end
+	if inFlight[purchaseId] then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
 	local key: string? = nil
 	for productKey, product in Config.Products do
@@ -106,10 +113,18 @@ local function processReceipt(receipt): Enum.ProductPurchaseDecision
 		warn("[ShopService] Неизвестный продукт", receipt.ProductId)
 		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
+	inFlight[purchaseId] = true
 	local ok, granted = pcall(grantProduct, player, key)
+	inFlight[purchaseId] = nil
 	if not ok or not granted then
 		warn("[ShopService] Не удалось выдать", key, granted)
 		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+	if not DataService.IsLoaded(player) then
+		-- Игрок вышел, пока шла выдача (ждёт только призыв Мем-Бога — он уже на дорожке):
+		-- чек записать некуда, но повторять покупку нельзя
+		warn("[ShopService] Выдано, игрок уже вышел", purchaseId)
+		return Enum.ProductPurchaseDecision.PurchaseGranted
 	end
 	DataService.AddReceipt(player, purchaseId)
 	-- Сохраняем сразу, чтобы чек не потерялся при падении сервера

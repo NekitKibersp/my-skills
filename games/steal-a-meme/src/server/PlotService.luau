@@ -97,6 +97,9 @@ function PlotService.GetEntry(player: Player, slot: number): Entry?
 end
 
 function PlotService.FreeSlot(player: Player): number?
+	if not plotOf[player] then
+		return nil -- нет базы (сервер переполнен) — ставить некуда
+	end
 	local used = {}
 	for _, entry in PlotService.GetEntries(player) do
 		used[entry.Slot] = true
@@ -253,6 +256,22 @@ local function spawnModel(player: Player, entry: Entry): Model
 	return model
 end
 
+-- Вернуть унесённого мема на его слот. Если модель успела уничтожиться
+-- (например, упала за карту вместе с вором), собираем её заново по записи.
+function PlotService.ReturnModel(player: Player, slot: number, model: Model)
+	local entry = PlotService.GetEntry(player, slot)
+	if not entry then
+		model:Destroy()
+		return
+	end
+	if model.PrimaryPart and model.PrimaryPart:IsDescendantOf(game) then
+		PlotService.PlaceModel(player, slot, model)
+	else
+		model:Destroy()
+		spawnModel(player, entry)
+	end
+end
+
 local function updateSlotsInfo(player: Player)
 	local plot = plotOf[player]
 	if not plot then
@@ -293,7 +312,8 @@ function PlotService.AddMeme(player: Player, id: string, mutationId: string, vir
 		holder.Value = walkFrom
 		model:PivotTo(walkFrom)
 		holder.Changed:Connect(function(value)
-			if model.Parent then
+			-- Мема могли украсть прямо в полёте: тогда двигать его нельзя (утащит вора вместе с ним)
+			if model.Parent and PlotService.GetModel(player, entry.Slot) == model then
 				model:PivotTo(value)
 			end
 		end)

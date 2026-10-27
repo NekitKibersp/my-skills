@@ -58,8 +58,8 @@ function StealService.Fail(thief: Player)
 	end
 
 	local owner = carry.Owner
-	if owner.Parent and PlotService.GetPlot(owner) and PlotService.GetEntry(owner, carry.Slot) then
-		PlotService.PlaceModel(owner, carry.Slot, carry.Model)
+	if owner.Parent and PlotService.GetPlot(owner) and DataService.IsLoaded(owner) and PlotService.GetEntry(owner, carry.Slot) then
+		PlotService.ReturnModel(owner, carry.Slot, carry.Model)
 		PlotService.SetAway(owner, carry.Slot, false)
 		Remotes.Notify:FireClient(owner, "MemeReturned", { Meme = carry.Id }, "success")
 	else
@@ -76,6 +76,11 @@ local function deliver(thief: Player)
 		return
 	end
 	local owner = carry.Owner
+	-- Хозяин уже вышел (база освобождена) — мем остаётся в его сохранении, вору не достаётся
+	if not PlotService.GetPlot(owner) or not DataService.IsLoaded(owner) then
+		StealService.Fail(thief)
+		return
+	end
 	local entry = PlotService.GetEntry(owner, carry.Slot)
 	if not entry or not PlotService.FreeSlot(thief) then
 		StealService.Fail(thief)
@@ -105,7 +110,7 @@ end
 
 -- Вызывается PlotService, когда кто-то дозажал «Украсть» на чужом меме
 function StealService.TryStart(thief: Player, owner: Player, slot: number, prompt: ProximityPrompt)
-	if thief == owner or not DataService.IsLoaded(thief) or not PlotService.GetPlot(thief) then
+	if thief == owner or not DataService.IsLoaded(thief) or not PlotService.GetPlot(thief) or not DataService.IsLoaded(owner) then
 		return
 	end
 	-- Удержание проверяем сами: клиент может «нажать» промпт мгновенно
@@ -365,25 +370,32 @@ function StealService.Start()
 			holdStart[player] = os.clock()
 		end
 	end)
+	local function step()
+		local t = now()
+		for thief, carry in carries do
+			if not thief.Parent then
+				continue
+			end
+			if t >= carry.EndsAt then
+				StealService.Fail(thief)
+				continue
+			end
+			local plot = PlotService.GetPlot(thief)
+			local root = rootOf(thief)
+			if plot and root and PlotService.InPlot(plot, root.Position) then
+				deliver(thief)
+			end
+		end
+		guardStep()
+	end
 	task.spawn(function()
 		while true do
 			task.wait(0.2)
-			local t = now()
-			for thief, carry in carries do
-				if not thief.Parent then
-					continue
-				end
-				if t >= carry.EndsAt then
-					StealService.Fail(thief)
-					continue
-				end
-				local plot = PlotService.GetPlot(thief)
-				local root = rootOf(thief)
-				if plot and root and PlotService.InPlot(plot, root.Position) then
-					deliver(thief)
-				end
+			-- Ошибка в одном тике не должна навсегда остановить доставку, таймеры и стражей
+			local ok, err = pcall(step)
+			if not ok then
+				warn("[StealService]", err)
 			end
-			guardStep()
 		end
 	end)
 end

@@ -507,11 +507,13 @@ for _, player in Players:GetPlayers() do
 end
 
 Players.PlayerRemoving:Connect(function(player)
-	-- Сначала возвращаем всё «в пути» по местам, потом сохраняем и освобождаем базу
+	-- Сначала возвращаем всё «в пути» по местам, потом освобождаем базу и сохраняем.
+	-- База освобождается ДО сохранения: Save ждёт DataStore, и за это время вор успел бы
+	-- начать новую кражу с базы уходящего игрока (а его данные потом пропадут из памяти).
 	StealService.OnPlayerRemoving(player)
 	EventService.OnPlayerRemoving(player)
-	DataService.Release(player)
 	PlotService.Release(player)
+	DataService.Release(player)
 end)
 ]]></string>
       </Properties>
@@ -1037,6 +1039,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
+local DataService = require(script.Parent.DataService)
 local MemeFactory = require(script.Parent.MemeFactory)
 local PlotService = require(script.Parent.PlotService)
 local Remotes = require(script.Parent.Remotes)
@@ -1163,8 +1166,9 @@ local function returnCarried(state: MonsterState)
 	state.Carry = nil
 	state.Model:SetAttribute("Carrying", "")
 	setFace(state, ":)")
-	if carry.Owner.Parent and PlotService.GetPlot(carry.Owner) and PlotService.GetEntry(carry.Owner, carry.Slot) then
-		PlotService.PlaceModel(carry.Owner, carry.Slot, carry.Model)
+	if carry.Owner.Parent and PlotService.GetPlot(carry.Owner) and DataService.IsLoaded(carry.Owner)
+		and PlotService.GetEntry(carry.Owner, carry.Slot) then
+		PlotService.ReturnModel(carry.Owner, carry.Slot, carry.Model)
 		PlotService.SetAway(carry.Owner, carry.Slot, false)
 		Remotes.Notify:FireClient(carry.Owner, "MemeReturned", { Meme = carry.Id }, "success")
 	else
@@ -1186,7 +1190,8 @@ local function rewardBest(state: MonsterState)
 	local best: Player? = nil
 	local bestDamage = 0
 	for player, damage in state.Damage do
-		if player.Parent and damage > bestDamage then
+		-- Награду кладём в данные игрока — без загруженных данных (или базы) выдать её нельзя
+		if player.Parent and DataService.IsLoaded(player) and damage > bestDamage then
 			best, bestDamage = player, damage
 		end
 	end
@@ -1311,6 +1316,10 @@ end
 
 local function monsterBrain(state: MonsterState)
 	while monster == state and not state.Defeated do
+		task.wait() -- страховка: ни одна ветка ниже не должна крутить цикл без паузы
+		if monster ~= state or state.Defeated then
+			break
+		end
 		local owner, slot = pickTarget()
 		if not owner or not slot then
 			-- Все базы закрыты — бродим по дорожке
@@ -1364,7 +1373,7 @@ local function monsterBrain(state: MonsterState)
 			state.Carry = nil
 			state.Model:SetAttribute("Carrying", "")
 			carry.Model:Destroy()
-			if carry.Owner.Parent and PlotService.GetPlot(carry.Owner) then
+			if carry.Owner.Parent and PlotService.GetPlot(carry.Owner) and DataService.IsLoaded(carry.Owner) then
 				PlotService.RemoveEntry(carry.Owner, carry.Slot)
 				Remotes.Notify:FireClient(carry.Owner, "MonsterEscaped", { Meme = carry.Id }, "error")
 			end
@@ -1992,7 +2001,8 @@ function MapBuilder.Build()
 	for _, side in { 1, -1 } do
 		for _, x in PLOT_X do
 			index += 1
-			local center = Vector3.new(x, 0, side * PLOT_Z)
+			-- y = 0.1: верх пола базы чуть выше верха земли (0.5), иначе грани совпадают и мерцают
+			local center = Vector3.new(x, 0.1, side * PLOT_Z)
 			table.insert(plots, buildPlot(index, center, Vector3.new(0, 0, -side), plotsFolder))
 		end
 	end
@@ -2391,6 +2401,9 @@ function PlotService.GetEntry(player: Player, slot: number): Entry?
 end
 
 function PlotService.FreeSlot(player: Player): number?
+	if not plotOf[player] then
+		return nil -- нет базы (сервер переполнен) — ставить некуда
+	end
 	local used = {}
 	for _, entry in PlotService.GetEntries(player) do
 		used[entry.Slot] = true
@@ -2547,6 +2560,22 @@ local function spawnModel(player: Player, entry: Entry): Model
 	return model
 end
 
+-- Вернуть унесённого мема на его слот. Если модель успела уничтожиться
+-- (например, упала за карту вместе с вором), собираем её заново по записи.
+function PlotService.ReturnModel(player: Player, slot: number, model: Model)
+	local entry = PlotService.GetEntry(player, slot)
+	if not entry then
+		model:Destroy()
+		return
+	end
+	if model.PrimaryPart and model.PrimaryPart:IsDescendantOf(game) then
+		PlotService.PlaceModel(player, slot, model)
+	else
+		model:Destroy()
+		spawnModel(player, entry)
+	end
+end
+
 local function updateSlotsInfo(player: Player)
 	local plot = plotOf[player]
 	if not plot then
@@ -2587,7 +2616,8 @@ function PlotService.AddMeme(player: Player, id: string, mutationId: string, vir
 		holder.Value = walkFrom
 		model:PivotTo(walkFrom)
 		holder.Changed:Connect(function(value)
-			if model.Parent then
+			-- Мема могли украсть прямо в полёте: тогда двигать его нельзя (утащит вора вместе с ним)
+			if model.Parent and PlotService.GetModel(player, entry.Slot) == model then
 				model:PivotTo(value)
 			end
 		end)
@@ -3147,6 +3177,10 @@ local function grantProduct(player: Player, key: string): boolean
 	return false
 end
 
+-- Чеки, которые выдаются прямо сейчас: выдача может ждать (загрузка модели Мем-Бога),
+-- а повторный вызов ProcessReceipt с тем же PurchaseId не должен выдать товар второй раз
+local inFlight: { [string]: boolean } = {}
+
 local function processReceipt(receipt): Enum.ProductPurchaseDecision
 	local player = Players:GetPlayerByUserId(receipt.PlayerId)
 	if not player or not DataService.IsLoaded(player) then
@@ -3155,6 +3189,9 @@ local function processReceipt(receipt): Enum.ProductPurchaseDecision
 	local purchaseId = tostring(receipt.PurchaseId)
 	if DataService.HasReceipt(player, purchaseId) then
 		return Enum.ProductPurchaseDecision.PurchaseGranted
+	end
+	if inFlight[purchaseId] then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
 	local key: string? = nil
 	for productKey, product in Config.Products do
@@ -3166,10 +3203,18 @@ local function processReceipt(receipt): Enum.ProductPurchaseDecision
 		warn("[ShopService] Неизвестный продукт", receipt.ProductId)
 		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
+	inFlight[purchaseId] = true
 	local ok, granted = pcall(grantProduct, player, key)
+	inFlight[purchaseId] = nil
 	if not ok or not granted then
 		warn("[ShopService] Не удалось выдать", key, granted)
 		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+	if not DataService.IsLoaded(player) then
+		-- Игрок вышел, пока шла выдача (ждёт только призыв Мем-Бога — он уже на дорожке):
+		-- чек записать некуда, но повторять покупку нельзя
+		warn("[ShopService] Выдано, игрок уже вышел", purchaseId)
+		return Enum.ProductPurchaseDecision.PurchaseGranted
 	end
 	DataService.AddReceipt(player, purchaseId)
 	-- Сохраняем сразу, чтобы чек не потерялся при падении сервера
@@ -3260,8 +3305,8 @@ function StealService.Fail(thief: Player)
 	end
 
 	local owner = carry.Owner
-	if owner.Parent and PlotService.GetPlot(owner) and PlotService.GetEntry(owner, carry.Slot) then
-		PlotService.PlaceModel(owner, carry.Slot, carry.Model)
+	if owner.Parent and PlotService.GetPlot(owner) and DataService.IsLoaded(owner) and PlotService.GetEntry(owner, carry.Slot) then
+		PlotService.ReturnModel(owner, carry.Slot, carry.Model)
 		PlotService.SetAway(owner, carry.Slot, false)
 		Remotes.Notify:FireClient(owner, "MemeReturned", { Meme = carry.Id }, "success")
 	else
@@ -3278,6 +3323,11 @@ local function deliver(thief: Player)
 		return
 	end
 	local owner = carry.Owner
+	-- Хозяин уже вышел (база освобождена) — мем остаётся в его сохранении, вору не достаётся
+	if not PlotService.GetPlot(owner) or not DataService.IsLoaded(owner) then
+		StealService.Fail(thief)
+		return
+	end
 	local entry = PlotService.GetEntry(owner, carry.Slot)
 	if not entry or not PlotService.FreeSlot(thief) then
 		StealService.Fail(thief)
@@ -3307,7 +3357,7 @@ end
 
 -- Вызывается PlotService, когда кто-то дозажал «Украсть» на чужом меме
 function StealService.TryStart(thief: Player, owner: Player, slot: number, prompt: ProximityPrompt)
-	if thief == owner or not DataService.IsLoaded(thief) or not PlotService.GetPlot(thief) then
+	if thief == owner or not DataService.IsLoaded(thief) or not PlotService.GetPlot(thief) or not DataService.IsLoaded(owner) then
 		return
 	end
 	-- Удержание проверяем сами: клиент может «нажать» промпт мгновенно
@@ -3567,25 +3617,32 @@ function StealService.Start()
 			holdStart[player] = os.clock()
 		end
 	end)
+	local function step()
+		local t = now()
+		for thief, carry in carries do
+			if not thief.Parent then
+				continue
+			end
+			if t >= carry.EndsAt then
+				StealService.Fail(thief)
+				continue
+			end
+			local plot = PlotService.GetPlot(thief)
+			local root = rootOf(thief)
+			if plot and root and PlotService.InPlot(plot, root.Position) then
+				deliver(thief)
+			end
+		end
+		guardStep()
+	end
 	task.spawn(function()
 		while true do
 			task.wait(0.2)
-			local t = now()
-			for thief, carry in carries do
-				if not thief.Parent then
-					continue
-				end
-				if t >= carry.EndsAt then
-					StealService.Fail(thief)
-					continue
-				end
-				local plot = PlotService.GetPlot(thief)
-				local root = rootOf(thief)
-				if plot and root and PlotService.InPlot(plot, root.Position) then
-					deliver(thief)
-				end
+			-- Ошибка в одном тике не должна навсегда остановить доставку, таймеры и стражей
+			local ok, err = pcall(step)
+			if not ok then
+				warn("[StealService]", err)
 			end
-			guardStep()
 		end
 	end)
 end

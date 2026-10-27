@@ -431,7 +431,8 @@ function MapBuilder.Build()
 	for _, side in { 1, -1 } do
 		for _, x in PLOT_X do
 			index += 1
-			local center = Vector3.new(x, 0, side * PLOT_Z)
+			-- y = 0.1: верх пола базы чуть выше верха земли (0.5), иначе грани совпадают и мерцают
+			local center = Vector3.new(x, 0.1, side * PLOT_Z)
 			table.insert(plots, buildPlot(index, center, Vector3.new(0, 0, -side), plotsFolder))
 		end
 	end
