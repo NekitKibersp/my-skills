@@ -23,6 +23,9 @@
   - [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills): `database-designer`;
   - [haidrrrry/claude-remotion-skill](https://github.com/haidrrrry/claude-remotion-skill): `remotion-motion-graphics`;
   - [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill): `design-taste-frontend` (папка `taste-skill`).
+  - [gamedev-skills/awesome-gamedev-agent-skills](https://github.com/gamedev-skills/awesome-gamedev-agent-skills) (Apache-2.0):
+    `game-ai` — ИИ для NPC и врагов (конечные автоматы, деревья поведения, steering, поиск пути A*/navmesh),
+    `ai-behavior-trees-utility-ai` — свой движок деревьев поведения и Utility AI;
   - [blader/humanizer](https://github.com/blader/humanizer): `humanizer` — убирает признаки «ИИ-текста»;
   - [mvanhorn/last30days-skill](https://github.com/mvanhorn/last30days-skill): `last30days` — что обсуждают о теме за последние 30 дней
     (Reddit, X, YouTube, HN, Polymarket, GitHub и др.; нужен Python 3, часть источников требует своих API-ключей;
@@ -62,7 +65,7 @@ cd my-skills && ./install.sh
 окажется внутри проекта (скиллы Anthropic при этом ставятся только через `install.sh`).
 
 ## Лицензии
-Сторонние скиллы распространяются под MIT (файл `LICENSE` в папке скилла).
+Сторонние скиллы распространяются под MIT, а `game-ai` и `ai-behavior-trees-utility-ai` — под Apache-2.0 (файлы `LICENSE` и `NOTICE` в папке скилла).
 Скиллы Anthropic, HyperFrames, Эмиля Ковальски, Impeccable, ElevenLabs и Remotion здесь не хранятся, их лицензии — в исходных репозиториях.
 
 ## Скилл `scrape`
