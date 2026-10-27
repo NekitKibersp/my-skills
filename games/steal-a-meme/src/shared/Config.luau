@@ -23,24 +23,24 @@ Config.Rarities = {
 -- в инвентаре владельца игры; скрипты из неё вырезаются при загрузке.
 -- Чтобы заменить или удалить персонажа (например, по жалобе правообладателя), правьте только этот список.
 Config.Creatures = {
-	{ Id = "ClapCat", Name = "Clapping Cat", NameRu = "Хлопающий Кот", Face = "👏🐈‍⬛", Rarity = "Common", Price = 25, Income = 1, Color = Color3.fromRGB(30, 30, 35), Shape = "Ball", Size = 1, ModelId = 0 },
+	{ Id = "ClapCat", Name = "Black Cat Clapping", Face = "👏🐈‍⬛", Rarity = "Common", Price = 25, Income = 1, Color = Color3.fromRGB(30, 30, 35), Shape = "Ball", Size = 1, ModelId = 0 },
 	{ Id = "Pups", Name = "Sleepy Baby", NameRu = "Сонный Пупс", Face = "😴", Rarity = "Common", Price = 60, Income = 2, Color = Color3.fromRGB(255, 205, 180), Shape = "Ball", Size = 0.9, ModelId = 0 },
 	{ Id = "Kolobok", Name = "Kolobok", NameRu = "Колобок", Face = "😏", Rarity = "Common", Price = 130, Income = 4, Color = Color3.fromRGB(240, 190, 60), Shape = "Ball", Size = 0.8, ModelId = 0 },
 	{ Id = "Brdysh", Name = "Brdysh", NameRu = "Брдыщ", Face = "🐟🐶", Rarity = "Common", Price = 250, Income = 7, Color = Color3.fromRGB(120, 170, 190), Shape = "Cylinder", Size = 1, ModelId = 0 },
 
-	{ Id = "SixSeven", Name = "Six Seven", NameRu = "Шесть-Семь", Face = "6️⃣7️⃣", Rarity = "Rare", Price = 500, Income = 12, Color = Color3.fromRGB(80, 200, 255), Shape = "Block", Size = 1.1, ModelId = 0 },
+	{ Id = "SixSeven", Name = "Six Seven", Face = "6️⃣7️⃣", Rarity = "Rare", Price = 500, Income = 12, Color = Color3.fromRGB(80, 200, 255), Shape = "Block", Size = 1.1, ModelId = 0 },
 	{ Id = "Cheremsha", Name = "Cheremsha", NameRu = "Черемша", Face = "🦁🐰", Rarity = "Rare", Price = 1300, Income = 26, Color = Color3.fromRGB(230, 170, 90), Shape = "Ball", Size = 1.15, ModelId = 0 },
 	{ Id = "Semga", Name = "Semga", NameRu = "Сёмга", Face = "🐟😐", Rarity = "Rare", Price = 2500, Income = 45, Color = Color3.fromRGB(250, 130, 110), Shape = "Cylinder", Size = 1.2, ModelId = 0 },
 
-	{ Id = "Tralalero", Name = "Tralalero Tralala", NameRu = "Тралалеро Тралала", Face = "🦈👟", Rarity = "Epic", Price = 5000, Income = 80, Color = Color3.fromRGB(90, 140, 220), Shape = "Cylinder", Size = 1.25, ModelId = 0 },
-	{ Id = "TungSahur", Name = "Tung Tung Tung Sahur", NameRu = "Тунг Тунг Тунг Сахур", Face = "🪵🏏", Rarity = "Epic", Price = 13000, Income = 175, Color = Color3.fromRGB(170, 120, 70), Shape = "Cylinder", Size = 1.35, ModelId = 0 },
+	{ Id = "Tralalero", Name = "Tralalero Tralala", Face = "🦈👟", Rarity = "Epic", Price = 5000, Income = 80, Color = Color3.fromRGB(90, 140, 220), Shape = "Cylinder", Size = 1.25, ModelId = 0 },
+	{ Id = "TungSahur", Name = "Tung Tung Tung Sahur", Face = "🪵🏏", Rarity = "Epic", Price = 13000, Income = 175, Color = Color3.fromRGB(170, 120, 70), Shape = "Cylinder", Size = 1.35, ModelId = 0 },
 	{ Id = "SwordKitten", Name = "Kitten with a Sword", NameRu = "Котёнок с мечом", Face = "🐱⚔️", Rarity = "Epic", Price = 22000, Income = 280, Color = Color3.fromRGB(190, 190, 205), Shape = "Ball", Size = 1, ModelId = 0 },
 
 	{ Id = "BossCapybara", Name = "Boss Capybara", NameRu = "Капибара-Босс", Face = "😎", Rarity = "Legendary", Price = 50000, Income = 550, Color = Color3.fromRGB(160, 110, 70), Shape = "Block", Size = 1.4, ModelId = 0 },
-	{ Id = "Bombardiro", Name = "Bombardiro Crocodilo", NameRu = "Бомбардиро Крокодило", Face = "🐊✈️", Rarity = "Legendary", Price = 90000, Income = 900, Color = Color3.fromRGB(70, 130, 60), Shape = "Cylinder", Size = 1.5, ModelId = 0 },
-	{ Id = "Ballerina", Name = "Ballerina Cappuccina", NameRu = "Балерина Капучина", Face = "☕🩰", Rarity = "Legendary", Price = 150000, Income = 1400, Color = Color3.fromRGB(255, 170, 210), Shape = "Cylinder", Size = 1.3, ModelId = 0 },
+	{ Id = "Bombardiro", Name = "Bombardiro Crocodilo", Face = "🐊✈️", Rarity = "Legendary", Price = 90000, Income = 900, Color = Color3.fromRGB(70, 130, 60), Shape = "Cylinder", Size = 1.5, ModelId = 0 },
+	{ Id = "Ballerina", Name = "Ballerina Cappuccina", Face = "☕🩰", Rarity = "Legendary", Price = 150000, Income = 1400, Color = Color3.fromRGB(255, 170, 210), Shape = "Cylinder", Size = 1.3, ModelId = 0 },
 
-	{ Id = "Verity", Name = "Verity", NameRu = "Верити", Face = "🙂", Rarity = "Mythic", Price = 400000, Income = 3500, Color = Color3.fromRGB(255, 220, 30), Shape = "Block", Size = 1.6, ModelId = 0 },
+	{ Id = "Verity", Name = "Verity", Face = "🙂", Rarity = "Mythic", Price = 400000, Income = 3500, Color = Color3.fromRGB(255, 220, 30), Shape = "Block", Size = 1.6, ModelId = 0 },
 	{ Id = "DjCat", Name = "DJ Cat", NameRu = "Кот-Диджей", Face = "😼🎧", Rarity = "Mythic", Price = 1200000, Income = 9000, Color = Color3.fromRGB(120, 60, 200), Shape = "Ball", Size = 1.7, ModelId = 0 },
 
 	{ Id = "MegaSixSeven", Name = "MEGA 67", NameRu = "МЕГА 67", Face = "6️⃣7️⃣🔥", Rarity = "God", Price = 6700000, Income = 40000, Color = Color3.fromRGB(255, 80, 200), Shape = "Block", Size = 2.1, ModelId = 0 },
