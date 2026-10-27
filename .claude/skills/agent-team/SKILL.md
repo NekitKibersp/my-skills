@@ -17,25 +17,38 @@ argument-hint: "[задача]"
 
 | Задача | Агент |
 |---|---|
-| Серверная часть, API, БД | `backend-developer` |
-| Интерфейс, React/Vue | `frontend-developer`, `ui-designer` |
+| Серверная часть, API, БД | `backend-developer`, `api-designer` |
+| Интерфейс, React/Vue/Next.js | `frontend-developer`, `react-specialist`, `nextjs-developer`, `ui-designer` |
 | Фича целиком (фронт+бэк) | `fullstack-developer` |
 | Мобильное приложение | `mobile-developer` |
-| Python / TypeScript глубоко | `python-pro`, `typescript-pro` |
+| Python / JavaScript / TypeScript глубоко | `python-pro`, `javascript-pro`, `typescript-pro` |
+| Telegram-бот | `telegram-bot-developer` |
+| Платежи | `payment-integration` (+ потом `security-auditor`) |
 | Roblox (Luau, Rojo) | `roblox-developer` |
-| Другие игры (Unity, Godot, механики) | `game-developer` |
-| CI/CD, Docker, деплой | `devops-engineer` |
+| Unity | `unity-developer` |
+| Другие игры (Godot, механики) | `game-developer` |
+| SQL, Postgres, схема БД | `sql-pro`, `postgres-pro` |
+| Анализ данных, графики, выводы | `data-analyst`, `data-scientist` |
+| ИИ-функции, модели, дообучение | `ai-engineer`, `machine-learning-engineer`, `prompt-engineer` |
+| MCP-серверы | `mcp-developer` |
+| Docker, CI/CD, деплой | `docker-expert`, `devops-engineer` |
 | Ревью кода | `code-reviewer`, `architect-reviewer` |
-| Баг, падение, странное поведение | `debugger` |
-| Тесты | `test-automator` |
+| Баг, падение, странное поведение | `debugger`, `error-detective` (разбор логов) |
+| Тесты, проверка качества | `test-automator`, `qa-expert`, `ui-ux-tester`, `accessibility-tester` |
 | Безопасность | `security-auditor` |
 | Тормоза | `performance-engineer` |
-| Рефакторинг | `refactoring-specialist` |
-| Документация, README | `documentation-engineer` |
-| Промпты для LLM | `prompt-engineer` |
+| Рефакторинг, старый код, зависимости | `refactoring-specialist`, `legacy-modernizer`, `dependency-manager` |
+| Документация, инструкции | `documentation-engineer`, `technical-writer` |
+| Курсовая, реферат, доклад (по методичке, ГОСТ) | `academic-writer` |
+| Презентация целиком | `presentation-designer` |
+| Тексты для маркетинга, SEO | `content-marketer`, `seo-specialist` |
+| Реклама в Telegram | `telegram-ads-analyst` |
 | Поиск информации, сравнение вариантов | `research-analyst`, `search-specialist` |
-| Требования, приоритеты, план продукта | `product-manager` |
-| Разбить огромную задачу и раздать | `multi-agent-coordinator`, `task-distributor` |
+| Рынок, конкуренты, проверка идеи | `market-researcher`, `competitive-analyst`, `project-idea-validator` |
+| Пользователи и удобство | `ux-researcher` |
+| Требования, приоритеты, план | `product-manager`, `project-manager` |
+| Свести результаты многих агентов | `knowledge-synthesizer` |
+| Разбить огромную задачу и раздать | `multi-agent-coordinator`, `task-distributor`, `workflow-orchestrator` |
 
 ## Как работать
 

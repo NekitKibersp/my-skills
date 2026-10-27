@@ -92,13 +92,13 @@
     скрипты `setup.sh` (rojo + selene), `new-project.sh`, `check.sh`;
   - `roblox-monetization` — геймпассы и Developer Products с правильным `ProcessReceipt`;
   - `agent-team` — как раздавать задачи субагентам и запускать их параллельно.
-- **субагенты** (`.claude/agents/` → `~/.claude/agents/`), 23 из
-  [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) (MIT) и свой `roblox-developer`:
-  `backend-developer`, `frontend-developer`, `fullstack-developer`, `ui-designer`, `mobile-developer`, `python-pro`,
-  `typescript-pro`, `devops-engineer`, `code-reviewer`, `architect-reviewer`, `debugger`, `test-automator`,
-  `security-auditor`, `performance-engineer`, `refactoring-specialist`, `documentation-engineer`, `prompt-engineer`,
-  `game-developer`, `roblox-developer`, `product-manager`, `research-analyst`, `search-specialist`,
-  `multi-agent-coordinator`, `task-distributor`.
+  - `prompt-enhancer` — превращает короткую идею в подробный промпт: для Claude, картинок (Midjourney, Nano Banana,
+    GPT Image, Flux), видео (Sora, Veo, Kling), музыки и голоса (Suno, ElevenLabs) и других чат-ботов (ChatGPT, Gemini).
+- **субагенты** (`.claude/agents/` → `~/.claude/agents/`): 53 из
+  [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) (MIT, `LICENSE-VoltAgent`),
+  `unity-developer` из [wshobson/agents](https://github.com/wshobson/agents) (MIT, `LICENSE-wshobson`) и свои:
+  `roblox-developer`, `telegram-bot-developer` (боты на aiogram 3, платежи Stars), `academic-writer` (курсовые и рефераты
+  по методичке и ГОСТ), `presentation-designer` (презентация целиком). Кому что поручать — в скилле `agent-team`.
 
 Чтобы добавить свой скилл, положите его папку в `.claude/skills/`.
 
