@@ -3,7 +3,8 @@
 #   1. часто обновляемые наборы — свежие, напрямую из их репозиториев
 #      (anthropics/skills, heygen-com/hyperframes, emilkowalski/skills, pbakaus/impeccable,
 #      elevenlabs/skills, remotion-dev/skills);
-#   2. сторонние скиллы из этого репозитория (.claude/skills).
+#   2. сторонние скиллы из этого репозитория (.claude/skills);
+#   3. субагенты из этого репозитория (.claude/agents) -> ~/.claude/agents.
 #
 # Локально:        ./install.sh
 # Облачный setup:  git clone --depth 1 https://github.com/NekitKibersp/my-skills /tmp/my-skills && /tmp/my-skills/install.sh
@@ -47,6 +48,15 @@ install_upstream elevenlabs/skills .
 install_upstream remotion-dev/skills
 
 install_dir "$SRC" ""
+
+# Субагенты (.claude/agents) -> ~/.claude/agents.
+AGENTS_SRC="$(cd "$(dirname "$0")" && pwd)/.claude/agents"
+mkdir -p "$HOME/.claude/agents"
+for agent in "$AGENTS_SRC"/*.md; do
+  [ -f "$agent" ] || continue
+  cp "$agent" "$HOME/.claude/agents/"
+  echo "installed agent: $(basename "$agent" .md)"
+done
 
 # Python-зависимости скиллов (ru-voiceover).
 if python3 -m pip install --quiet edge-tts 2>/dev/null \

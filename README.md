@@ -37,8 +37,38 @@
   - [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills): маркетинг, `ab-testing`, `ad-creative`, `ads`, `ai-seo`, `analytics`, `aso`, `attribution`, `churn-prevention`, `co-marketing`, `cold-email`, `community-marketing`, `competitor-profiling`, `competitors`, `content-strategy`, `conversion-tracking`, `copy-editing`, `copywriting`, `cro`, `customer-research`, `directory-submissions`, `emails`, `events`, `free-tools`, `image`, `influencer-marketing`, `launch`, `lead-magnets`, `link-building`, `marketing-council`, `marketing-ideas`, `marketing-loops`, `marketing-plan`, `marketing-psychology`, `offers`, `marketing-onboarding`, `paywalls`, `popups`, `pricing`, `product-marketing`, `programmatic-seo`, `prospecting`, `public-relations`, `referrals`, `revops`, `sales-enablement`, `schema`, `seo-audit`, `signup`, `site-architecture`, `sms`, `social`, `video`.
     Скилл `onboarding` переименован в `marketing-onboarding`, чтобы не конфликтовать с `onboarding` от ElevenLabs.
 
-- **свои скиллы:** `ru-voiceover` — русская озвучка видео голосом `ru-RU-DmitryNeural` через edge-tts + ffmpeg
-  (`install.sh` ставит `edge-tts` через pip; в облаке нужен доступ к `speech.platform.bing.com`).
+  - [obra/superpowers](https://github.com/obra/superpowers) (MIT): процесс разработки — `brainstorming`, `writing-plans`,
+    `executing-plans`, `subagent-driven-development`, `dispatching-parallel-agents`, `test-driven-development`,
+    `systematic-debugging`, `verification-before-completion`, `using-git-worktrees`, `requesting-code-review`,
+    `receiving-code-review`, `finishing-a-development-branch`, `writing-skills`, `using-superpowers`
+    (ссылки `superpowers:<имя>` внутри заменены на просто `<имя>`; визуальный режим `brainstorming` грузит логотип
+    с primeradiant.com — отключается `SUPERPOWERS_DISABLE_TELEMETRY=1`);
+  - [google/skills](https://github.com/google/skills) (Apache-2.0), официальные скиллы Google: `finding-google-skills`,
+    `retrieving-developer-knowledge`, `gemini-api`, `firebase-basics`, `cloud-run-basics`, `google-cloud-recipe-onboarding`,
+    `google-cloud-recipe-auth`, `google-cloud-storage-basics`, `cloud-sql-basics`, `sign-in-with-google-web`,
+    `google-analytics-data-api-basics`, `google-analytics-admin-api-basics` (остальные ~160 — GKE, BigQuery, Ads — не взяты);
+  - [google-gemini/gemini-skills](https://github.com/google-gemini/gemini-skills) (Apache-2.0): `gemini-api-dev`,
+    `gemini-live-api-dev`, `gemini-omni-flash-api` (нужен `GEMINI_API_KEY`);
+  - [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (MIT): `vercel-react-best-practices`,
+    `vercel-composition-patterns`, `web-design-guidelines`;
+  - [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) (MIT): `karpathy-guidelines` —
+    правила против типичных ошибок LLM в коде;
+
+- **свои скиллы:**
+  - `ru-voiceover` — русская озвучка видео голосом `ru-RU-DmitryNeural` через edge-tts + ffmpeg
+    (`install.sh` ставит `edge-tts` через pip; в облаке нужен доступ к `speech.platform.bing.com`);
+  - `roblox-game` — целый режим для Roblox (симулятор, обби, тайкун, PvP-арена, tower defense, хоррор) как Rojo-проект
+    + готовый `.rbxlx`: шаблон (сохранение, Remotes, UI-набор), рецепты жанров, пример «Симулятор кристаллов»,
+    скрипты `setup.sh` (rojo + selene), `new-project.sh`, `check.sh`;
+  - `roblox-monetization` — геймпассы и Developer Products с правильным `ProcessReceipt`;
+  - `agent-team` — как раздавать задачи субагентам и запускать их параллельно.
+- **субагенты** (`.claude/agents/` → `~/.claude/agents/`), 23 из
+  [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) (MIT) и свой `roblox-developer`:
+  `backend-developer`, `frontend-developer`, `fullstack-developer`, `ui-designer`, `mobile-developer`, `python-pro`,
+  `typescript-pro`, `devops-engineer`, `code-reviewer`, `architect-reviewer`, `debugger`, `test-automator`,
+  `security-auditor`, `performance-engineer`, `refactoring-specialist`, `documentation-engineer`, `prompt-engineer`,
+  `game-developer`, `roblox-developer`, `product-manager`, `research-analyst`, `search-specialist`,
+  `multi-agent-coordinator`, `task-distributor`.
 
 Чтобы добавить свой скилл, положите его папку в `.claude/skills/`.
 
@@ -69,7 +99,7 @@ cd my-skills && ./install.sh
 окажется внутри проекта (скиллы Anthropic при этом ставятся только через `install.sh`).
 
 ## Лицензии
-Сторонние скиллы распространяются под MIT, а скиллы из awesome-gamedev-agent-skills (`game-ai`, `ai-behavior-trees-utility-ai`, `roblox-*`) и `caveman` — под Apache-2.0 (файлы `LICENSE` и `NOTICE` в папке скилла).
+Сторонние скиллы распространяются под MIT, а скиллы из awesome-gamedev-agent-skills (`game-ai`, `ai-behavior-trees-utility-ai`, `roblox-*` кроме `roblox-game` и `roblox-monetization`), `caveman`, скиллы Google и Gemini — под Apache-2.0. Агенты VoltAgent — MIT (`.claude/agents/LICENSE-VoltAgent`) (файлы `LICENSE` и `NOTICE` в папке скилла).
 Скиллы Anthropic, HyperFrames, Эмиля Ковальски, Impeccable, ElevenLabs и Remotion здесь не хранятся, их лицензии — в исходных репозиториях.
 
 ## Скилл `scrape`
