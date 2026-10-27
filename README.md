@@ -1,5 +1,28 @@
 # Мои скиллы для Claude Code
 
+## Итого (на 27.10.2026)
+
+| Что | Сколько | Откуда |
+|---|---|---|
+| **Скиллы** | **317** | 251 лежат в этом репозитории (`.claude/skills/`), ещё 66 `install.sh` скачивает свежими: Anthropic, HyperFrames, Эмиль Ковальски, Impeccable, ElevenLabs, Remotion |
+| **Агенты (субагенты)** | **58** | 53 из VoltAgent, `unity-developer` из wshobson, 4 своих: `roblox-developer`, `telegram-bot-developer`, `academic-writer`, `presentation-designer` |
+
+Плюс встроенные возможности Claude Code, которые не нужно ставить (скиллы вроде `code-review`, `simplify`,
+`security-review` и стандартные агенты); облачное окружение может добавить пару своих служебных скиллов.
+
+**Как это работает**
+- В начале каждой сессии скрипт настройки окружения запускает `install.sh`: скиллы попадают в `~/.claude/skills`,
+  агенты — в `~/.claude/agents`, правила из `user-instructions.md` — в `~/.claude/CLAUDE.md`.
+- Правило: все новые скиллы, агенты и то, чему пользователь учит Claude («запомни…», «всегда делай…»), Claude
+  сам кладёт **только в этот репозиторий** и сразу пушит в `main` (без pull request'ов; старый `claude-skills` не используется).
+- Агентов Claude запускает сам, когда это выгодно: задача делится на независимые части, нужна независимая проверка
+  крупной работы или кода с деньгами/ключами, большой поиск, сложный баг. Для мелочей — работает сам.
+  Кому что поручать — в скилле `agent-team`.
+- После изменений, чтобы новые сессии сразу взяли свежую версию, — добавить пробел в конец скрипта настройки
+  окружения и сохранить.
+
+## Что ставит `install.sh`
+
 `install.sh` ставит в `~/.claude/skills`:
 - **все скиллы Anthropic** — всегда свежие, скачиваются напрямую из [anthropics/skills](https://github.com/anthropics/skills);
 - **HyperFrames от HeyGen** (видео из HTML: `hyperframes`, `hyperframes-cli`, `hyperframes-registry`, `media-use`,
