@@ -54,6 +54,36 @@
   - [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) (MIT): `karpathy-guidelines` —
     правила против типичных ошибок LLM в коде;
 
+  - [vercel-labs/skills](https://github.com/vercel-labs/skills) (MIT): `find-skills` — сам ищет подходящий скилл в каталоге skills.sh;
+  - [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) (MIT): `frontend-ui-engineering`, `api-and-interface-design`,
+    `web-performance-optimization` (в оригинале `performance-optimization`, переименован из-за игрового скилла с тем же именем),
+    `security-and-hardening`, `observability-and-instrumentation`, `git-workflow-and-versioning`, `documentation-and-adrs`,
+    `ci-cd-and-automation`, `shipping-and-launch`, `deprecation-and-migration`, `browser-testing-with-devtools`.
+    Не взяты дубли Superpowers: TDD, планирование, отладка, ревью, упрощение кода, проработка идей;
+  - [mattpocock/skills](https://github.com/mattpocock/skills) (MIT): `grill-me`, `grilling`, `grill-with-docs`, `handoff`, `teach`,
+    `wait-what`, `to-questionnaire`, `writing-for-agents`, `wizard`, `ask-matt`, `retro`, `research`,
+    `improve-codebase-architecture`, `wayfinder`, `throwaway-prototype` (в оригинале `prototype`, переименован: `prototype` уже есть
+    у Эмиля Ковальски), `pr`, `domain-modeling`, `setup-matt-pocock-skills`, `codebase-design`, `to-tickets`, `implement`,
+    `implement-spec`, `to-spec`, `triage`. Не взяты: `tdd` и `diagnosing-bugs` (есть в Superpowers), `code-review` (встроен в Claude Code);
+  - [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT): `diagram-design` — схемы и диаграммы;
+  - [zarazhangrui/frontend-slides](https://github.com/zarazhangrui/frontend-slides) (MIT): `frontend-slides` — HTML-презентации с анимациями;
+  - [supabase/agent-skills](https://github.com/supabase/agent-skills) (MIT): `supabase`, `supabase-postgres-best-practices`;
+  - [prisma/skills](https://github.com/prisma/skills) (MIT): `prisma-orm-setup`, `prisma-client-api`, `prisma-cli`, `prisma-database-setup`,
+    `prisma-postgres`, `prisma-postgres-setup`, `prisma-upgrade-v7`;
+  - [greensock/gsap-skills](https://github.com/greensock/gsap-skills) (MIT): `gsap-core`, `gsap-timeline`, `gsap-scrolltrigger`,
+    `gsap-plugins`, `gsap-utils`, `gsap-react`, `gsap-frameworks`, `gsap-performance`;
+  - [huggingface/skills](https://github.com/huggingface/skills) (Apache-2.0): `huggingface-best`, `hf-cli`, `hf-mem`,
+    `huggingface-local-models`, `huggingface-spaces`, `huggingface-gradio`, `huggingface-zerogpu`, `huggingface-datasets`,
+    `huggingface-llm-trainer`, `trl-training`, `huggingface-vision-trainer`, `transformers-js`, `huggingface-papers`,
+    `huggingface-tool-builder`, `huggingface-lora-space-builder` (без AWS SageMaker). Многим нужен свой токен `HF_TOKEN`;
+  - [gamedev-skills/awesome-gamedev-agent-skills](https://github.com/gamedev-skills/awesome-gamedev-agent-skills) (Apache-2.0), остальные
+    скиллы набора: `gamedev-router` (в оригинале `router`, сам выбирает нужный скилл по движку), Godot (`godot-*`), Unity (`unity-*`),
+    Unreal (`unreal-*`), браузерные движки (`phaser-*`, `pixijs-rendering`, `threejs-*`), `bevy-ecs`, `defold-core`, `love2d-core`,
+    `pygame-core`, `ebitengine-game`, общие темы (`game-feel`, `level-design`, `procedural-gen`, `save-systems`, `shader-programming`,
+    `camera-systems`, `audio-design`, `dialogue-systems`, `game-ui-ux`, `input-systems`, `physics-tuning`, `performance-optimization`,
+    `create-game-assets`), жанры (`platformer`, `roguelike`, `rpg`, `fps-shooter`, `tower-defense`, `card-game`, `visual-novel`,
+    `survival-crafting`, `puzzle`) и выпуск игры (`game-jam`, `prototype-fast`, `steam-publish`, `itch-publish`);
+
 - **свои скиллы:**
   - `ru-voiceover` — русская озвучка видео голосом `ru-RU-DmitryNeural` через edge-tts + ffmpeg
     (`install.sh` ставит `edge-tts` через pip; в облаке нужен доступ к `speech.platform.bing.com`);
@@ -100,7 +130,7 @@ cd my-skills && ./install.sh
 окажется внутри проекта (скиллы Anthropic при этом ставятся только через `install.sh`).
 
 ## Лицензии
-Сторонние скиллы распространяются под MIT, а скиллы из awesome-gamedev-agent-skills (`game-ai`, `ai-behavior-trees-utility-ai`, `roblox-*` кроме `roblox-game` и `roblox-monetization`), `caveman`, скиллы Google и Gemini — под Apache-2.0. Агенты VoltAgent — MIT (`.claude/agents/LICENSE-VoltAgent`) (файлы `LICENSE` и `NOTICE` в папке скилла).
+Сторонние скиллы распространяются под MIT, а скиллы из awesome-gamedev-agent-skills (`game-ai`, `ai-behavior-trees-utility-ai`, `roblox-*` кроме `roblox-game` и `roblox-monetization`), `caveman`, скиллы Google, Gemini и Hugging Face — под Apache-2.0. Агенты VoltAgent — MIT (`.claude/agents/LICENSE-VoltAgent`) (файлы `LICENSE` и `NOTICE` в папке скилла).
 Скиллы Anthropic, HyperFrames, Эмиля Ковальски, Impeccable, ElevenLabs и Remotion здесь не хранятся, их лицензии — в исходных репозиториях.
 
 ## Скилл `scrape`
