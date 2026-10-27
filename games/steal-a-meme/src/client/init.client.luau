@@ -1,32 +1,114 @@
--- Точка входа клиента: строит UI и подписывается на атрибуты игрока.
-local Players = game:GetService("Players")
+-- Точка входа клиента «Укради Мем»: создаёт экран, общий контекст UI и запускает модули.
+-- Клиент только рисует состояние (атрибуты, теги) и просит действия через Remotes;
+-- все решения (цены, кражи, награды) принимает сервер.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Format = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Format"))
+-- Строки UI добавляются в Locale до того, как кто-то их попросит
+local Locale = require(script:WaitForChild("Strings"))
 local UiKit = require(script:WaitForChild("UiKit"))
 
-local player = Players.LocalPlayer
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 
 local gui = UiKit.screen("GameUi")
-local toast = UiKit.toaster(gui)
-Remotes:WaitForChild("Notify").OnClientEvent:Connect(toast)
+gui.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets -- кнопки не под чёлкой и не под кнопками Roblox
 
-local coinsLabel = UiKit.text({
-	Position = UDim2.new(0, 12, 0, 12),
-	Size = UDim2.new(0, 220, 0, 40),
-	BackgroundTransparency = 0.15,
-	BackgroundColor3 = UiKit.Colors.Panel,
-	TextSize = 24,
-	TextColor3 = UiKit.Colors.Gold,
+-- Уведомления — чуть ниже баннеров события сверху
+local toastHolder = UiKit.create("Frame", {
+	Name = "Toasts",
+	AnchorPoint = Vector2.new(0.5, 0),
+	Position = UDim2.new(0.5, 0, 0, 96),
+	Size = UDim2.new(1, 0, 0, 220),
+	BackgroundTransparency = 1,
+	ZIndex = 20,
 	Parent = gui,
 })
-UiKit.corner(12).Parent = coinsLabel
-UiKit.padding(8).Parent = coinsLabel
+local toast = UiKit.toaster(toastHolder)
 
-local function render()
-	coinsLabel.Text = "💰 " .. Format.Number(player:GetAttribute("Coins") or 0)
+-- Масштаб интерфейса по высоте экрана: телефон в альбомной ориентации ~ 0.6, ПК — 1
+local scales: { UIScale } = {}
+local function currentScale(): number
+	local camera = workspace.CurrentCamera
+	local height = if camera then camera.ViewportSize.Y else 720
+	return math.clamp(height / 720, 0.6, 1)
+end
+local function rescale()
+	local value = currentScale()
+	for _, scale in scales do
+		scale.Scale = value
+	end
+end
+local function watchCamera()
+	local camera = workspace.CurrentCamera
+	if camera then
+		camera:GetPropertyChangedSignal("ViewportSize"):Connect(rescale)
+	end
+	rescale()
+end
+workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(watchCamera)
+watchCamera()
+
+local windows: { [string]: GuiObject } = {}
+
+-- Общий контекст, который получают все модули интерфейса
+local ctx = {
+	Gui = gui,
+	Toast = toast,
+	Windows = windows,
+}
+
+-- Добавить UIScale к кластеру интерфейса (панель, кнопки, окно)
+function ctx.Scale(frame: GuiObject)
+	local scale = Instance.new("UIScale")
+	scale.Scale = currentScale()
+	scale.Parent = frame
+	table.insert(scales, scale)
 end
 
-player:GetAttributeChangedSignal("Coins"):Connect(render)
-render()
+-- Одно окно за раз: открыть/закрыть по имени
+function ctx.Open(name: string, forceOpen: boolean?)
+	local target = windows[name]
+	if not target then
+		return
+	end
+	local show = forceOpen or not target.Visible
+	for _, window in windows do
+		window.Visible = false
+	end
+	target.Visible = show
+end
+
+-- Окна не масштабируются: UiKit.window уже подгоняет размер под экран
+function ctx.Register(name: string, window: GuiObject)
+	windows[name] = window
+end
+
+Remotes:WaitForChild("Notify").OnClientEvent:Connect(function(key, args, kind)
+	if type(key) ~= "string" then
+		return
+	end
+	toast(Locale.T(key, if type(args) == "table" then args else nil), if type(kind) == "string" then kind else nil)
+end)
+
+-- Модули: окна регистрируются раньше HUD, который их открывает
+local modules = {
+	"Shop",
+	"IndexWindow",
+	"RebirthWindow",
+	"GuardWindow",
+	"Popups",
+	"Hud",
+	"Banners",
+	"Carry",
+	"PlotSigns",
+	"Prompts",
+	"MemeBillboards",
+	"Effects",
+}
+for _, name in modules do
+	local ok, err = pcall(function()
+		require(script:WaitForChild(name)).Start(ctx)
+	end)
+	if not ok then
+		warn("[Client] " .. name .. " failed: " .. tostring(err))
+	end
+end

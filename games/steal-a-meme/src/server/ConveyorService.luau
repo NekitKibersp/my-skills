@@ -1,0 +1,200 @@
+-- «Красная дорожка»: мемы появляются из портала, идут по дорожке, их можно купить.
+-- Редкость и мутация выбираются на сервере; Удача сервера и Ночь Смайлика меняют шансы.
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local DataService = require(script.Parent.DataService)
+local MemeFactory = require(script.Parent.MemeFactory)
+local PlotService = require(script.Parent.PlotService)
+local Remotes = require(script.Parent.Remotes)
+
+local ConveyorService = {}
+
+local carpetStart: Vector3
+local carpetEnd: Vector3
+local folder: Folder
+local walking: { [Model]: number } = {} -- модель -> пройденное расстояние
+local random = Random.new()
+
+local LUCKY_RARITIES = { Legendary = true, Mythic = true, God = true, Secret = true }
+
+local function weightedPick<T>(items: { T }, weightOf: (T) -> number): T
+	local total = 0
+	for _, item in items do
+		total += weightOf(item)
+	end
+	local roll = random:NextNumber() * total
+	for _, item in items do
+		roll -= weightOf(item)
+		if roll <= 0 then
+			return item
+		end
+	end
+	return items[#items]
+end
+
+local function isLucky(): boolean
+	return (ReplicatedStorage:GetAttribute("LuckEndsAt") or 0) > workspace:GetServerTimeNow()
+end
+
+local function rollCreature(): string
+	local night = ReplicatedStorage:GetAttribute("NightActive") == true
+	if night and random:NextNumber() < Config.Conveyor.EventChance then
+		local seasonal = {}
+		for _, creature in Config.Creatures do
+			if creature.Event then
+				table.insert(seasonal, creature)
+			end
+		end
+		return weightedPick(seasonal, function(creature)
+			return creature.EventWeight or 1
+		end).Id
+	end
+
+	local lucky = isLucky()
+	local rarity = weightedPick(Config.Rarities, function(r)
+		return r.Weight * (if lucky and LUCKY_RARITIES[r.Id] then Config.Conveyor.LuckMult else 1)
+	end)
+	local pool = {}
+	for _, creature in Config.Creatures do
+		if creature.Rarity == rarity.Id and not creature.Event then
+			table.insert(pool, creature)
+		end
+	end
+	if #pool == 0 then
+		return Config.Creatures[1].Id
+	end
+	return pool[random:NextInteger(1, #pool)].Id
+end
+
+local function rollMutation(): string
+	local night = ReplicatedStorage:GetAttribute("NightActive") == true
+	local pool = {}
+	for _, mutation in Config.Mutations do
+		if night or not mutation.Event then
+			table.insert(pool, mutation)
+		end
+	end
+	return weightedPick(pool, function(m)
+		return m.Weight
+	end).Id
+end
+
+local function carpetCFrame(distance: number, model: Model): CFrame
+	local direction = (carpetEnd - carpetStart).Unit
+	local position = carpetStart + direction * distance
+	-- Лёгкое покачивание «шаг-шаг»
+	local bob = math.abs(math.sin(distance * 0.9)) * 0.5
+	return CFrame.lookAt(position, position + direction) * CFrame.new(0, MemeFactory.BodyOffset(model) + bob, 0)
+end
+
+local function tryBuy(player: Player, model: Model)
+	if not DataService.IsLoaded(player) or not walking[model] or model:GetAttribute("State") ~= "Carpet" then
+		Remotes.Notify:FireClient(player, "AlreadyTaken", nil, "error")
+		return
+	end
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	if not root or (root.Position - model:GetPivot().Position).Magnitude > 20 then
+		return
+	end
+	local id = model:GetAttribute("CreatureId")
+	local mutationId = model:GetAttribute("Mutation")
+	local price = model:GetAttribute("Price")
+	if DataService.Get(player, "Coins") < price then
+		Remotes.Notify:FireClient(player, "NotEnoughCash", { Price = price }, "error")
+		return
+	end
+	if not PlotService.FreeSlot(player) then
+		Remotes.Notify:FireClient(player, "BaseFull", nil, "error")
+		return
+	end
+
+	-- Сначала забираем мема с дорожки, потом списываем деньги и выдаём
+	walking[model] = nil
+	model:SetAttribute("State", "Walking")
+	local from = model:GetPivot()
+	model:Destroy()
+
+	DataService.Increment(player, "Coins", -price)
+	PlotService.AddMeme(player, id, mutationId, false, from)
+	Remotes.Fx:FireAllClients("Bought", { Position = from.Position, Rarity = Config.GetCreature(id).Rarity })
+	Remotes.Notify:FireClient(player, "Bought", { Meme = id }, "success")
+end
+
+function ConveyorService.Spawn(forcedId: string?, forcedMutation: string?): Model?
+	local count = 0
+	for _ in walking do
+		count += 1
+	end
+	if count >= Config.Conveyor.MaxOnCarpet and not forcedId then
+		return nil
+	end
+
+	local id = forcedId or rollCreature()
+	local mutationId = forcedMutation or rollMutation()
+	local model = MemeFactory.Create(id, mutationId, false, CFrame.new(carpetStart))
+	model:SetAttribute("State", "Carpet")
+	model:SetAttribute("Price", Config.PriceOf(id, mutationId))
+	model:PivotTo(carpetCFrame(0, model))
+
+	local prompt = MemeFactory.AddPrompt(model, "BuyPrompt", "Buy", 0)
+	prompt.MaxActivationDistance = 14
+	prompt.Triggered:Connect(function(player)
+		tryBuy(player, model)
+	end)
+
+	walking[model] = 0
+	model.Parent = folder
+	return model
+end
+
+-- Призыв Мем-Бога (покупка за Robux): случайный мем редкости God на дорожке
+function ConveyorService.SummonGod()
+	local gods = {}
+	for _, creature in Config.Creatures do
+		if creature.Rarity == "God" then
+			table.insert(gods, creature.Id)
+		end
+	end
+	if #gods > 0 then
+		ConveyorService.Spawn(gods[random:NextInteger(1, #gods)])
+	end
+end
+
+function ConveyorService.Start(startPosition: Vector3, endPosition: Vector3)
+	carpetStart = startPosition
+	carpetEnd = endPosition
+	folder = Instance.new("Folder")
+	folder.Name = "CarpetMemes"
+	folder.Parent = workspace
+
+	local length = (carpetEnd - carpetStart).Magnitude
+
+	RunService.Heartbeat:Connect(function(dt)
+		for model, distance in walking do
+			if not model.Parent then
+				walking[model] = nil
+				continue
+			end
+			distance += Config.Conveyor.Speed * dt
+			if distance >= length then
+				walking[model] = nil
+				model:Destroy()
+				continue
+			end
+			walking[model] = distance
+			model:PivotTo(carpetCFrame(distance, model))
+		end
+	end)
+
+	task.spawn(function()
+		while true do
+			ConveyorService.Spawn()
+			task.wait(Config.Conveyor.SpawnInterval)
+		end
+	end)
+end
+
+return ConveyorService

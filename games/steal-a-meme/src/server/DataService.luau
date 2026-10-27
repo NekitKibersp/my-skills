@@ -1,24 +1,39 @@
--- Прогресс игроков: загрузка/сохранение в DataStore, leaderstats и зеркало в атрибутах игрока,
+-- Прогресс игроков: загрузка/сохранение в DataStore, leaderstats и зеркало чисел в атрибутах игрока,
 -- чтобы клиентский UI читал значения через player:GetAttribute без лишних remotes.
--- Хранит только числа; для сложных данных (инвентарь) расширьте sanitize и syncAttribute.
+-- Числовые поля — через Get/Set/Increment; таблицы (мемы на базе, Индекс, чеки покупок) — через GetTable.
 local DataStoreService = game:GetService("DataStoreService")
-local Players = game:GetService("Players")
 
+local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
 local Remotes = require(script.Parent.Remotes)
 
 local DataService = {}
 
-local STORE_NAME = "GameData_v1" -- смена версии = чистый старт для всех
+local STORE_NAME = "StealAMeme_v1" -- смена версии = чистый старт для всех
 local AUTOSAVE_INTERVAL = 120
+local MAX_RECEIPTS = 100
 
--- Все сохраняемые поля и их значения по умолчанию.
-local DEFAULT_DATA: { [string]: number } = {
-	Coins = 0,
+-- Числовые поля и значения по умолчанию
+local DEFAULT_NUMBERS: { [string]: number } = {
+	Coins = Config.StartCoins,
+	Rebirths = 0,
+	Stolen = 0,
+	TotalEarned = 0,
+	GuardLevel = 0,
+	LastSeen = 0,
+	DailyStreak = 0,
+	LastDailyDay = 0,
 }
 
--- Поля, которые видны в таблице игроков: ключ данных -> подпись.
+-- Табличные поля:
+--   Memes    — массив { Id, Mut, Viral, Slot } (мемы на базе)
+--   Index    — { ["Id|Mut"] = true } (открытые записи Индекса)
+--   Receipts — массив PurchaseId обработанных покупок за Robux (защита от двойной выдачи)
+local TABLE_KEYS = { "Memes", "Index", "Receipts" }
+
+-- Поля в таблице игроков: ключ данных -> подпись
 local LEADERSTATS: { { Key: string, Label: string } } = {
-	{ Key = "Coins", Label = "Монеты" },
+	{ Key = "Coins", Label = "Cash" },
+	{ Key = "Stolen", Label = "Steals" },
 }
 
 local store: DataStore? = nil
@@ -33,7 +48,7 @@ do
 	end
 end
 
-type Profile = { Data: { [string]: number }, CanSave: boolean }
+type Profile = { Data: { [string]: any }, CanSave: boolean, IsNew: boolean }
 local profiles: { [Player]: Profile } = {}
 
 local changedEvent = Instance.new("BindableEvent")
@@ -60,21 +75,17 @@ end
 
 local function syncAttribute(player: Player, key: string, value: number)
 	player:SetAttribute(key, value)
-
 	local leaderstats = player:FindFirstChild("leaderstats")
 	if leaderstats then
 		for _, stat in LEADERSTATS do
 			if stat.Key == key then
-				(leaderstats:FindFirstChild(stat.Label) :: IntValue).Value = value
+				(leaderstats:FindFirstChild(stat.Label) :: IntValue).Value = math.floor(value)
 			end
 		end
 	end
 end
 
 local function createLeaderstats(player: Player)
-	if #LEADERSTATS == 0 then
-		return
-	end
 	local leaderstats = Instance.new("Folder")
 	leaderstats.Name = "leaderstats"
 	for _, stat in LEADERSTATS do
@@ -85,16 +96,57 @@ local function createLeaderstats(player: Player)
 	leaderstats.Parent = player
 end
 
-local function sanitize(saved: any): { [string]: number }
-	local data = table.clone(DEFAULT_DATA)
-	if type(saved) == "table" then
-		for key, default in DEFAULT_DATA do
+local function sanitizeMemes(saved: any): { any }
+	local result = {}
+	local usedSlots = {}
+	if type(saved) ~= "table" then
+		return result
+	end
+	for _, entry in saved do
+		if type(entry) == "table" and type(entry.Id) == "string" and Config.GetCreature(entry.Id)
+			and type(entry.Slot) == "number" and entry.Slot >= 1 and entry.Slot <= Config.AbsoluteMaxSlots
+			and not usedSlots[entry.Slot] then
+			usedSlots[entry.Slot] = true
+			table.insert(result, {
+				Id = entry.Id,
+				Mut = if type(entry.Mut) == "string" then Config.GetMutation(entry.Mut).Id else "None",
+				Viral = entry.Viral == true,
+				Slot = math.floor(entry.Slot),
+			})
+		end
+	end
+	return result
+end
+
+local function sanitize(saved: any): ({ [string]: any }, boolean)
+	local data: { [string]: any } = table.clone(DEFAULT_NUMBERS)
+	local isNew = type(saved) ~= "table"
+	if not isNew then
+		for key, default in DEFAULT_NUMBERS do
 			if type(saved[key]) == type(default) then
 				data[key] = saved[key]
 			end
 		end
 	end
-	return data
+	local savedTable = if isNew then {} else saved
+	data.Memes = sanitizeMemes(savedTable.Memes)
+	data.Index = {}
+	if type(savedTable.Index) == "table" then
+		for key, value in savedTable.Index do
+			if type(key) == "string" and value == true then
+				data.Index[key] = true
+			end
+		end
+	end
+	data.Receipts = {}
+	if type(savedTable.Receipts) == "table" then
+		for _, id in savedTable.Receipts do
+			if type(id) == "string" then
+				table.insert(data.Receipts, id)
+			end
+		end
+	end
+	return data, isNew
 end
 
 function DataService.Load(player: Player)
@@ -118,26 +170,27 @@ function DataService.Load(player: Player)
 		return
 	end
 
-	local data = sanitize(saved)
-	profiles[player] = { Data = data, CanSave = canSave }
+	local data, isNew = sanitize(saved)
+	profiles[player] = { Data = data, CanSave = canSave, IsNew = isNew }
 
 	createLeaderstats(player)
-	for key, value in data do
-		syncAttribute(player, key, value)
+	for key in DEFAULT_NUMBERS do
+		syncAttribute(player, key, data[key])
 	end
-	player:SetAttribute("DataLoaded", true)
 
 	if not canSave then
-		Remotes.Notify:FireClient(
-			player,
-			"Сохранение недоступно. В Studio включите Game Settings → Security → Enable Studio Access to API Services.",
-			"error"
-		)
+		Remotes.Notify:FireClient(player, "SaveDisabled", nil, "error")
 	end
 end
 
 function DataService.IsLoaded(player: Player): boolean
 	return profiles[player] ~= nil
+end
+
+-- Новый игрок (сохранения ещё не было)
+function DataService.IsNew(player: Player): boolean
+	local profile = profiles[player]
+	return profile ~= nil and profile.IsNew
 end
 
 function DataService.Get(player: Player, key: string): number
@@ -149,7 +202,7 @@ end
 function DataService.Set(player: Player, key: string, value: number)
 	local profile = profiles[player]
 	assert(profile, "Данные игрока ещё не загружены")
-	assert(DEFAULT_DATA[key] ~= nil, "Неизвестное поле данных: " .. key)
+	assert(DEFAULT_NUMBERS[key] ~= nil, "Неизвестное числовое поле: " .. key)
 	profile.Data[key] = value
 	syncAttribute(player, key, value)
 	changedEvent:Fire(player, key, value)
@@ -161,27 +214,62 @@ function DataService.Increment(player: Player, key: string, delta: number): numb
 	return value
 end
 
-function DataService.Save(player: Player)
+-- Возвращает саму таблицу (не копию): меняйте её на месте.
+function DataService.GetTable(player: Player, key: string): any
+	local profile = profiles[player]
+	assert(profile, "Данные игрока ещё не загружены")
+	assert(table.find(TABLE_KEYS, key), "Неизвестное табличное поле: " .. key)
+	return profile.Data[key]
+end
+
+function DataService.HasReceipt(player: Player, purchaseId: string): boolean
+	return table.find(DataService.GetTable(player, "Receipts"), purchaseId) ~= nil
+end
+
+function DataService.AddReceipt(player: Player, purchaseId: string)
+	local receipts = DataService.GetTable(player, "Receipts")
+	table.insert(receipts, purchaseId)
+	while #receipts > MAX_RECEIPTS do
+		table.remove(receipts, 1)
+	end
+end
+
+local function snapshot(data: { [string]: any }): { [string]: any }
+	local copy = table.clone(data)
+	copy.Memes = {}
+	for _, entry in data.Memes do
+		table.insert(copy.Memes, { Id = entry.Id, Mut = entry.Mut, Viral = entry.Viral, Slot = entry.Slot })
+	end
+	copy.Index = table.clone(data.Index)
+	copy.Receipts = table.clone(data.Receipts)
+	return copy
+end
+
+function DataService.Save(player: Player): boolean
 	local profile = profiles[player]
 	if not profile or not profile.CanSave or not store then
-		return
+		return false
 	end
 
-	local snapshot = table.clone(profile.Data)
+	profile.Data.LastSeen = os.time()
+	local copy = snapshot(profile.Data)
 	local ok, err = withRetries(function()
-		return (store :: DataStore):SetAsync(keyFor(player), snapshot, { player.UserId })
+		return (store :: DataStore):SetAsync(keyFor(player), copy, { player.UserId })
 	end)
 	if not ok then
 		warn("[DataService] Не удалось сохранить", player.Name, err)
 	end
+	return ok
+end
+
+-- Вызывается из init.server после того, как другие сервисы отработали выход игрока
+-- (например, вернули украденного мема хозяину), чтобы сохранить итоговое состояние.
+function DataService.Release(player: Player)
+	DataService.Save(player)
+	profiles[player] = nil
 end
 
 function DataService.Start()
-	Players.PlayerRemoving:Connect(function(player)
-		DataService.Save(player)
-		profiles[player] = nil
-	end)
-
 	game:BindToClose(function()
 		local pending = 0
 		for player in profiles do
@@ -205,6 +293,7 @@ function DataService.Start()
 			end
 		end
 	end)
+
 end
 
 return DataService
