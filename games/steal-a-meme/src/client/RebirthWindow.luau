@@ -62,6 +62,10 @@ function RebirthWindow.Start(ctx)
 	end
 	local perkIncome = perk(3)
 	local perkSlots = perk(4)
+	local cashReset = perk(5)
+	cashReset.TextColor3 = COLORS.Muted
+	cashReset.TextSize = 14
+	cashReset.Text = Locale.T("RebirthCashReset")
 
 	local go = UiKit.button({
 		Text = Locale.T("RebirthButton"),

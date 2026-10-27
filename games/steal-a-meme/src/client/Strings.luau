@@ -66,6 +66,7 @@ Locale.Add({
 	RebirthPerkIncome = { "✅ +{Percent}% income forever (now x{Mult})", "✅ +{Percent}% дохода навсегда (сейчас ×{Mult})" },
 	RebirthPerkSlots = { "✅ +{Count} base slots", "✅ +{Count} слота на базе" },
 	RebirthPerkSlotsMax = { "Slots are already at max", "Слотов уже максимум" },
+	RebirthCashReset = { "Your cash resets to $0, memes stay", "Деньги обнулятся, мемы останутся" },
 	RebirthButton = { "REBIRTH", "ПЕРЕРОДИТЬСЯ" },
 
 	-- страж
@@ -83,6 +84,9 @@ Locale.Add({
 	PopupDailyTitle = { "Daily reward", "Ежедневная награда" },
 	PopupDaily = { "Day {Day} reward: {Coins}", "Награда за день {Day}: {Coins}" },
 	PopupOk = { "OK", "OK" },
+
+	-- ответы сервера без своей строки в Locale
+	NotLoaded = { "Loading your data, try again in a moment", "Загружаем твои данные, попробуй через секунду" },
 
 	-- эффекты
 	FxRebirth = { "REBIRTH!", "ПЕРЕРОЖДЕНИЕ!" },

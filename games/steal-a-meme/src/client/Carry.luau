@@ -53,10 +53,14 @@ function Carry.Start(ctx)
 	local toAttachment: Attachment? = nil
 
 	local function clearBeam()
-		for _, inst in { beam, fromAttachment, toAttachment } :: { Instance? } do
-			if inst then
-				inst:Destroy()
-			end
+		if beam then
+			beam:Destroy()
+		end
+		if fromAttachment then
+			fromAttachment:Destroy()
+		end
+		if toAttachment then
+			toAttachment:Destroy()
 		end
 		beam, fromAttachment, toAttachment = nil, nil, nil
 	end

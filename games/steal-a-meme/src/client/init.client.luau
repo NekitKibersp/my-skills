@@ -16,13 +16,30 @@ gui.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets -- кнопки не по�
 local toastHolder = UiKit.create("Frame", {
 	Name = "Toasts",
 	AnchorPoint = Vector2.new(0.5, 0),
-	Position = UDim2.new(0.5, 0, 0, 96),
+	Position = UDim2.new(0.5, 0, 0, 112),
 	Size = UDim2.new(1, 0, 0, 220),
 	BackgroundTransparency = 1,
 	ZIndex = 20,
 	Parent = gui,
 })
-local toast = UiKit.toaster(toastHolder)
+local rawToast = UiKit.toaster(toastHolder)
+
+-- Один и тот же текст дважды подряд не показываем: сервер шлёт Notify, а окна ещё
+-- показывают ключ, который вернула RemoteFunction (Rebirth/UpgradeGuard)
+local recentToasts: { [string]: number } = {}
+local function toast(message: string, kind: string?)
+	local now = os.clock()
+	if recentToasts[message] and now - recentToasts[message] < 2 then
+		return
+	end
+	recentToasts[message] = now
+	for text, at in recentToasts do
+		if now - at >= 2 then
+			recentToasts[text] = nil
+		end
+	end
+	rawToast(message, kind)
+end
 
 -- Масштаб интерфейса по высоте экрана: телефон в альбомной ориентации ~ 0.6, ПК — 1
 local scales: { UIScale } = {}

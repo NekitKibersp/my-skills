@@ -35,24 +35,24 @@ Config.Rarities = {
 -- в инвентаре владельца игры; скрипты из неё вырезаются при загрузке.
 -- Чтобы заменить или удалить персонажа (например, по жалобе правообладателя), правьте только этот список.
 Config.Creatures = {
-	{ Id = "ClapCat", Name = "Clapping Cat", NameRu = "Хлопающий Кот", Face = "👏🐈‍⬛", Rarity = "Common", Price = 25, Income = 1, Color = Color3.fromRGB(30, 30, 35), Shape = "Ball", Size = 1, ModelId = 0 },
+	{ Id = "ClapCat", Name = "Black Cat Clapping", Face = "👏🐈‍⬛", Rarity = "Common", Price = 25, Income = 1, Color = Color3.fromRGB(30, 30, 35), Shape = "Ball", Size = 1, ModelId = 0 },
 	{ Id = "Pups", Name = "Sleepy Baby", NameRu = "Сонный Пупс", Face = "😴", Rarity = "Common", Price = 60, Income = 2, Color = Color3.fromRGB(255, 205, 180), Shape = "Ball", Size = 0.9, ModelId = 0 },
 	{ Id = "Kolobok", Name = "Kolobok", NameRu = "Колобок", Face = "😏", Rarity = "Common", Price = 130, Income = 4, Color = Color3.fromRGB(240, 190, 60), Shape = "Ball", Size = 0.8, ModelId = 0 },
 	{ Id = "Brdysh", Name = "Brdysh", NameRu = "Брдыщ", Face = "🐟🐶", Rarity = "Common", Price = 250, Income = 7, Color = Color3.fromRGB(120, 170, 190), Shape = "Cylinder", Size = 1, ModelId = 0 },
 
-	{ Id = "SixSeven", Name = "Six Seven", NameRu = "Шесть-Семь", Face = "6️⃣7️⃣", Rarity = "Rare", Price = 500, Income = 12, Color = Color3.fromRGB(80, 200, 255), Shape = "Block", Size = 1.1, ModelId = 0 },
+	{ Id = "SixSeven", Name = "Six Seven", Face = "6️⃣7️⃣", Rarity = "Rare", Price = 500, Income = 12, Color = Color3.fromRGB(80, 200, 255), Shape = "Block", Size = 1.1, ModelId = 0 },
 	{ Id = "Cheremsha", Name = "Cheremsha", NameRu = "Черемша", Face = "🦁🐰", Rarity = "Rare", Price = 1300, Income = 26, Color = Color3.fromRGB(230, 170, 90), Shape = "Ball", Size = 1.15, ModelId = 0 },
 	{ Id = "Semga", Name = "Semga", NameRu = "Сёмга", Face = "🐟😐", Rarity = "Rare", Price = 2500, Income = 45, Color = Color3.fromRGB(250, 130, 110), Shape = "Cylinder", Size = 1.2, ModelId = 0 },
 
-	{ Id = "Tralalero", Name = "Tralalero Tralala", NameRu = "Тралалеро Тралала", Face = "🦈👟", Rarity = "Epic", Price = 5000, Income = 80, Color = Color3.fromRGB(90, 140, 220), Shape = "Cylinder", Size = 1.25, ModelId = 0 },
-	{ Id = "TungSahur", Name = "Tung Tung Tung Sahur", NameRu = "Тунг Тунг Тунг Сахур", Face = "🪵🏏", Rarity = "Epic", Price = 13000, Income = 175, Color = Color3.fromRGB(170, 120, 70), Shape = "Cylinder", Size = 1.35, ModelId = 0 },
+	{ Id = "Tralalero", Name = "Tralalero Tralala", Face = "🦈👟", Rarity = "Epic", Price = 5000, Income = 80, Color = Color3.fromRGB(90, 140, 220), Shape = "Cylinder", Size = 1.25, ModelId = 0 },
+	{ Id = "TungSahur", Name = "Tung Tung Tung Sahur", Face = "🪵🏏", Rarity = "Epic", Price = 13000, Income = 175, Color = Color3.fromRGB(170, 120, 70), Shape = "Cylinder", Size = 1.35, ModelId = 0 },
 	{ Id = "SwordKitten", Name = "Kitten with a Sword", NameRu = "Котёнок с мечом", Face = "🐱⚔️", Rarity = "Epic", Price = 22000, Income = 280, Color = Color3.fromRGB(190, 190, 205), Shape = "Ball", Size = 1, ModelId = 0 },
 
 	{ Id = "BossCapybara", Name = "Boss Capybara", NameRu = "Капибара-Босс", Face = "😎", Rarity = "Legendary", Price = 50000, Income = 550, Color = Color3.fromRGB(160, 110, 70), Shape = "Block", Size = 1.4, ModelId = 0 },
-	{ Id = "Bombardiro", Name = "Bombardiro Crocodilo", NameRu = "Бомбардиро Крокодило", Face = "🐊✈️", Rarity = "Legendary", Price = 90000, Income = 900, Color = Color3.fromRGB(70, 130, 60), Shape = "Cylinder", Size = 1.5, ModelId = 0 },
-	{ Id = "Ballerina", Name = "Ballerina Cappuccina", NameRu = "Балерина Капучина", Face = "☕🩰", Rarity = "Legendary", Price = 150000, Income = 1400, Color = Color3.fromRGB(255, 170, 210), Shape = "Cylinder", Size = 1.3, ModelId = 0 },
+	{ Id = "Bombardiro", Name = "Bombardiro Crocodilo", Face = "🐊✈️", Rarity = "Legendary", Price = 90000, Income = 900, Color = Color3.fromRGB(70, 130, 60), Shape = "Cylinder", Size = 1.5, ModelId = 0 },
+	{ Id = "Ballerina", Name = "Ballerina Cappuccina", Face = "☕🩰", Rarity = "Legendary", Price = 150000, Income = 1400, Color = Color3.fromRGB(255, 170, 210), Shape = "Cylinder", Size = 1.3, ModelId = 0 },
 
-	{ Id = "Verity", Name = "Verity", NameRu = "Верити", Face = "🙂", Rarity = "Mythic", Price = 400000, Income = 3500, Color = Color3.fromRGB(255, 220, 30), Shape = "Block", Size = 1.6, ModelId = 0 },
+	{ Id = "Verity", Name = "Verity", Face = "🙂", Rarity = "Mythic", Price = 400000, Income = 3500, Color = Color3.fromRGB(255, 220, 30), Shape = "Block", Size = 1.6, ModelId = 0 },
 	{ Id = "DjCat", Name = "DJ Cat", NameRu = "Кот-Диджей", Face = "😼🎧", Rarity = "Mythic", Price = 1200000, Income = 9000, Color = Color3.fromRGB(120, 60, 200), Shape = "Ball", Size = 1.7, ModelId = 0 },
 
 	{ Id = "MegaSixSeven", Name = "MEGA 67", NameRu = "МЕГА 67", Face = "6️⃣7️⃣🔥", Rarity = "God", Price = 6700000, Income = 40000, Color = Color3.fromRGB(255, 80, 200), Shape = "Block", Size = 2.1, ModelId = 0 },
@@ -3625,13 +3625,30 @@ gui.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets -- кнопки не по�
 local toastHolder = UiKit.create("Frame", {
 	Name = "Toasts",
 	AnchorPoint = Vector2.new(0.5, 0),
-	Position = UDim2.new(0.5, 0, 0, 96),
+	Position = UDim2.new(0.5, 0, 0, 112),
 	Size = UDim2.new(1, 0, 0, 220),
 	BackgroundTransparency = 1,
 	ZIndex = 20,
 	Parent = gui,
 })
-local toast = UiKit.toaster(toastHolder)
+local rawToast = UiKit.toaster(toastHolder)
+
+-- Один и тот же текст дважды подряд не показываем: сервер шлёт Notify, а окна ещё
+-- показывают ключ, который вернула RemoteFunction (Rebirth/UpgradeGuard)
+local recentToasts: { [string]: number } = {}
+local function toast(message: string, kind: string?)
+	local now = os.clock()
+	if recentToasts[message] and now - recentToasts[message] < 2 then
+		return
+	end
+	recentToasts[message] = now
+	for text, at in recentToasts do
+		if now - at >= 2 then
+			recentToasts[text] = nil
+		end
+	end
+	rawToast(message, kind)
+end
 
 -- Масштаб интерфейса по высоте экрана: телефон в альбомной ориентации ~ 0.6, ПК — 1
 local scales: { UIScale } = {}
@@ -3895,10 +3912,14 @@ function Carry.Start(ctx)
 	local toAttachment: Attachment? = nil
 
 	local function clearBeam()
-		for _, inst in { beam, fromAttachment, toAttachment } :: { Instance? } do
-			if inst then
-				inst:Destroy()
-			end
+		if beam then
+			beam:Destroy()
+		end
+		if fromAttachment then
+			fromAttachment:Destroy()
+		end
+		if toAttachment then
+			toAttachment:Destroy()
 		end
 		beam, fromAttachment, toAttachment = nil, nil, nil
 	end
@@ -4007,6 +4028,346 @@ return Carry
         </Item>
         <Item class="ModuleScript" referent="23">
           <Properties>
+            <string name="Name">Effects</string>
+            <string name="Source"><![CDATA[-- Клиентские эффекты: отбрасывание от тапка (Remotes.Knockback), разовые вспышки/конфетти
+-- (Remotes.Fx), лёгкий красноватый оттенок Ночью Смайлика и табличка со здоровьем монстра.
+-- Всё создаётся локально, без звуков и текстур по ID.
+local Debris = game:GetService("Debris")
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Locale = require(Shared:WaitForChild("Locale"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local COLORS = UiKit.Colors
+local create = UiKit.create
+local player = Players.LocalPlayer
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+
+local KNOCKBACK_TIME = 0.6
+local MAX_KNOCKBACK = 300 -- защита от странных значений: клиент не улетит за карту
+local MAX_PIECES = 250 -- не больше стольких частиц конфетти одновременно
+local VIRAL_COLOR = Color3.fromRGB(255, 80, 220)
+local MONSTER_COLOR = Color3.fromRGB(255, 220, 40)
+
+local Effects = {}
+
+-- ===== Отбрасывание =====
+local function shakeCamera(humanoid: Humanoid, duration: number, strength: number)
+	task.spawn(function()
+		local started = os.clock()
+		while os.clock() - started < duration and humanoid.Parent do
+			local fade = 1 - (os.clock() - started) / duration
+			humanoid.CameraOffset = Vector3.new(
+				(math.random() - 0.5) * strength * fade,
+				(math.random() - 0.5) * strength * fade,
+				0
+			)
+			task.wait()
+		end
+		humanoid.CameraOffset = Vector3.zero
+	end)
+end
+
+local knockToken = 0
+local function onKnockback(velocity: any)
+	if typeof(velocity) ~= "Vector3" or velocity ~= velocity then
+		return
+	end
+	if velocity.Magnitude > MAX_KNOCKBACK then
+		velocity = velocity.Unit * MAX_KNOCKBACK
+	end
+	local _, root, humanoid = Util.character()
+	if not root or not humanoid or humanoid.Health <= 0 then
+		return
+	end
+	knockToken += 1
+	local token = knockToken
+	humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+	root.AssemblyLinearVelocity = velocity
+	shakeCamera(humanoid, 0.35, 0.6)
+	task.delay(KNOCKBACK_TIME, function()
+		-- Новый удар за это время продлевает полёт
+		if token == knockToken and humanoid.Parent and humanoid.Health > 0 then
+			humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+		end
+	end)
+end
+
+-- ===== Вспышки и конфетти =====
+local livePieces = 0
+
+local function fxParent(): Instance
+	return workspace.CurrentCamera or workspace
+end
+
+local function piece(position: Vector3, size: Vector3, color: Color3, shape: Enum.PartType?): Part
+	return create("Part", {
+		Anchored = true,
+		CanCollide = false,
+		CanQuery = false,
+		CanTouch = false,
+		CastShadow = false,
+		Material = Enum.Material.Neon,
+		Shape = shape or Enum.PartType.Block,
+		Size = size,
+		Color = color,
+		CFrame = CFrame.new(position),
+		Parent = fxParent(),
+	})
+end
+
+-- Разлетающиеся кусочки цветов colors
+local function confetti(position: Vector3, colors: { Color3 }, count: number, spread: number)
+	count = math.min(count, MAX_PIECES - livePieces)
+	for _ = 1, count do
+		livePieces += 1
+		local size = 0.25 + math.random() * 0.35
+		local part = piece(position, Vector3.new(size, size, size * 0.4), colors[math.random(#colors)])
+		local direction = Vector3.new(math.random() - 0.5, 0.6 + math.random(), math.random() - 0.5).Unit
+		local target = position + direction * (spread * (0.5 + math.random() * 0.5))
+		local spin = CFrame.Angles(math.random() * 6, math.random() * 6, math.random() * 6)
+		local fly = TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+		TweenService:Create(part, fly, { CFrame = CFrame.new(target) * spin }):Play()
+		TweenService:Create(part, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, 0.5), {
+			Transparency = 1,
+		}):Play()
+		Debris:AddItem(part, 1.1)
+		task.delay(1.1, function()
+			livePieces -= 1
+		end)
+	end
+end
+
+-- Расширяющийся светящийся шар
+local function flash(position: Vector3, color: Color3, size: number, duration: number)
+	local ball = piece(position, Vector3.one, color, Enum.PartType.Ball)
+	ball.Transparency = 0.2
+	TweenService:Create(ball, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Size = Vector3.one * size,
+		Transparency = 1,
+	}):Play()
+	Debris:AddItem(ball, duration + 0.1)
+end
+
+-- Белая вспышка экрана и крупный текст при своём перерождении
+local function rebirthScreen()
+	local overlay = create("ScreenGui", {
+		Name = "RebirthFlash",
+		IgnoreGuiInset = true,
+		ResetOnSpawn = false,
+		DisplayOrder = 50,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	local white = create("Frame", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = Color3.new(1, 1, 1),
+		BackgroundTransparency = 0,
+		Parent = overlay,
+	})
+	local label = UiKit.text({
+		Text = "♻️ " .. Locale.T("FxRebirth"),
+		TextScaled = true,
+		TextColor3 = COLORS.Purple,
+		TextStrokeTransparency = 0,
+		TextStrokeColor3 = Color3.new(1, 1, 1),
+		TextXAlignment = Enum.TextXAlignment.Center,
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.42),
+		Size = UDim2.fromScale(0.8, 0.18),
+		Parent = overlay,
+	})
+	local pop = create("UIScale", { Scale = 0.3, Parent = label })
+	TweenService:Create(white, TweenInfo.new(0.9), { BackgroundTransparency = 1 }):Play()
+	TweenService:Create(pop, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+	task.delay(1.6, function()
+		TweenService:Create(label, TweenInfo.new(0.5), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+	end)
+	Debris:AddItem(overlay, 2.3)
+end
+
+local function onFx(kind: any, data: any)
+	if type(kind) ~= "string" or type(data) ~= "table" then
+		return
+	end
+	local position = data.Position
+	local hasPosition = typeof(position) == "Vector3"
+
+	-- Эффекты далеко от игрока не рисуем — экономим телефоны
+	if hasPosition then
+		local _, root = Util.character()
+		if root and (root.Position - position).Magnitude > 250 then
+			return
+		end
+	end
+
+	if kind == "Slap" and hasPosition then
+		flash(position, Color3.new(1, 1, 1), 6, 0.25)
+		confetti(position, { Color3.new(1, 1, 1), Color3.fromRGB(255, 240, 200) }, 10, 4)
+	elseif kind == "Bought" and hasPosition then
+		local rarityId = if type(data.Rarity) == "string" then data.Rarity else "Common"
+		local color = Config.GetRarity(rarityId).Color
+		local colors = if rarityId == "Secret"
+			then { Color3.new(1, 1, 1), COLORS.Gold, Color3.fromRGB(40, 40, 40) }
+			else { color, color, Color3.new(1, 1, 1), COLORS.Gold }
+		confetti(position, colors, 24, 7)
+	elseif kind == "Stolen" and hasPosition then
+		flash(position, COLORS.Red, 5, 0.3)
+		confetti(position, { COLORS.Red, Color3.fromRGB(255, 160, 160) }, 12, 5)
+	elseif kind == "Delivered" and hasPosition then
+		local mine = data.UserId == player.UserId
+		confetti(position, { COLORS.Green, COLORS.Gold, Color3.new(1, 1, 1) }, if mine then 36 else 16, 8)
+	elseif kind == "Merged" and hasPosition then
+		flash(position, VIRAL_COLOR, 9, 0.45)
+		confetti(position, { VIRAL_COLOR, COLORS.Purple, COLORS.Gold, Color3.new(1, 1, 1) }, 40, 9)
+	elseif kind == "MonsterHit" and hasPosition then
+		flash(position, MONSTER_COLOR, 4, 0.2)
+		confetti(position, { MONSTER_COLOR, Color3.new(1, 1, 1) }, 8, 4)
+	elseif kind == "Rebirth" then
+		if data.UserId == player.UserId then
+			rebirthScreen()
+		end
+		-- Конфетти над перерождённым игроком (если он рядом)
+		local who = if type(data.UserId) == "number" then Players:GetPlayerByUserId(data.UserId) else nil
+		local character = who and who.Character
+		local root = character and character:FindFirstChild("HumanoidRootPart")
+		if root and root:IsA("BasePart") then
+			confetti(root.Position + Vector3.new(0, 3, 0), { COLORS.Purple, COLORS.Gold, Color3.new(1, 1, 1) }, 40, 10)
+		end
+	end
+end
+
+-- ===== Ночь Смайлика: лёгкий тёплый/красный оттенок поверх освещения сервера =====
+local function startNightTint()
+	local tint = create("ColorCorrectionEffect", {
+		Name = "SmileyNightLocal",
+		TintColor = Color3.new(1, 1, 1),
+		Parent = Lighting,
+	})
+	local fade = TweenInfo.new(2.5, Enum.EasingStyle.Sine)
+	local function render()
+		local active = Util.bool(ReplicatedStorage, "NightActive")
+		TweenService:Create(tint, fade, {
+			TintColor = if active then Color3.fromRGB(255, 222, 215) else Color3.new(1, 1, 1),
+			Saturation = if active then -0.15 else 0,
+			Contrast = if active then 0.12 else 0,
+			Brightness = if active then -0.03 else 0,
+		}):Play()
+	end
+	ReplicatedStorage:GetAttributeChangedSignal("NightActive"):Connect(render)
+	render()
+end
+
+-- ===== Монстр: табличка с полосой здоровья =====
+local function trackMonster(model: Instance): () -> ()
+	local gui = create("BillboardGui", {
+		Name = "Monster",
+		Size = UDim2.fromOffset(220, 74),
+		SizeOffset = Vector2.new(0, 0.5),
+		AlwaysOnTop = true,
+		MaxDistance = 300,
+		LightInfluence = 0,
+		ResetOnSpawn = false,
+	})
+	local name = UiKit.text({
+		Text = Locale.T("MonsterName"),
+		TextSize = 20,
+		TextColor3 = MONSTER_COLOR,
+		TextStrokeTransparency = 0,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		Size = UDim2.new(1, 0, 0, 24),
+		Parent = gui,
+	})
+	local bar = create("Frame", {
+		Position = UDim2.fromOffset(10, 26),
+		Size = UDim2.new(1, -20, 0, 18),
+		BackgroundColor3 = Color3.fromRGB(30, 20, 20),
+		Parent = gui,
+	}, { UiKit.corner(6), create("UIStroke", { Color = Color3.new(0, 0, 0), Thickness = 2 }) })
+	local fill = create("Frame", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = COLORS.Red,
+		Parent = bar,
+	}, { UiKit.corner(6) })
+	local hpText = UiKit.text({
+		TextSize = 13,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		TextStrokeTransparency = 0.3,
+		Size = UDim2.fromScale(1, 1),
+		ZIndex = 2,
+		Parent = bar,
+	})
+	local carrying = UiKit.text({
+		TextSize = 16,
+		TextColor3 = COLORS.Red,
+		TextStrokeTransparency = 0,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		Position = UDim2.fromOffset(0, 48),
+		Size = UDim2.new(1, 0, 0, 22),
+		Parent = gui,
+	})
+
+	local function render()
+		local hp, maxHp = Util.num(model, "Hp"), Util.num(model, "MaxHp")
+		local ratio = if maxHp > 0 then math.clamp(hp / maxHp, 0, 1) else 0
+		TweenService:Create(fill, TweenInfo.new(0.15), { Size = UDim2.fromScale(ratio, 1) }):Play()
+		hpText.Text = math.max(0, math.ceil(hp)) .. " / " .. math.ceil(maxHp)
+		local memeId = Util.str(model, "Carrying")
+		carrying.Text = if memeId ~= "" then "😈 " .. Locale.MemeName(memeId) else ""
+		name.Text = (if memeId ~= "" then "😈 " else "") .. Locale.T("MonsterName")
+	end
+
+	local function adorn()
+		local part = Util.mainPart(model)
+		gui.Adornee = part
+		local height = if part then part.Size.Y else 6
+		if model:IsA("Model") then
+			local ok, size = pcall(model.GetExtentsSize, model)
+			if ok and size.Y > 0 then
+				height = size.Y
+			end
+		end
+		gui.StudsOffsetWorldSpace = Vector3.new(0, height / 2 + 1, 0)
+	end
+
+	adorn()
+	render()
+	gui.Parent = player:WaitForChild("PlayerGui"):FindFirstChild("MemeBillboards") or player.PlayerGui
+
+	local connections = {
+		model.AttributeChanged:Connect(render),
+		model.ChildAdded:Connect(function(child)
+			if child:IsA("BasePart") then
+				adorn()
+			end
+		end),
+	}
+	return function()
+		for _, connection in connections do
+			connection:Disconnect()
+		end
+		gui:Destroy()
+	end
+end
+
+function Effects.Start()
+	Remotes:WaitForChild("Knockback").OnClientEvent:Connect(onKnockback)
+	Remotes:WaitForChild("Fx").OnClientEvent:Connect(onFx)
+	startNightTint()
+	Util.watchTagged("Monster", trackMonster)
+end
+
+return Effects
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="24">
+          <Properties>
             <string name="Name">GuardWindow</string>
             <string name="Source"><![CDATA[-- Окно стража базы (Котёнок с мечом): текущий уровень, что даст следующий, цена.
 -- Покупку проверяет сервер (Remotes.UpgradeGuard), цены — из Config.Guard.
@@ -4105,7 +4466,7 @@ return GuardWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="24">
+        <Item class="ModuleScript" referent="25">
           <Properties>
             <string name="Name">Hud</string>
             <string name="Source"><![CDATA[-- HUD: деньги/доход/слоты слева сверху, таймер подарка за игру и боковые кнопки
@@ -4166,7 +4527,8 @@ local function buildStats(ctx)
 	})
 	local coinsPop = create("UIScale", { Parent = coins })
 	local income = UiKit.text({ TextSize = 20, TextColor3 = COLORS.Green, Size = UDim2.new(1, 0, 0, 24), LayoutOrder = 2, Parent = panel })
-	local info = UiKit.text({ TextSize = 16, Size = UDim2.new(1, 0, 0, 22), LayoutOrder = 3, Parent = panel })
+	local info = UiKit.text({ TextScaled = true, Size = UDim2.new(1, 0, 0, 22), LayoutOrder = 3, Parent = panel })
+	create("UITextSizeConstraint", { MaxTextSize = 16, Parent = info })
 	local gift = UiKit.text({ TextSize = 14, TextColor3 = COLORS.Muted, Size = UDim2.new(1, 0, 0, 18), LayoutOrder = 4, Parent = panel })
 
 	-- Плавный счётчик денег
@@ -4203,7 +4565,8 @@ local function buildStats(ctx)
 		local delta = value - lastCoins
 		lastCoins = value
 		TweenService:Create(shown, TweenInfo.new(0.35, Enum.EasingStyle.Quad), { Value = value }):Play()
-		if delta > 0 then
+		-- Первая загрузка данных — не «доход», без всплывающей цифры
+		if delta > 0 and Util.bool(player, "DataLoaded") then
 			coinsPop.Scale = 1.1
 			TweenService:Create(coinsPop, TweenInfo.new(0.25, Enum.EasingStyle.Back), { Scale = 1 }):Play()
 			floatGain(delta)
@@ -4370,7 +4733,7 @@ return Hud
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="25">
+        <Item class="ModuleScript" referent="26">
           <Properties>
             <string name="Name">IndexWindow</string>
             <string name="Source"><![CDATA[-- Окно Индекса: сетка всех мемов из Config.Creatures. Открытые — цветные, закрытые — «???».
@@ -4591,7 +4954,325 @@ return IndexWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="26">
+        <Item class="ModuleScript" referent="27">
+          <Properties>
+            <string name="Name">MemeBillboards</string>
+            <string name="Source"><![CDATA[-- Таблички над мемами (тег "Meme"): мутация, ВИРУСНЫЙ, имя, редкость, доход/сек, цена на дорожке.
+-- BillboardGui создаются локально в PlayerGui и привязываются к Body (Adornee), поэтому
+-- переживают стриминг: Body ушёл — табличка пустая, вернулся — снова привязываем.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Format = require(Shared:WaitForChild("Format"))
+local Locale = require(Shared:WaitForChild("Locale"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local COLORS = UiKit.Colors
+local create = UiKit.create
+local player = Players.LocalPlayer
+
+local VIRAL_COLOR = Color3.fromRGB(255, 80, 220)
+local MAX_DISTANCE = 60
+
+local MemeBillboards = {}
+
+type Entry = {
+	Model: Instance,
+	Gui: BillboardGui,
+	Tags: TextLabel,
+	Name: TextLabel,
+	Rarity: TextLabel,
+	Income: TextLabel,
+	Price: TextLabel,
+}
+local entries: { [Instance]: Entry } = {}
+
+local function row(parent: Instance, order: number, height: number, textSize: number): TextLabel
+	return UiKit.text({
+		Text = "",
+		RichText = true,
+		TextSize = textSize,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		TextStrokeTransparency = 0.2,
+		Size = UDim2.new(1, 0, 0, height),
+		LayoutOrder = order,
+		Parent = parent,
+	})
+end
+
+local function render(entry: Entry)
+	local model = entry.Model
+	local id = Util.str(model, "CreatureId")
+	local creature = Config.GetCreature(id)
+	local mutation = Config.GetMutation(Util.str(model, "Mutation"))
+	local viral = Util.bool(model, "Viral")
+	local state = Util.str(model, "State")
+
+	-- Мутация (цветом) и значок ВИРУСНЫЙ
+	local tags = {}
+	if mutation.Id ~= "None" then
+		local color = mutation.Color or COLORS.Text
+		table.insert(tags, '<font color="#' .. color:ToHex() .. '">' .. Locale.Name(mutation) .. "</font>")
+	end
+	if viral then
+		table.insert(tags, '<font color="#' .. VIRAL_COLOR:ToHex() .. '">🔥 ' .. Locale.T("BbViral") .. "</font>")
+	end
+	entry.Tags.Text = table.concat(tags, "  ")
+	entry.Tags.Visible = #tags > 0
+
+	entry.Name.Text = if creature then Locale.Name(creature) else id
+
+	-- Редкость; «Секретный» почти чёрный — белый текст с тёмной обводкой
+	local rarityId = if creature then creature.Rarity else "Common"
+	local rarity = Config.GetRarity(rarityId)
+	entry.Rarity.Text = Locale.Name(rarity)
+	if rarityId == "Secret" then
+		entry.Rarity.TextColor3 = Color3.new(1, 1, 1)
+		entry.Rarity.TextStrokeColor3 = Color3.new(0, 0, 0)
+		entry.Rarity.TextStrokeTransparency = 0
+	else
+		entry.Rarity.TextColor3 = rarity.Color
+		entry.Rarity.TextStrokeColor3 = Color3.new(0, 0, 0)
+		entry.Rarity.TextStrokeTransparency = 0.2
+	end
+
+	-- Доход/сек: базовый × тренд (без личных множителей игрока)
+	local income = Config.BaseIncome(id, mutation.Id, viral)
+	local trending = id ~= "" and Util.str(ReplicatedStorage, "TrendingId") == id
+	if trending then
+		income *= Config.Trend.Mult
+	end
+	local incomeText = Locale.T("BbIncome", { Coins = income })
+	entry.Income.Text = if trending then "📈 " .. incomeText else incomeText
+	entry.Income.TextColor3 = if trending then COLORS.Gold else COLORS.Green
+
+	-- Цена — только на дорожке: зелёная, если хватает денег, иначе красная
+	local price = Util.num(model, "Price")
+	local onCarpet = state == "Carpet" and Util.num(model, "OwnerUserId") == 0 and price > 0
+	entry.Price.Visible = onCarpet
+	if onCarpet then
+		entry.Price.Text = "$" .. Format.Number(price)
+		entry.Price.TextColor3 = if Util.num(player, "Coins") >= price then COLORS.Green else COLORS.Red
+	end
+
+	-- Высота таблички — над макушкой модели
+	local body = entry.Gui.Adornee
+	local height = Util.num(model, "Height")
+	if height <= 0 and body and body:IsA("BasePart") then
+		height = body.Size.Y
+	end
+	entry.Gui.StudsOffsetWorldSpace = Vector3.new(0, height / 2 + 0.8, 0)
+end
+
+local function track(model: Instance): () -> ()
+	local folder = player:WaitForChild("PlayerGui"):FindFirstChild("MemeBillboards")
+	local gui = create("BillboardGui", {
+		Name = "Meme",
+		Size = UDim2.fromOffset(200, 112),
+		SizeOffset = Vector2.new(0, 0.5), -- нижний край таблички на точке привязки
+		MaxDistance = MAX_DISTANCE,
+		LightInfluence = 0,
+		ResetOnSpawn = false,
+		ClipsDescendants = false,
+	})
+	local list = create("Frame", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Parent = gui,
+	}, {
+		create("UIListLayout", {
+			VerticalAlignment = Enum.VerticalAlignment.Bottom,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+
+	local entry: Entry = {
+		Model = model,
+		Gui = gui,
+		Tags = row(list, 1, 18, 15),
+		Name = row(list, 2, 24, 20),
+		Rarity = row(list, 3, 18, 15),
+		Income = row(list, 4, 20, 17),
+		Price = row(list, 5, 24, 21),
+	}
+	entry.Name.TextColor3 = COLORS.Text
+	entry.Name.TextStrokeTransparency = 0
+	entry.Price.TextStrokeTransparency = 0
+	entries[model] = entry
+
+	local connections: { RBXScriptConnection } = {}
+	local function adorn()
+		gui.Adornee = Util.mainPart(model)
+		render(entry)
+	end
+	adorn()
+	gui.Parent = folder
+
+	-- StreamingEnabled: Body может прийти позже (или заново после выгрузки)
+	table.insert(connections, model.ChildAdded:Connect(function(child)
+		if child.Name == "Body" or (not gui.Adornee and child:IsA("BasePart")) then
+			adorn()
+		end
+	end))
+	table.insert(connections, model.AttributeChanged:Connect(function()
+		render(entry)
+	end))
+
+	return function()
+		entries[model] = nil
+		for _, connection in connections do
+			connection:Disconnect()
+		end
+		gui:Destroy()
+	end
+end
+
+local function renderAll()
+	for _, entry in entries do
+		render(entry)
+	end
+end
+
+function MemeBillboards.Start()
+	create("Folder", { Name = "MemeBillboards", Parent = player:WaitForChild("PlayerGui") })
+
+	ReplicatedStorage:GetAttributeChangedSignal("TrendingId"):Connect(renderAll)
+	-- Цвет цены зависит от денег игрока
+	player:GetAttributeChangedSignal("Coins"):Connect(function()
+		for _, entry in entries do
+			if entry.Price.Visible then
+				local price = Util.num(entry.Model, "Price")
+				entry.Price.TextColor3 = if Util.num(player, "Coins") >= price then COLORS.Green else COLORS.Red
+			end
+		end
+	end)
+
+	Util.watchTagged("Meme", track)
+end
+
+return MemeBillboards
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="28">
+          <Properties>
+            <string name="Name">PlotSigns</string>
+            <string name="Source"><![CDATA[-- Таблички баз: SurfaceGui на Sign каждой базы (Face = Front) — имя хозяина или «Свободно»,
+-- замок с таймером, своя база подсвечена зелёным. SurfaceGui живут в PlayerGui с Adornee = Sign,
+-- поэтому не пропадают при стриминге: Sign вернулся — снова привязываем.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Locale = require(Shared:WaitForChild("Locale"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local COLORS = UiKit.Colors
+local create = UiKit.create
+local player = Players.LocalPlayer
+
+local OWN_COLOR = Color3.fromRGB(40, 150, 70)
+local LOCK_COLOR = Color3.fromRGB(255, 120, 100)
+
+local PlotSigns = {}
+
+type Sign = {
+	Plot: Instance,
+	Gui: SurfaceGui,
+	Background: Frame,
+	Owner: TextLabel,
+	Status: TextLabel,
+}
+
+function PlotSigns.Start()
+	local folder = create("Folder", { Name = "PlotSigns", Parent = player:WaitForChild("PlayerGui") })
+	local signs: { Sign } = {}
+
+	Util.forEachPlot(function(plot: Instance)
+		local gui = create("SurfaceGui", {
+			Name = plot.Name,
+			Face = Enum.NormalId.Front,
+			SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud,
+			PixelsPerStud = 40,
+			LightInfluence = 0,
+			ResetOnSpawn = false,
+			Parent = folder,
+		})
+		local background = create("Frame", {
+			Size = UDim2.fromScale(1, 1),
+			BackgroundColor3 = COLORS.Panel,
+			Parent = gui,
+		}, { UiKit.padding(6) })
+		local owner = UiKit.text({
+			TextScaled = true,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			TextStrokeTransparency = 0.4,
+			Size = UDim2.fromScale(1, 0.6),
+			Parent = background,
+		})
+		local status = UiKit.text({
+			TextScaled = true,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			Position = UDim2.fromScale(0, 0.62),
+			Size = UDim2.fromScale(1, 0.38),
+			Parent = background,
+		})
+		table.insert(signs, { Plot = plot, Gui = gui, Background = background, Owner = owner, Status = status })
+	end)
+
+	local function render(sign: Sign)
+		local plot = sign.Plot
+		if not plot.Parent then
+			return
+		end
+		local signPart = plot:FindFirstChild("Sign")
+		sign.Gui.Adornee = if signPart and signPart:IsA("BasePart") then signPart else nil
+		if not sign.Gui.Adornee then
+			return
+		end
+
+		local ownerId = Util.num(plot, "OwnerUserId")
+		local mine = ownerId == player.UserId
+		if ownerId == 0 then
+			sign.Owner.Text = Locale.T("SignFree")
+			sign.Owner.TextColor3 = COLORS.Muted
+		else
+			local name = Util.str(plot, "OwnerName")
+			sign.Owner.Text = if mine then Locale.T("SignYours") else name
+			sign.Owner.TextColor3 = if mine then Color3.new(1, 1, 1) else COLORS.Gold
+		end
+		sign.Background.BackgroundColor3 = if mine then OWN_COLOR else COLORS.Panel
+
+		local lockedLeft = Util.num(plot, "LockedUntil") - Util.now()
+		if ownerId ~= 0 and lockedLeft > 0 then
+			sign.Status.Text = "🔒 " .. Util.clock(lockedLeft)
+			sign.Status.TextColor3 = LOCK_COLOR
+		else
+			sign.Status.Text = if mine then Util.str(plot, "OwnerName") else ""
+			sign.Status.TextColor3 = Color3.new(1, 1, 1)
+		end
+	end
+
+	task.spawn(function()
+		while true do
+			for _, sign in signs do
+				render(sign)
+			end
+			task.wait(0.25)
+		end
+	end)
+end
+
+return PlotSigns
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="29">
           <Properties>
             <string name="Name">Popups</string>
             <string name="Source"><![CDATA[-- Всплывающие окна от сервера (Remotes.Popup): оффлайн-доход и ежедневная награда.
@@ -4690,7 +5371,278 @@ return Popups
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="27">
+        <Item class="ModuleScript" referent="30">
+          <Properties>
+            <string name="Name">Prompts</string>
+            <string name="Source"><![CDATA[-- ProximityPrompt мемов и замков баз: перевод ActionText/ObjectText и локальное выключение лишних
+-- (Украсть — на своих, Продать/Слить — на чужих, Слить — только если есть Config.Viral.Count одинаковых,
+-- Замок — только на своей базе). Сервер всё равно проверяет каждое действие сам.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Format = require(Shared:WaitForChild("Format"))
+local Locale = require(Shared:WaitForChild("Locale"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local player = Players.LocalPlayer
+
+local Prompts = {}
+
+-- ===== Управляемые подсказки =====
+-- Enabled = (значение сервера) and (локальное правило). Значение сервера запоминаем,
+-- чтобы при снятии локального запрета вернуть именно его, а не включить то, что сервер выключил.
+type Managed = {
+	Server: boolean,
+	Expected: boolean?,
+	Rule: () -> (boolean, string?, string?), -- (можно ли, ActionText, ObjectText)
+	Connections: { RBXScriptConnection },
+}
+local managed: { [ProximityPrompt]: Managed } = {}
+
+local function setIfDiff(prompt: ProximityPrompt, property: string, value: any)
+	if (prompt :: any)[property] ~= value then
+		(prompt :: any)[property] = value
+	end
+end
+
+local function apply(prompt: ProximityPrompt)
+	local entry = managed[prompt]
+	if not entry then
+		return
+	end
+	local ok, allowed, action, object = pcall(entry.Rule)
+	if not ok then
+		return
+	end
+	if action then
+		setIfDiff(prompt, "ActionText", action)
+	end
+	if object then
+		setIfDiff(prompt, "ObjectText", object)
+	end
+	local want = entry.Server and allowed
+	entry.Expected = want
+	setIfDiff(prompt, "Enabled", want)
+end
+
+local function manage(prompt: ProximityPrompt, rule: () -> (boolean, string?, string?))
+	local existing = managed[prompt]
+	if existing then
+		existing.Rule = rule
+		apply(prompt)
+		return
+	end
+	local entry: Managed = { Server = prompt.Enabled, Expected = nil, Rule = rule, Connections = {} }
+	managed[prompt] = entry
+	table.insert(
+		entry.Connections,
+		prompt:GetPropertyChangedSignal("Enabled"):Connect(function()
+			-- Сигналы отложенные: своё же изменение узнаём по Expected
+			if prompt.Enabled ~= entry.Expected then
+				entry.Server = prompt.Enabled
+				apply(prompt)
+			end
+		end)
+	)
+	-- Сервер мог переписать текст — переводим заново
+	for _, property in { "ActionText", "ObjectText" } do
+		table.insert(entry.Connections, prompt:GetPropertyChangedSignal(property):Connect(function()
+			task.defer(apply, prompt)
+		end))
+	end
+	table.insert(entry.Connections, prompt.Destroying:Connect(function()
+		for _, connection in entry.Connections do
+			connection:Disconnect()
+		end
+		managed[prompt] = nil
+	end))
+	apply(prompt)
+end
+
+-- ===== Мемы =====
+local memes: { [Instance]: boolean } = {}
+
+-- Имя мема с мутацией и пометкой вирусности: «Gold Kolobok», «VIRAL Kolobok»
+local function memeTitle(model: Instance): string
+	local name = Locale.MemeName(Util.str(model, "CreatureId"))
+	local mutation = Config.GetMutation(Util.str(model, "Mutation"))
+	if mutation.Id ~= "None" then
+		name = Locale.Name(mutation) .. " " .. name
+	end
+	if Util.bool(model, "Viral") then
+		name = Locale.T("BbViral") .. " " .. name
+	end
+	return name
+end
+
+local function myMemesFolder(): Instance?
+	local plot = Util.myPlot()
+	return plot and plot:FindFirstChild("Memes")
+end
+
+local function isMine(model: Instance): boolean
+	return Util.num(model, "OwnerUserId") == player.UserId
+end
+
+-- Сколько у игрока на базе таких же невирусных мемов (тот же вид и мутация), включая этот
+local function sameCount(model: Instance): number
+	local folder = myMemesFolder()
+	local id, mutation = Util.str(model, "CreatureId"), Util.str(model, "Mutation")
+	local count = 0
+	for other in memes do
+		local onBase = if folder then other.Parent == folder else isMine(other)
+		if
+			onBase
+			and isMine(other)
+			and not Util.bool(other, "Viral")
+			and Util.str(other, "State") ~= "Carried"
+			and Util.str(other, "CreatureId") == id
+			and Util.str(other, "Mutation") == mutation
+		then
+			count += 1
+		end
+	end
+	return count
+end
+
+local function ruleFor(model: Instance, prompt: ProximityPrompt): (() -> (boolean, string?, string?))?
+	if prompt.Name == "BuyPrompt" then
+		return function()
+			local price = Util.num(model, "Price")
+			return true, Locale.T("PromptBuy"), memeTitle(model) .. " — $" .. Format.Number(price)
+		end
+	elseif prompt.Name == "StealPrompt" then
+		return function()
+			-- Быстрая кража: только время удержания на клиенте, сервер проверяет сам
+			prompt.HoldDuration = if Util.bool(player, "Pass_FastSteal")
+				then Config.Steal.FastHoldDuration
+				else Config.Steal.HoldDuration
+			local allowed = not isMine(model)
+				and Util.str(player, "Carrying") == ""
+				and Util.str(model, "State") ~= "Carried"
+			return allowed, Locale.T("PromptSteal"), memeTitle(model)
+		end
+	elseif prompt.Name == "SellPrompt" then
+		return function()
+			return isMine(model), Locale.T("PromptSell"), memeTitle(model)
+		end
+	elseif prompt.Name == "MergePrompt" then
+		return function()
+			local allowed = isMine(model) and not Util.bool(model, "Viral") and sameCount(model) >= Config.Viral.Count
+			return allowed, Locale.T("PromptMerge", { Count = Config.Viral.Count }), memeTitle(model)
+		end
+	end
+	return nil
+end
+
+-- Перепроверить все подсказки мемов (одним пакетом за кадр)
+local refreshQueued = false
+local function refreshAll()
+	if refreshQueued then
+		return
+	end
+	refreshQueued = true
+	task.defer(function()
+		refreshQueued = false
+		for prompt in managed do
+			apply(prompt)
+		end
+	end)
+end
+
+local function trackMeme(model: Instance): () -> ()
+	memes[model] = true
+	local connections: { RBXScriptConnection } = {}
+
+	local function hookPrompt(child: Instance)
+		if child:IsA("ProximityPrompt") then
+			local rule = ruleFor(model, child)
+			if rule then
+				manage(child, rule)
+			end
+		end
+	end
+
+	local function hookBody(body: Instance)
+		for _, child in body:GetChildren() do
+			hookPrompt(child)
+		end
+		table.insert(connections, body.ChildAdded:Connect(hookPrompt))
+	end
+
+	local body = model:FindFirstChild("Body")
+	if body then
+		hookBody(body)
+	end
+	-- StreamingEnabled: Body может прийти позже или подгрузиться заново
+	table.insert(connections, model.ChildAdded:Connect(function(child)
+		if child.Name == "Body" then
+			hookBody(child)
+		end
+	end))
+	table.insert(connections, model.AttributeChanged:Connect(refreshAll))
+	table.insert(connections, model.AncestryChanged:Connect(refreshAll))
+	refreshAll()
+
+	return function()
+		memes[model] = nil
+		for _, connection in connections do
+			connection:Disconnect()
+		end
+		refreshAll()
+	end
+end
+
+-- ===== Замки баз =====
+local function trackPlot(plot: Instance)
+	local function hookButton(button: Instance)
+		local function hookPrompt(prompt: Instance)
+			if not prompt:IsA("ProximityPrompt") then
+				return
+			end
+			manage(prompt, function()
+				local mine = Util.num(plot, "OwnerUserId") == player.UserId
+				return mine, Locale.T("PromptLock"), Locale.T("PromptLockObject", { Seconds = Config.Plot.LockDuration })
+			end)
+		end
+		local prompt = button:FindFirstChild("LockPrompt")
+		if prompt then
+			hookPrompt(prompt)
+		end
+		button.ChildAdded:Connect(function(child)
+			if child.Name == "LockPrompt" then
+				hookPrompt(child)
+			end
+		end)
+	end
+
+	local button = plot:FindFirstChild("LockButton")
+	if button then
+		hookButton(button)
+	end
+	plot.ChildAdded:Connect(function(child)
+		if child.Name == "LockButton" then
+			hookButton(child)
+		end
+	end)
+	plot:GetAttributeChangedSignal("OwnerUserId"):Connect(refreshAll)
+end
+
+function Prompts.Start()
+	for _, name in { "Carrying", "Pass_FastSteal", "Plot" } do
+		player:GetAttributeChangedSignal(name):Connect(refreshAll)
+	end
+	Util.watchTagged("Meme", trackMeme)
+	Util.forEachPlot(trackPlot)
+end
+
+return Prompts
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="31">
           <Properties>
             <string name="Name">RebirthWindow</string>
             <string name="Source"><![CDATA[-- Окно перерождения: цена, прогресс денег до цены, что даёт, кнопка.
@@ -4757,6 +5709,10 @@ function RebirthWindow.Start(ctx)
 	end
 	local perkIncome = perk(3)
 	local perkSlots = perk(4)
+	local cashReset = perk(5)
+	cashReset.TextColor3 = COLORS.Muted
+	cashReset.TextSize = 14
+	cashReset.Text = Locale.T("RebirthCashReset")
 
 	local go = UiKit.button({
 		Text = Locale.T("RebirthButton"),
@@ -4828,7 +5784,7 @@ return RebirthWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="28">
+        <Item class="ModuleScript" referent="32">
           <Properties>
             <string name="Name">Shop</string>
             <string name="Source"><![CDATA[-- Окно магазина: геймпассы (навсегда) и продукты за Robux (бусты, деньги).
@@ -4994,7 +5950,7 @@ return Shop
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="29">
+        <Item class="ModuleScript" referent="33">
           <Properties>
             <string name="Name">Strings</string>
             <string name="Source"><![CDATA[--!strict
@@ -5065,6 +6021,7 @@ Locale.Add({
 	RebirthPerkIncome = { "✅ +{Percent}% income forever (now x{Mult})", "✅ +{Percent}% дохода навсегда (сейчас ×{Mult})" },
 	RebirthPerkSlots = { "✅ +{Count} base slots", "✅ +{Count} слота на базе" },
 	RebirthPerkSlotsMax = { "Slots are already at max", "Слотов уже максимум" },
+	RebirthCashReset = { "Your cash resets to $0, memes stay", "Деньги обнулятся, мемы останутся" },
 	RebirthButton = { "REBIRTH", "ПЕРЕРОДИТЬСЯ" },
 
 	-- страж
@@ -5083,6 +6040,9 @@ Locale.Add({
 	PopupDaily = { "Day {Day} reward: {Coins}", "Награда за день {Day}: {Coins}" },
 	PopupOk = { "OK", "OK" },
 
+	-- ответы сервера без своей строки в Locale
+	NotLoaded = { "Loading your data, try again in a moment", "Загружаем твои данные, попробуй через секунду" },
+
 	-- эффекты
 	FxRebirth = { "REBIRTH!", "ПЕРЕРОЖДЕНИЕ!" },
 	MonsterName = { "😃 Smiley", "😃 Смайлик" },
@@ -5092,7 +6052,7 @@ return Locale
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="30">
+        <Item class="ModuleScript" referent="34">
           <Properties>
             <string name="Name">UiKit</string>
             <string name="Source"><![CDATA[-- Небольшой набор для построения UI кодом (Studio под рукой нет, поэтому весь интерфейс — в скриптах).
@@ -5263,7 +6223,7 @@ return UiKit
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="31">
+        <Item class="ModuleScript" referent="35">
           <Properties>
             <string name="Name">Util</string>
             <string name="Source"><![CDATA[--!strict

@@ -56,7 +56,8 @@ local function buildStats(ctx)
 	})
 	local coinsPop = create("UIScale", { Parent = coins })
 	local income = UiKit.text({ TextSize = 20, TextColor3 = COLORS.Green, Size = UDim2.new(1, 0, 0, 24), LayoutOrder = 2, Parent = panel })
-	local info = UiKit.text({ TextSize = 16, Size = UDim2.new(1, 0, 0, 22), LayoutOrder = 3, Parent = panel })
+	local info = UiKit.text({ TextScaled = true, Size = UDim2.new(1, 0, 0, 22), LayoutOrder = 3, Parent = panel })
+	create("UITextSizeConstraint", { MaxTextSize = 16, Parent = info })
 	local gift = UiKit.text({ TextSize = 14, TextColor3 = COLORS.Muted, Size = UDim2.new(1, 0, 0, 18), LayoutOrder = 4, Parent = panel })
 
 	-- Плавный счётчик денег
@@ -93,7 +94,8 @@ local function buildStats(ctx)
 		local delta = value - lastCoins
 		lastCoins = value
 		TweenService:Create(shown, TweenInfo.new(0.35, Enum.EasingStyle.Quad), { Value = value }):Play()
-		if delta > 0 then
+		-- Первая загрузка данных — не «доход», без всплывающей цифры
+		if delta > 0 and Util.bool(player, "DataLoaded") then
 			coinsPop.Scale = 1.1
 			TweenService:Create(coinsPop, TweenInfo.new(0.25, Enum.EasingStyle.Back), { Scale = 1 }):Play()
 			floatGain(delta)
