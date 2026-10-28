@@ -1,4 +1,4 @@
--- Строит карту кодом: земля, «красная дорожка» мемов, 8 баз игроков, декор Хэллоуина,
+-- Строит карту кодом: земля, «красная дорожка» мемов, 8 баз игроков, сезонный декор,
 -- точка появления и стены-границы. В режиме редактирования Studio мир пустой — он появляется по Play.
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -169,7 +169,7 @@ local function buildSnowfall(parent: Instance)
 	snow.Color = ColorSequence.new(Color3.new(1, 1, 1))
 	snow.LightEmission = 0.3
 	snow.Size = NumberSequence.new(0.35)
-	snow.Rate = 220
+	snow.Rate = 90 -- частиц на всю карту; больше — тяжело для телефонов
 	snow.Lifetime = NumberRange.new(9, 12)
 	snow.Speed = NumberRange.new(6, 9)
 	snow.SpreadAngle = Vector2.new(15, 15)

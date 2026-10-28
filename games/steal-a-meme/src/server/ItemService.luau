@@ -153,6 +153,10 @@ end
 -- ===== Перезарядка =====
 
 local function ready(player: Player, item: any, tool: Tool): boolean
+	-- Срабатывает только предмет в руках своего персонажа
+	if tool.Parent ~= player.Character then
+		return false
+	end
 	local list = cooldowns[player]
 	if not list then
 		list = {}
@@ -178,10 +182,21 @@ local function setInvisible(player: Player, invisible: boolean)
 		return
 	end
 	character:SetAttribute("Invisible", invisible)
-	for _, descendant in character:GetDescendants() do
+	-- Рюкзак тоже: предмет, надетый во время невидимости, не должен выдавать игрока,
+	-- а снятый — остаться прозрачным навсегда
+	local descendants = character:GetDescendants()
+	local backpack = player:FindFirstChildOfClass("Backpack")
+	if backpack then
+		for _, descendant in backpack:GetDescendants() do
+			table.insert(descendants, descendant)
+		end
+	end
+	for _, descendant in descendants do
 		if descendant:IsA("BasePart") or descendant:IsA("Decal") then
 			if invisible then
-				descendant:SetAttribute("OrigTransparency", descendant.Transparency)
+				if descendant:GetAttribute("OrigTransparency") == nil then
+					descendant:SetAttribute("OrigTransparency", descendant.Transparency)
+				end
 				descendant.Transparency = 1
 			else
 				local original = descendant:GetAttribute("OrigTransparency")
@@ -334,6 +349,11 @@ local function placeBanana(player: Player, item: any, tool: Tool)
 		used = true
 		local position = banana.Position
 		banana:Destroy()
+		local current = bananas[player]
+		local index = current and table.find(current, banana)
+		if current and index then
+			table.remove(current, index)
+		end
 		StealService.Knock(victim, position - Vector3.new(0, 1, 0), 25, item.Stun)
 		Remotes.Fx:FireAllClients("Banana", { Position = position })
 	end)

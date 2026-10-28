@@ -192,7 +192,7 @@ function DataService.Load(player: Player)
 					end
 					local value = if type(old) == "table" then old else {}
 					value.Session = { JobId = game.JobId, Time = os.time() }
-					return value
+					return value, { player.UserId }
 				end)
 			end)
 			if not ok then
@@ -219,6 +219,19 @@ function DataService.Load(player: Player)
 	end
 
 	if not player.Parent then
+		-- Игрок ушёл, пока грузились данные: снимаем свою блокировку, иначе следующий сервер
+		-- будет ждать её протухания
+		if store and canSave then
+			pcall(function()
+				(store :: DataStore):UpdateAsync(keyFor(player), function(old)
+					if type(old) == "table" and type(old.Session) == "table" and old.Session.JobId == game.JobId then
+						old.Session = nil
+						return old, { player.UserId }
+					end
+					return nil
+				end)
+			end)
+		end
 		return
 	end
 
@@ -318,8 +331,9 @@ function DataService.Save(player: Player, release: boolean?): boolean
 				lostLock = true
 				return nil
 			end
-			return copy
-		end, { player.UserId })
+			-- UserIds (для запросов GDPR) передаются вторым значением из функции, а не аргументом UpdateAsync
+			return copy, { player.UserId }
+		end)
 	end)
 	if lostLock then
 		warn("[DataService] Сессия игрока открыта на другом сервере, сохранение пропущено", player.Name)

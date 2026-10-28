@@ -1006,7 +1006,7 @@ function DataService.Load(player: Player)
 					end
 					local value = if type(old) == "table" then old else {}
 					value.Session = { JobId = game.JobId, Time = os.time() }
-					return value
+					return value, { player.UserId }
 				end)
 			end)
 			if not ok then
@@ -1033,6 +1033,19 @@ function DataService.Load(player: Player)
 	end
 
 	if not player.Parent then
+		-- Игрок ушёл, пока грузились данные: снимаем свою блокировку, иначе следующий сервер
+		-- будет ждать её протухания
+		if store and canSave then
+			pcall(function()
+				(store :: DataStore):UpdateAsync(keyFor(player), function(old)
+					if type(old) == "table" and type(old.Session) == "table" and old.Session.JobId == game.JobId then
+						old.Session = nil
+						return old, { player.UserId }
+					end
+					return nil
+				end)
+			end)
+		end
 		return
 	end
 
@@ -1132,8 +1145,9 @@ function DataService.Save(player: Player, release: boolean?): boolean
 				lostLock = true
 				return nil
 			end
-			return copy
-		end, { player.UserId })
+			-- UserIds (для запросов GDPR) передаются вторым значением из функции, а не аргументом UpdateAsync
+			return copy, { player.UserId }
+		end)
 	end)
 	if lostLock then
 		warn("[DataService] Сессия игрока открыта на другом сервере, сохранение пропущено", player.Name)
@@ -1800,6 +1814,10 @@ end
 -- ===== Перезарядка =====
 
 local function ready(player: Player, item: any, tool: Tool): boolean
+	-- Срабатывает только предмет в руках своего персонажа
+	if tool.Parent ~= player.Character then
+		return false
+	end
 	local list = cooldowns[player]
 	if not list then
 		list = {}
@@ -1825,10 +1843,21 @@ local function setInvisible(player: Player, invisible: boolean)
 		return
 	end
 	character:SetAttribute("Invisible", invisible)
-	for _, descendant in character:GetDescendants() do
+	-- Рюкзак тоже: предмет, надетый во время невидимости, не должен выдавать игрока,
+	-- а снятый — остаться прозрачным навсегда
+	local descendants = character:GetDescendants()
+	local backpack = player:FindFirstChildOfClass("Backpack")
+	if backpack then
+		for _, descendant in backpack:GetDescendants() do
+			table.insert(descendants, descendant)
+		end
+	end
+	for _, descendant in descendants do
 		if descendant:IsA("BasePart") or descendant:IsA("Decal") then
 			if invisible then
-				descendant:SetAttribute("OrigTransparency", descendant.Transparency)
+				if descendant:GetAttribute("OrigTransparency") == nil then
+					descendant:SetAttribute("OrigTransparency", descendant.Transparency)
+				end
 				descendant.Transparency = 1
 			else
 				local original = descendant:GetAttribute("OrigTransparency")
@@ -1981,6 +2010,11 @@ local function placeBanana(player: Player, item: any, tool: Tool)
 		used = true
 		local position = banana.Position
 		banana:Destroy()
+		local current = bananas[player]
+		local index = current and table.find(current, banana)
+		if current and index then
+			table.remove(current, index)
+		end
 		StealService.Knock(victim, position - Vector3.new(0, 1, 0), 25, item.Stun)
 		Remotes.Fx:FireAllClients("Banana", { Position = position })
 	end)
@@ -2204,7 +2238,7 @@ return LeaderboardService
       <Item class="ModuleScript" referent="12">
         <Properties>
           <string name="Name">MapBuilder</string>
-          <string name="Source"><![CDATA[-- Строит карту кодом: земля, «красная дорожка» мемов, 8 баз игроков, декор Хэллоуина,
+          <string name="Source"><![CDATA[-- Строит карту кодом: земля, «красная дорожка» мемов, 8 баз игроков, сезонный декор,
 -- точка появления и стены-границы. В режиме редактирования Studio мир пустой — он появляется по Play.
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -2375,7 +2409,7 @@ local function buildSnowfall(parent: Instance)
 	snow.Color = ColorSequence.new(Color3.new(1, 1, 1))
 	snow.LightEmission = 0.3
 	snow.Size = NumberSequence.new(0.35)
-	snow.Rate = 220
+	snow.Rate = 90 -- частиц на всю карту; больше — тяжело для телефонов
 	snow.Lifetime = NumberRange.new(9, 12)
 	snow.Speed = NumberRange.new(6, 9)
 	snow.SpreadAngle = Vector2.new(15, 15)
