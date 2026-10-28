@@ -1,5 +1,6 @@
--- HUD: деньги/доход/слоты слева сверху, таймер подарка за игру и боковые кнопки
--- (Магазин, Предметы, Индекс, Перерождение, Замок базы, Страж). Всё рисуется из атрибутов игрока.
+-- HUD: деньги/доход/слоты слева сверху, таймер подарка за игру и боковые кнопки в две колонки:
+-- основная (Магазин, Предметы, Индекс, Перерождение, Замок базы, Защита) и вторая (Награды дня,
+-- Квесты, Эмоции, Обмен) — на телефоне так кнопки не уезжают под джойстик. Всё рисуется из атрибутов игрока.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -8,6 +9,8 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Format = require(Shared:WaitForChild("Format"))
 local Locale = require(Shared:WaitForChild("Locale"))
+local DefenseWindow = require(script.Parent:WaitForChild("DefenseWindow"))
+local QuestsWindow = require(script.Parent:WaitForChild("QuestsWindow"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
@@ -167,30 +170,99 @@ local function sideButton(parent: Instance, order: number, icon: string, caption
 	return button, label
 end
 
+-- Красный значок в правом верхнем углу кнопки: число или просто точка (text = "")
+local function badge(button: GuiObject): TextLabel
+	local label = UiKit.text({
+		Name = "Badge",
+		Text = "",
+		TextSize = 14,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(1, -4, 0, 4),
+		Size = UDim2.fromOffset(20, 20),
+		BackgroundTransparency = 0,
+		BackgroundColor3 = COLORS.Red,
+		ZIndex = 3,
+		Visible = false,
+		Parent = button,
+	}, { UiKit.corner(10), create("UIStroke", { Color = Color3.new(1, 1, 1), Thickness = 1.5 }) })
+	return label
+end
+
+local function column(parent: Instance, order: number): Frame
+	return create("Frame", {
+		Size = UDim2.fromOffset(BUTTON, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BackgroundTransparency = 1,
+		LayoutOrder = order,
+		Parent = parent,
+	}, {
+		create("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }),
+	})
+end
+
 function Hud.Start(ctx)
 	local renderGift = buildStats(ctx)
 
-	-- Вертикальные кнопки слева по центру
+	-- Кнопки слева по центру, две колонки
 	local side = create("Frame", {
 		Name = "SideButtons",
 		AnchorPoint = Vector2.new(0, 0.5),
 		Position = UDim2.new(0, 8, 0.55, 0),
-		Size = UDim2.fromOffset(BUTTON, 0),
-		AutomaticSize = Enum.AutomaticSize.Y,
+		Size = UDim2.fromOffset(0, 0),
+		AutomaticSize = Enum.AutomaticSize.XY,
 		BackgroundTransparency = 1,
 		Parent = ctx.Gui,
 	}, {
-		create("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }),
+		create("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			VerticalAlignment = Enum.VerticalAlignment.Top,
+			Padding = UDim.new(0, 6),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
 	})
 	ctx.Scale(side)
+	local main = column(side, 1)
+	local extra = column(side, 2)
 
-	local shop = sideButton(side, 1, "🛒", Locale.T("BtnShop"))
-	local items = sideButton(side, 2, "🗡️", Locale.T("BtnItems"))
-	local index = sideButton(side, 3, "📖", Locale.T("BtnIndex"))
-	local rebirth, rebirthCaption = sideButton(side, 4, "♻️", Locale.T("BtnRebirth"))
-	local lock, lockCaption = sideButton(side, 5, "🔒", Locale.T("BtnLock"))
-	local guard, guardCaption = sideButton(side, 6, "🐱⚔️", Locale.T("BtnGuard"))
+	local shop = sideButton(main, 1, "🛒", Locale.T("BtnShop"))
+	local items = sideButton(main, 2, "🗡️", Locale.T("BtnItems"))
+	local index = sideButton(main, 3, "📖", Locale.T("BtnIndex"))
+	local rebirth, rebirthCaption = sideButton(main, 4, "♻️", Locale.T("BtnRebirth"))
+	local lock, lockCaption = sideButton(main, 5, "🔒", Locale.T("BtnLock"))
+	local guard, guardCaption = sideButton(main, 6, "🛡️", Locale.T("BtnDefense"))
 	local lockIcon = lock:FindFirstChild("Icon") :: TextLabel
+
+	local daily = sideButton(extra, 1, "📅", Locale.T("BtnDaily"))
+	local quests = sideButton(extra, 2, "📜", Locale.T("BtnQuests"))
+	local emotes = sideButton(extra, 3, "😀", Locale.T("BtnEmotes"))
+	local trade = sideButton(extra, 4, "🤝", Locale.T("BtnTrade"))
+	local dailyBadge = badge(daily)
+	local questsBadge = badge(quests)
+
+	daily.Activated:Connect(function()
+		ctx.Open("Daily")
+	end)
+	quests.Activated:Connect(function()
+		ctx.Open("Quests")
+	end)
+	emotes.Activated:Connect(function()
+		ctx.Open("Emotes")
+	end)
+	trade.Activated:Connect(function()
+		ctx.Open("TradePick")
+	end)
+
+	local function renderBadges()
+		dailyBadge.Visible = Util.bool(player, "DailyReady")
+		daily.BackgroundColor3 = if dailyBadge.Visible then COLORS.Purple else COLORS.Panel
+		local claimable = QuestsWindow.ClaimableCount()
+		questsBadge.Visible = claimable > 0
+		questsBadge.Text = tostring(claimable)
+	end
+	player:GetAttributeChangedSignal("DailyReady"):Connect(renderBadges)
+	player:GetAttributeChangedSignal("QuestsJson"):Connect(renderBadges)
+	renderBadges()
 
 	shop.BackgroundColor3 = COLORS.Green
 	shop.Activated:Connect(function()
@@ -206,7 +278,7 @@ function Hud.Start(ctx)
 		ctx.Open("Rebirth")
 	end)
 	guard.Activated:Connect(function()
-		ctx.Open("Guard")
+		ctx.Open("Defense")
 	end)
 	lock.Activated:Connect(function()
 		-- Можно ли закрыть — решает сервер (он же пришлёт Notify с причиной)
@@ -220,15 +292,17 @@ function Hud.Start(ctx)
 		rebirth.BackgroundColor3 = if progress >= 1 then COLORS.Purple else COLORS.Panel
 	end
 
-	-- Подпись «Стража» — цена следующего уровня
+	-- Подпись «Защиты» — цена самой дешёвой следующей прокачки (страж, турель, лазер)
 	local function renderGuard()
-		local nextLevel = Config.Guard[Util.num(player, "GuardLevel") + 1]
-		guardCaption.Text = if nextLevel then "$" .. Format.Number(nextLevel.Price) else Locale.T("BtnMax")
+		local price = DefenseWindow.CheapestPrice()
+		guardCaption.Text = if price then "$" .. Format.Number(price) else Locale.T("BtnMax")
 	end
 
 	player:GetAttributeChangedSignal("Coins"):Connect(renderRebirth)
 	player:GetAttributeChangedSignal("Rebirths"):Connect(renderRebirth)
-	player:GetAttributeChangedSignal("GuardLevel"):Connect(renderGuard)
+	for _, name in DefenseWindow.Attributes do
+		player:GetAttributeChangedSignal(name):Connect(renderGuard)
+	end
 	renderRebirth()
 	renderGuard()
 

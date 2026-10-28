@@ -16,6 +16,38 @@ local player = Players.LocalPlayer
 
 local Shop = {}
 
+-- Подсказка под названием для товаров без пачки денег (из Config, чтобы цифры не расходились)
+local function staticHint(key: string): string
+	if key == "MysteryBox" and Config.MysteryBox then
+		local total = 0
+		for _, weight in Config.MysteryBox.Weights do
+			total += weight
+		end
+		local percents = {}
+		for i, weight in Config.MysteryBox.Weights do
+			percents[i] = math.floor(weight / math.max(total, 1) * 100 + 0.5)
+		end
+		return Locale.T("ShopHintMysteryBox", { A = percents[1] or 0, B = percents[2] or 0, C = percents[3] or 0 })
+	elseif key == "MemeRain" and Config.AdminEvents then
+		return Locale.T("ShopHintMemeRain", { Time = Util.clock(Config.AdminEvents.MemeRainDuration or 0) })
+	elseif key == "EmotePack" then
+		local count = 0
+		for _, emote in Config.Emotes or {} do
+			if emote.Pass == key then
+				count += 1
+			end
+		end
+		return Locale.T("ShopHintEmotePack", { Count = count })
+	end
+	-- Геймпасс, который даёт предмет (Confetti Cannon) — описание предмета
+	for _, item in Config.Items do
+		if item.Pass == key then
+			return item.Face .. " " .. (if Locale.IsRussian and item.DescRu then item.DescRu else item.Desc or "")
+		end
+	end
+	return ""
+end
+
 -- Ключи словаря по возрастанию цены (порядок обхода словаря в Luau не гарантирован)
 local function sortedKeys(items: { [string]: any }): { string }
 	local keys = {}
@@ -85,12 +117,12 @@ function Shop.Start(ctx)
 		create("UITextSizeConstraint", { MaxTextSize = 18, MinTextSize = 10, Parent = name })
 		local hint = UiKit.text({
 			Text = "",
-			TextSize = 14,
+			TextScaled = true,
 			TextColor3 = COLORS.Muted,
 			Position = UDim2.fromOffset(12, 32),
 			Size = UDim2.new(1, -140, 0, 18),
 			Parent = frame,
-		})
+		}, { create("UITextSizeConstraint", { MaxTextSize = 14, MinTextSize = 8 }) })
 		local buy = UiKit.button({
 			Text = "R$ " .. item.Robux,
 			TextSize = 18,
@@ -107,7 +139,8 @@ function Shop.Start(ctx)
 	section("ShopPasses")
 	for _, key in sortedKeys(Config.GamePasses) do
 		local item = Config.GamePasses[key]
-		local buy = row(item)
+		local buy, hint = row(item)
+		hint.Text = staticHint(key)
 		local attribute = "Pass_" .. key
 
 		local function render()
@@ -136,6 +169,7 @@ function Shop.Start(ctx)
 	for _, key in sortedKeys(Config.Products) do
 		local item = Config.Products[key]
 		local buy, hint = row(item)
+		hint.Text = staticHint(key)
 
 		-- Для пачек денег показываем примерную сумму (точную считает сервер)
 		if item.IncomeSeconds then

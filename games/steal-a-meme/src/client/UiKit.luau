@@ -48,12 +48,13 @@ function UiKit.padding(px: number)
 	})
 end
 
-function UiKit.text(props: { [string]: any }): TextLabel
+-- children (необязательно) — как у create: констрейнты, обводки и т.п.
+function UiKit.text(props: { [string]: any }, children: { Instance }?): TextLabel
 	props.BackgroundTransparency = props.BackgroundTransparency or 1
 	props.Font = props.Font or Enum.Font.GothamBold
 	props.TextColor3 = props.TextColor3 or COLORS.Text
 	props.TextXAlignment = props.TextXAlignment or Enum.TextXAlignment.Left
-	return create("TextLabel", props)
+	return create("TextLabel", props, children)
 end
 
 -- Используйте .Activated, а не .MouseButton1Click: Activated работает и на телефоне, и на геймпаде.

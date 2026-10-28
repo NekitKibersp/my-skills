@@ -2,7 +2,10 @@
 -- Общие помощники клиента: серверное время, атрибуты с значениями по умолчанию,
 -- слежение за объектами с тегом (с учётом StreamingEnabled) и поиск своей базы.
 local CollectionService = game:GetService("CollectionService")
+local HttpService = game:GetService("HttpService")
+local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Util = {}
 
@@ -151,6 +154,33 @@ function Util.character(): (Model?, BasePart?, Humanoid?)
 	local root = character:FindFirstChild("HumanoidRootPart")
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	return character, (if root and root:IsA("BasePart") then root else nil), humanoid
+end
+
+-- JSON-атрибут (QuestsJson, ItemsJson, ...) -> таблица; нет атрибута или битый JSON -> nil
+function Util.json(inst: Instance?, name: string): any
+	local raw = Util.str(inst, name)
+	if raw == "" then
+		return nil
+	end
+	local ok, value = pcall(HttpService.JSONDecode, HttpService, raw)
+	return if ok then value else nil
+end
+
+-- Примерная награда «N секунд дохода, но не меньше minCoins» (точную сумму считает сервер)
+function Util.coinsFor(incomeSeconds: number?, minCoins: number?): number
+	return math.max(Util.num(player, "Income") * (incomeSeconds or 0), minCoins or 0)
+end
+
+-- Окно покупки геймпасса по ключу Config.GamePasses; Id = 0 -> тост «не настроено»
+function Util.promptPass(passKey: string, toast: (string, string?) -> ())
+	local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config")) :: any
+	local Locale = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Locale")) :: any
+	local pass = Config.GamePasses[passKey]
+	if not pass or pass.Id == 0 then
+		toast(Locale.T("NotConfigured"), "error")
+		return
+	end
+	MarketplaceService:PromptGamePassPurchase(player, pass.Id)
 end
 
 return Util

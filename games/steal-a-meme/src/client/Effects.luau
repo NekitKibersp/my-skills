@@ -415,6 +415,13 @@ local function trackMonster(model: Instance): () -> ()
 	end
 end
 
+-- Помощники для других модулей эффектов (FxExtra): те же детали, вспышки и конфетти
+Effects.Piece = piece
+Effects.Confetti = confetti
+Effects.Flash = flash
+Effects.FloatText = floatText
+Effects.FxParent = fxParent
+
 function Effects.Start()
 	Remotes:WaitForChild("Knockback").OnClientEvent:Connect(onKnockback)
 	Remotes:WaitForChild("Fx").OnClientEvent:Connect(onFx)

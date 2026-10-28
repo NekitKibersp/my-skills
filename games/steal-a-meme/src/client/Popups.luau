@@ -1,7 +1,9 @@
--- Всплывающие окна от сервера (Remotes.Popup): оффлайн-доход и ежедневная награда.
+-- Всплывающие окна от сервера (Remotes.Popup): оффлайн-доход и ежедневная награда
+-- (Daily: Day + одно или несколько из Coins / Meme (Id) / Item (Id)).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
 local Locale = require(Shared:WaitForChild("Locale"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
@@ -11,6 +13,27 @@ local create = UiKit.create
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 
 local Popups = {}
+
+-- Текст ежедневной награды: заголовок дня и строка на каждую часть награды
+local function dailyText(data): string
+	local day = if type(data.Day) == "number" then data.Day else 1
+	local lines = {}
+	local creature = if type(data.Meme) == "string" then Config.GetCreature(data.Meme) else nil
+	if creature then
+		table.insert(lines, Locale.T("PopupDailyMeme", { Face = creature.Face, Name = creature.Name }))
+	end
+	local item = if type(data.Item) == "string" then Config.GetItem(data.Item) else nil
+	if item then
+		table.insert(lines, Locale.T("PopupDailyItem", { Face = item.Face, Name = Locale.Name(item) }))
+	end
+	if type(data.Coins) == "number" and data.Coins > 0 then
+		table.insert(lines, "💰 " .. Locale.T("CashBought", { Coins = data.Coins }))
+	end
+	if #lines == 0 then
+		return Locale.T("PopupDaily", { Coins = 0, Day = day })
+	end
+	return Locale.T("PopupDailyHead", { Day = day }) .. "\n" .. table.concat(lines, "\n")
+end
 
 function Popups.Start(ctx)
 	-- Очередь: если пришли и «Оффлайн», и «Ежедневная», показываем по одному
@@ -79,7 +102,7 @@ function Popups.Start(ctx)
 		elseif kind == "Daily" then
 			table.insert(queue, {
 				Title = Locale.T("PopupDailyTitle"),
-				Text = Locale.T("PopupDaily", { Coins = coins, Day = if type(data.Day) == "number" then data.Day else 1 }),
+				Text = dailyText(data),
 			})
 		else
 			return

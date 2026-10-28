@@ -1,6 +1,7 @@
--- Баннеры сверху по центру: «В ТРЕНДЕ», Ночь Смайлика (идёт / до следующей, с эмодзи сезона), Удача сервера.
--- Источник — атрибуты ReplicatedStorage (TrendingId, TrendEndsAt, NightActive, NightEndsAt, NextNightAt,
--- LuckEndsAt, Season).
+-- Баннеры сверху по центру: админ-ивент (идёт / до следующего), «В ТРЕНДЕ», Ночь Смайлика
+-- (идёт / до следующей, с эмодзи сезона), Удача сервера.
+-- Источник — атрибуты ReplicatedStorage (AdminEvent, AdminEventEndsAt, NextAdminEventAt, TrendingId,
+-- TrendEndsAt, NightActive, NightEndsAt, NextNightAt, LuckEndsAt, Season).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -14,6 +15,8 @@ local create = UiKit.create
 
 local NIGHT_COLOR = Color3.fromRGB(255, 220, 40)
 local LUCK_COLOR = Color3.fromRGB(80, 230, 120)
+local ADMIN_COLOR = Color3.fromRGB(255, 120, 230)
+local ADMIN_SOON = 24 * 3600 -- «следующий админ-ивент через …» показываем только в пределах суток
 local SEASON_EMOJI = { Halloween = "🎃", Winter = "❄️" } -- по атрибуту Season в ReplicatedStorage
 
 local Banners = {}
@@ -56,14 +59,44 @@ function Banners.Start(ctx)
 	})
 	ctx.Scale(stack)
 
+	local admin = banner(stack, -2, 24, ADMIN_COLOR)
+	admin.TextColor3 = ADMIN_COLOR
+	admin.BackgroundColor3 = Color3.fromRGB(45, 20, 60)
+	local adminDesc = banner(stack, -1, 14, ADMIN_COLOR)
+	local adminNext = banner(stack, -1, 14, COLORS.PanelLight)
+	adminNext.TextColor3 = COLORS.Muted
+
 	local trend = banner(stack, 1, 20, COLORS.Gold)
 	trend.TextColor3 = COLORS.Gold
 	local night = banner(stack, 2, 22, NIGHT_COLOR)
 	local luck = banner(stack, 3, 16, LUCK_COLOR)
 	luck.TextColor3 = LUCK_COLOR
 
+	local function renderAdmin(now: number)
+		local event = Config.GetAdminEvent(Util.str(ReplicatedStorage, "AdminEvent"))
+		local endsAt = Util.num(ReplicatedStorage, "AdminEventEndsAt")
+		admin.Visible = event ~= nil
+		adminDesc.Visible = event ~= nil
+		if event then
+			admin.Text = Locale.T("BannerAdminEvent", {
+				Face = event.Face,
+				Name = Locale.Name(event),
+				Time = Util.clock(endsAt - now),
+			})
+			adminDesc.Text = if Locale.IsRussian and event.DescRu then event.DescRu else event.Desc
+			adminNext.Visible = false
+			return
+		end
+		local nextAt = Util.num(ReplicatedStorage, "NextAdminEventAt")
+		adminNext.Visible = nextAt > now and nextAt - now <= ADMIN_SOON
+		if adminNext.Visible then
+			adminNext.Text = Locale.T("BannerNextAdminEvent", { Time = Util.clock(nextAt - now) })
+		end
+	end
+
 	local function render()
 		local now = Util.now()
+		renderAdmin(now)
 
 		local trendId = Util.str(ReplicatedStorage, "TrendingId")
 		trend.Visible = trendId ~= "" and Config.GetCreature(trendId) ~= nil

@@ -1,6 +1,8 @@
 -- Окно предметов: оружие и гаджеты из Config.Items, покупка за монеты навсегда.
 -- Купленные — атрибут игрока ItemsJson (JSON-массив Id). Покупку проверяет и выдаёт сервер
 -- (Remotes.BuyItem), клиент только просит и показывает ответ.
+-- Предметы с Pass (Confetti Cannon) за монеты не продаются: кнопка показывает цену геймпасса
+-- Config.GamePasses[item.Pass] и открывает его покупку; куплено — атрибут "Pass_" .. item.Pass.
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -37,6 +39,10 @@ local function ownedSet(): { [string]: boolean }
 		end
 	end
 	return set
+end
+
+local function isOwned(item, owned: { [string]: boolean }): boolean
+	return owned[item.Id] == true or (item.Pass ~= nil and Util.bool(player, "Pass_" .. item.Pass))
 end
 
 local function statsText(item): string
@@ -144,8 +150,27 @@ function Items.Start(ctx)
 			Parent = frame,
 		})
 
+		-- Пометка «геймпасс за Robux» над кнопкой
+		if item.Pass then
+			UiKit.text({
+				Text = "🎟️ " .. Locale.T("ItemRobuxPass"),
+				TextScaled = true,
+				TextColor3 = COLORS.Gold,
+				TextXAlignment = Enum.TextXAlignment.Center,
+				AnchorPoint = Vector2.new(1, 0),
+				Position = UDim2.new(1, -8, 0, 3),
+				Size = UDim2.fromOffset(116, 14),
+				Parent = frame,
+			}, { create("UITextSizeConstraint", { MaxTextSize = 12, MinTextSize = 7 }) })
+			buy.Position = UDim2.new(1, -8, 0.5, 6)
+		end
+
 		buy.Activated:Connect(function()
-			if busy or ownedSet()[item.Id] then
+			if busy or isOwned(item, ownedSet()) then
+				return
+			end
+			if item.Pass then
+				Util.promptPass(item.Pass, ctx.Toast)
 				return
 			end
 			busy = true
@@ -166,11 +191,17 @@ function Items.Start(ctx)
 		local coins = Util.num(player, "Coins")
 		for _, entry in rows do
 			local item, buy = entry.Item, entry.Button
-			if owned[item.Id] then
+			local pass = item.Pass and Config.GamePasses[item.Pass]
+			if isOwned(item, owned) then
 				buy.Text = Locale.T("ShopOwned")
 				buy.TextColor3 = COLORS.Muted
 				buy.BackgroundColor3 = COLORS.Panel
 				buy.AutoButtonColor = false
+			elseif item.Pass then
+				buy.Text = if pass then "R$ " .. pass.Robux else "R$"
+				buy.TextColor3 = COLORS.Text
+				buy.BackgroundColor3 = COLORS.Purple
+				buy.AutoButtonColor = true
 			else
 				local affordable = coins >= item.Price
 				buy.Text = if item.Price > 0 then "$" .. Format.Number(item.Price) else Locale.T("ItemFree")
@@ -196,6 +227,11 @@ function Items.Start(ctx)
 	end
 
 	player:GetAttributeChangedSignal("ItemsJson"):Connect(render)
+	for _, item in Config.Items do
+		if item.Pass then
+			player:GetAttributeChangedSignal("Pass_" .. item.Pass):Connect(render)
+		end
+	end
 	player:GetAttributeChangedSignal("Coins"):Connect(function()
 		if window.Visible then
 			render()

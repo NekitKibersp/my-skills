@@ -25,7 +25,7 @@ local toastHolder = UiKit.create("Frame", {
 local rawToast = UiKit.toaster(toastHolder)
 
 -- Один и тот же текст дважды подряд не показываем: сервер шлёт Notify, а окна ещё
--- показывают ключ, который вернула RemoteFunction (Rebirth/UpgradeGuard)
+-- показывают ключ, который вернула RemoteFunction (Rebirth/UpgradeGuard/ClaimDaily/...)
 local recentToasts: { [string]: number } = {}
 local function toast(message: string, kind: string?)
 	local now = os.clock()
@@ -111,8 +111,12 @@ local modules = {
 	"Shop",
 	"IndexWindow",
 	"RebirthWindow",
-	"GuardWindow",
+	"DefenseWindow",
 	"Items",
+	"DailyWindow",
+	"QuestsWindow",
+	"Emotes",
+	"TradeWindow",
 	"Popups",
 	"Hud",
 	"Banners",
@@ -121,6 +125,7 @@ local modules = {
 	"Prompts",
 	"MemeBillboards",
 	"Effects",
+	"FxExtra",
 	"Status",
 	"Tutorial",
 }
