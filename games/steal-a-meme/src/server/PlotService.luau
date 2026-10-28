@@ -662,7 +662,10 @@ function PlotService.Start(builtPlots: { Model })
 					local character = other.Character
 					local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
 					if root and PlotService.InPlot(plot, root.Position) then
-						(character :: Model):PivotTo(PlotService.OutsidePoint(plot))
+						-- Анти-чит переноски (StealService): это серверный перенос, не телепорт читера
+						local pushed = character :: Model
+						pushed:SetAttribute("ServerMovedAt", workspace:GetServerTimeNow())
+						pushed:PivotTo(PlotService.OutsidePoint(plot))
 					end
 				end
 			end

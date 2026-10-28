@@ -206,11 +206,17 @@ local function run(ctx)
 
 	-- Ковёр ищем в фоне (при StreamingEnabled может подгрузиться позже)
 	local carpet: BasePart? = nil
+	-- Ждём без предела по времени (пока туториал идёт): игрок мог заспавниться далеко от дорожки,
+	-- и ковёр придёт только когда он подойдёт ближе. Позицию запоминаем — после выгрузки она та же.
 	task.spawn(function()
-		local map = workspace:WaitForChild("Map", 60)
-		local found = map and map:WaitForChild("Carpet", 60)
-		if found and found:IsA("BasePart") then
-			carpet = found
+		while not finished and not carpet do
+			local map = workspace:FindFirstChild("Map")
+			local found = map and map:FindFirstChild("Carpet")
+			if found and found:IsA("BasePart") then
+				carpet = found
+			else
+				task.wait(1)
+			end
 		end
 	end)
 

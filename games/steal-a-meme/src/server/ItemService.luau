@@ -513,8 +513,10 @@ local function useRocket(player: Player, item: any, tool: Tool)
 	end
 	local look = root.CFrame.LookVector
 	-- Толчок делает клиент владельца (персонажем управляет он), stun = 0 — без падения.
-	-- MoveGraceUntil: анти-чит переноски не считает этот рывок телепортом.
-	(player.Character :: Model):SetAttribute("MoveGraceUntil", now() + 3)
+	-- MoveGraceUntil: анти-чит переноски даёт на рывок повышенный допуск скорости.
+	-- (через local: строка, начинающаяся с «(», в Luau — неоднозначный синтаксис и ошибка разбора)
+	local character = player.Character :: Model
+	character:SetAttribute("MoveGraceUntil", now() + 3)
 	Remotes.Knockback:FireClient(player, Vector3.new(look.X, 0, look.Z) * item.Forward + Vector3.new(0, item.Jump, 0), 0)
 	Remotes.Fx:FireAllClients("Rocket", { Position = root.Position })
 end

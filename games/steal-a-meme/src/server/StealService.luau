@@ -205,33 +205,39 @@ function StealService.TryStart(thief: Player, owner: Player, slot: number, promp
 end
 
 -- Анти-чит переноски: вор не может двигаться быстрее своей скорости (телепорт домой с мемом).
--- Возвращает false, если перенос сорван. Отброс и ракетные ботинки ставят персонажу
--- атрибут MoveGraceUntil — в это время скорость не проверяем.
+-- Возвращает false, если в этот тик доставлять нельзя (нарушение или перенос сорван).
+-- При нарушении опорная точка НЕ сдвигается: телепорт на свою базу так и останется нарушением,
+-- а честный игрок после лага догонит допуск (он растёт со временем) — счётчик сбрасывается.
+-- Ракетные ботинки ставят персонажу MoveGraceUntil — в это время допуск выше, но не бесконечный
+-- (иначе читер телепортируется в окно ракеты). Серверный перенос персонажа (вытолкнули из
+-- запертой базы) ставит ServerMovedAt — опорная точка сбрасывается.
 function checkMovement(thief: Player, carry: Carry, root: BasePart, t: number): boolean
 	local position = root.Position
 	local lastPos, lastTime = carry.LastPos, carry.LastTime
-	carry.LastPos, carry.LastTime = position, t
-	if not lastPos or not lastTime then
-		return true
-	end
 	local character = thief.Character
-	if character and (character:GetAttribute("MoveGraceUntil") or 0) > t then
+	if not lastPos or not lastTime
+		or (character and (character:GetAttribute("ServerMovedAt") or -math.huge) >= lastTime) then
+		carry.LastPos, carry.LastTime = position, t
 		return true
 	end
 	local humanoid = humanoidOf(thief)
 	local speed = math.max(if humanoid then humanoid.WalkSpeed else BASE_WALK_SPEED, BASE_WALK_SPEED)
+	if character and (character:GetAttribute("MoveGraceUntil") or 0) > lastTime then
+		speed = math.max(speed, Config.AntiCheat.GraceSpeed)
+	end
 	local flat = Vector3.new(position.X - lastPos.X, 0, position.Z - lastPos.Z).Magnitude
 	local allowed = speed * (t - lastTime) * Config.AntiCheat.CarrySpeedSlack + Config.AntiCheat.CarryExtraStuds
 	if flat <= allowed then
+		carry.LastPos, carry.LastTime = position, t
+		carry.Strikes = 0
 		return true
 	end
 	carry.Strikes = (carry.Strikes or 0) + 1
 	warn(string.format("[AntiCheat] %s двигается слишком быстро с мемом: %.1f studs (можно %.1f)", thief.Name, flat, allowed))
 	if carry.Strikes >= Config.AntiCheat.MaxStrikes then
 		StealService.Fail(thief)
-		return false
 	end
-	return true
+	return false
 end
 
 -- Отменить все кражи мемов этого хозяина (хозяин выходит из игры)
