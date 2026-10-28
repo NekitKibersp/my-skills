@@ -86,16 +86,44 @@
 и «социальные» покупки, которые радуют весь сервер (Мем-дождь, Удача сервера) — их видят все и хотят повторить.
 
 ## Персонажи и модели
-Все мемы описаны в одном списке `Config.Creatures`. Пока персонажи собраны из примитивов:
-тело, ножки, эмодзи-лицо, а табличку с именем рисует клиент.
+Сейчас мемы собраны из примитивов (тело + эмодзи-лицо). Настоящие модели подключаются **без кода**:
 
-**Подставить свою модель:** возьмите модель в Creator Store (кнопка «Get», модель должна оказаться
-в инвентаре владельца игры), скопируйте её ID в поле `ModelId` нужного мема. Игра загрузит модель,
-подгонит размер и **вырежет из неё все скрипты**: бесплатные модели часто содержат «бэкдоры».
-Если модель не загрузилась, автоматически остаётся версия из примитивов.
+1. Откройте плейс в Studio. В **Explorer → ServerStorage** есть папка **MemeModels** (пустая).
+2. Вставьте модель: из Toolbox (Creator Store), из пака, сгенерированную ИИ в Studio или импортированную (File → Import 3D).
+3. **Удалите из неё все `Script`/`LocalScript`** (игра и так их вырежет, но в Studio они могут успеть сработать).
+4. Перетащите модель в **ServerStorage → MemeModels** и **переименуйте её точно в Id мема** из таблицы ниже.
+   Подходит Model или одиночный MeshPart. Размер не важен — игра сама подгонит высоту.
+5. Play — мем с этим Id теперь выглядит как ваша модель (на дорожке, на базе, в руках у вора).
+6. Если модель стоит боком/спиной — в `Config.luau` у этого мема добавьте `ModelYaw = 90` (или 180, -90).
 
-**Если придёт жалоба правообладателя:** переименуйте мема (`Name`/`NameRu`/`Face`) или удалите строку.
-Id лучше не менять, иначе у игроков пропадут уже купленные мемы этого вида.
+Вариации (сезонные, лимит, эксклюзивы) без своей модели берут модель «родителя» — например, Santa 67
+выглядит как Six Seven. Хотите отдельную — положите модель с Id вариации, она важнее.
+
+⚠️ После того как положили модели, **сохраняйте плейс в Studio** (File → Save / Publish). Если пересобрать
+плейс через `rojo build`, папка MemeModels снова станет пустой — чтобы этого не было, выделите папку →
+правый клик → **Save to File** → `models/MemeModels.rbxm` в проекте и скажите разработчику подключить её в сборку.
+
+**Id мемов для папки MemeModels:**
+
+| Редкость | Id → персонаж |
+|---|---|
+| Common | `ClapCat` Black Cat Clapping, `Pups` Sleepy Baby, `Doge` Doge, `Kolobok` Kolobok, `Lirili` Lirili Larila, `Brdysh` Brdysh, `Bobritto` Bobritto Bandito |
+| Rare | `SixSeven` Six Seven, `Chimpanzini` Chimpanzini Bananini, `Cheremsha` Cheremsha, `SadHamster` Sad Hamster, `Semga` Semga, `TrippiTroppi` Trippi Troppi |
+| Epic | `Tralalero` Tralalero Tralala, `Patapim` Brr Brr Patapim, `TungSahur` Tung Tung Tung Sahur, `SwordKitten` Kitten with a Sword, `Cappuccino` Cappuccino Assassino, `TimCheese` Tim Cheese |
+| Legendary | `BossCapybara` Boss Capybara, `ChillGuy` Chill Guy, `Bombardiro` Bombardiro Crocodilo, `Ballerina` Ballerina Cappuccina, `FrigoCamelo` Frigo Camelo |
+| Mythic | `Verity` Verity, `Odin` Odin Din Din Dun, `DjCat` DJ Cat, `VaccaSaturno` La Vacca Saturno Saturnita |
+| God | `Gigachad` Gigachad |
+| Secret | `StrawberryElephant` Strawberry Elephant |
+| Halloween | `SkeletonClap` Clapping Skeleton |
+| Limited | `AuraFarmer` Aura Farmer, `PedroRaccoon` Pedro Raccoon, `MooDeng` Moo Deng, `MewingCat` Mewing Cat |
+
+**Вариации (берут модель родителя, если своей нет):** `MegaSixSeven` → `SixSeven`, `Tralaleritos` → `Tralalero`, `GreatCheremsha` → `Cheremsha`, `PumpkinCat` → `ClapCat`, `WitchSixSeven` → `SixSeven`, `GhostCheremsha` → `Cheremsha`, `SnowCat` → `ClapCat`, `GingerSahur` → `TungSahur`, `SantaSixSeven` → `SixSeven`, `FrostVerity` → `Verity`, `Golden67` → `SixSeven`, `DiamondSahur` → `TungSahur`
+
+Найденные бесплатные модели и паки (проверьте перед использованием): Brainrot Pack [150+] — 137461628889541,
+Brainrot Pack 3 — 72466520546640, Tung Tung Tung Sahur — 138151705692565, Doge — 4000264846.
+
+**Если придёт жалоба правообладателя:** переименуйте мема (`Name`/`Face`) или удалите строку и модель из
+MemeModels. Id лучше не менять, иначе у игроков пропадут уже купленные мемы этого вида.
 
 ## Где менять баланс
 Весь баланс в [src/shared/Config.luau](src/shared/Config.luau): цены и доход мемов, шансы редкостей,

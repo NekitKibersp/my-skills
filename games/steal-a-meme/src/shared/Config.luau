@@ -23,8 +23,11 @@ Config.Rarities = {
 -- Мемы. Face — эмодзи-«лицо», Shape — форма тела (Ball/Block/Cylinder), Size — масштаб.
 -- Event = true — сезонные: появляются только ночью и только в своём сезоне (Season),
 -- EventWeight — шанс среди сезонных. Купленные сезонные мемы остаются у игроков навсегда.
--- ModelId — ID модели из Creator Store (0 = собрать из примитивов). Модель должна лежать
--- в инвентаре владельца игры; скрипты из неё вырезаются при загрузке.
+-- Внешний вид: проще всего положить модель в Studio в ServerStorage → MemeModels с именем = Id мема
+-- (см. README, раздел «Модели»). Иначе ModelId — ID модели из Creator Store (0 = из примитивов,
+-- модель должна лежать в инвентаре владельца игры). BaseModel — чью модель взять вариации, если
+-- своей нет (Santa 67 → Six Seven). ModelYaw — поворот модели в градусах, если она стоит боком.
+-- Скрипты и гуманоиды из моделей вырезаются при загрузке.
 -- Чтобы заменить или удалить персонажа (например, по жалобе правообладателя), правьте только этот список.
 Config.Creatures = {
 	{ Id = "ClapCat", Name = "Black Cat Clapping", Face = "👏🐈‍⬛", Rarity = "Common", Price = 25, Income = 1, Color = Color3.fromRGB(30, 30, 35), Shape = "Ball", Size = 1, ModelId = 0 },
@@ -60,29 +63,29 @@ Config.Creatures = {
 	{ Id = "DjCat", Name = "DJ Cat", Face = "😼🎧", Rarity = "Mythic", Price = 1200000, Income = 9000, Color = Color3.fromRGB(120, 60, 200), Shape = "Ball", Size = 1.7, ModelId = 0 },
 	{ Id = "VaccaSaturno", Name = "La Vacca Saturno Saturnita", Face = "🐄🪐", Rarity = "Mythic", Price = 2000000, Income = 14000, Color = Color3.fromRGB(240, 240, 240), Shape = "Ball", Size = 1.8, ModelId = 0 },
 
-	{ Id = "MegaSixSeven", Name = "MEGA 67", Face = "6️⃣7️⃣🔥", Rarity = "God", Price = 6700000, Income = 40000, Color = Color3.fromRGB(255, 80, 200), Shape = "Block", Size = 2.1, ModelId = 0 },
-	{ Id = "Tralaleritos", Name = "Los Tralaleritos", Face = "🦈🦈🦈", Rarity = "God", Price = 12000000, Income = 65000, Color = Color3.fromRGB(90, 140, 230), Shape = "Cylinder", Size = 2.2, ModelId = 0 },
+	{ Id = "MegaSixSeven", Name = "MEGA 67", Face = "6️⃣7️⃣🔥", Rarity = "God", Price = 6700000, Income = 40000, Color = Color3.fromRGB(255, 80, 200), Shape = "Block", Size = 2.1, ModelId = 0, BaseModel = "SixSeven" },
+	{ Id = "Tralaleritos", Name = "Los Tralaleritos", Face = "🦈🦈🦈", Rarity = "God", Price = 12000000, Income = 65000, Color = Color3.fromRGB(90, 140, 230), Shape = "Cylinder", Size = 2.2, ModelId = 0, BaseModel = "Tralalero" },
 	{ Id = "Gigachad", Name = "Gigachad", Face = "🗿💪", Rarity = "God", Price = 20000000, Income = 100000, Color = Color3.fromRGB(90, 90, 100), Shape = "Block", Size = 2.3, ModelId = 0 },
 
-	{ Id = "GreatCheremsha", Name = "The Great Cheremsha", Face = "🦁🐰👑", Rarity = "Secret", Price = 30000000, Income = 150000, Color = Color3.fromRGB(15, 15, 15), Shape = "Ball", Size = 2.4, ModelId = 0 },
+	{ Id = "GreatCheremsha", Name = "The Great Cheremsha", Face = "🦁🐰👑", Rarity = "Secret", Price = 30000000, Income = 150000, Color = Color3.fromRGB(15, 15, 15), Shape = "Ball", Size = 2.4, ModelId = 0, BaseModel = "Cheremsha" },
 	{ Id = "StrawberryElephant", Name = "Strawberry Elephant", Face = "🍓🐘", Rarity = "Secret", Price = 67000000, Income = 300000, Color = Color3.fromRGB(255, 80, 110), Shape = "Ball", Size = 2.5, ModelId = 0 },
 
-	{ Id = "PumpkinCat", Name = "Pumpkin Cat", Face = "🎃🐈‍⬛", Rarity = "Halloween", Price = 2500, Income = 60, Color = Color3.fromRGB(255, 120, 20), Shape = "Ball", Size = 1.1, Event = true, Season = "Halloween", EventWeight = 60, ModelId = 0 },
+	{ Id = "PumpkinCat", Name = "Pumpkin Cat", Face = "🎃🐈‍⬛", Rarity = "Halloween", Price = 2500, Income = 60, Color = Color3.fromRGB(255, 120, 20), Shape = "Ball", Size = 1.1, Event = true, Season = "Halloween", EventWeight = 60, ModelId = 0, BaseModel = "ClapCat" },
 	{ Id = "SkeletonClap", Name = "Clapping Skeleton", Face = "💀👏", Rarity = "Halloween", Price = 25000, Income = 400, Color = Color3.fromRGB(235, 235, 225), Shape = "Block", Size = 1.3, Event = true, Season = "Halloween", EventWeight = 28, ModelId = 0 },
-	{ Id = "WitchSixSeven", Name = "Witch 67", Face = "🧙‍♀️6️⃣7️⃣", Rarity = "Halloween", Price = 250000, Income = 2800, Color = Color3.fromRGB(90, 30, 120), Shape = "Cylinder", Size = 1.6, Event = true, Season = "Halloween", EventWeight = 10, ModelId = 0 },
-	{ Id = "GhostCheremsha", Name = "Ghost Cheremsha", Face = "👻🦁", Rarity = "Halloween", Price = 2000000, Income = 18000, Color = Color3.fromRGB(200, 230, 255), Shape = "Ball", Size = 1.9, Event = true, Season = "Halloween", EventWeight = 2, ModelId = 0 },
-	{ Id = "SnowCat", Name = "Snow Cat Clapping", Face = "❄️🐈‍⬛", Rarity = "Winter", Price = 2500, Income = 60, Color = Color3.fromRGB(230, 245, 255), Shape = "Ball", Size = 1.1, Event = true, Season = "Winter", EventWeight = 60, ModelId = 0 },
-	{ Id = "GingerSahur", Name = "Gingerbread Sahur", Face = "🍪🏏", Rarity = "Winter", Price = 25000, Income = 400, Color = Color3.fromRGB(180, 110, 60), Shape = "Cylinder", Size = 1.3, Event = true, Season = "Winter", EventWeight = 28, ModelId = 0 },
-	{ Id = "SantaSixSeven", Name = "Santa 67", Face = "🎅6️⃣7️⃣", Rarity = "Winter", Price = 250000, Income = 2800, Color = Color3.fromRGB(220, 40, 50), Shape = "Block", Size = 1.6, Event = true, Season = "Winter", EventWeight = 10, ModelId = 0 },
-	{ Id = "FrostVerity", Name = "Frost Verity", Face = "🥶", Rarity = "Winter", Price = 2000000, Income = 18000, Color = Color3.fromRGB(140, 210, 255), Shape = "Block", Size = 1.9, Event = true, Season = "Winter", EventWeight = 2, ModelId = 0 },
+	{ Id = "WitchSixSeven", Name = "Witch 67", Face = "🧙‍♀️6️⃣7️⃣", Rarity = "Halloween", Price = 250000, Income = 2800, Color = Color3.fromRGB(90, 30, 120), Shape = "Cylinder", Size = 1.6, Event = true, Season = "Halloween", EventWeight = 10, ModelId = 0, BaseModel = "SixSeven" },
+	{ Id = "GhostCheremsha", Name = "Ghost Cheremsha", Face = "👻🦁", Rarity = "Halloween", Price = 2000000, Income = 18000, Color = Color3.fromRGB(200, 230, 255), Shape = "Ball", Size = 1.9, Event = true, Season = "Halloween", EventWeight = 2, ModelId = 0, BaseModel = "Cheremsha" },
+	{ Id = "SnowCat", Name = "Snow Cat Clapping", Face = "❄️🐈‍⬛", Rarity = "Winter", Price = 2500, Income = 60, Color = Color3.fromRGB(230, 245, 255), Shape = "Ball", Size = 1.1, Event = true, Season = "Winter", EventWeight = 60, ModelId = 0, BaseModel = "ClapCat" },
+	{ Id = "GingerSahur", Name = "Gingerbread Sahur", Face = "🍪🏏", Rarity = "Winter", Price = 25000, Income = 400, Color = Color3.fromRGB(180, 110, 60), Shape = "Cylinder", Size = 1.3, Event = true, Season = "Winter", EventWeight = 28, ModelId = 0, BaseModel = "TungSahur" },
+	{ Id = "SantaSixSeven", Name = "Santa 67", Face = "🎅6️⃣7️⃣", Rarity = "Winter", Price = 250000, Income = 2800, Color = Color3.fromRGB(220, 40, 50), Shape = "Block", Size = 1.6, Event = true, Season = "Winter", EventWeight = 10, ModelId = 0, BaseModel = "SixSeven" },
+	{ Id = "FrostVerity", Name = "Frost Verity", Face = "🥶", Rarity = "Winter", Price = 2000000, Income = 18000, Color = Color3.fromRGB(140, 210, 255), Shape = "Block", Size = 1.9, Event = true, Season = "Winter", EventWeight = 2, ModelId = 0, BaseModel = "Verity" },
 	-- Лимитированные мемы недели: на дорожке только свою неделю (Config.Weekly), потом пропадают навсегда
 	{ Id = "AuraFarmer", Name = "Aura Farmer", Face = "🚣✨", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(70, 120, 200), Shape = "Cylinder", Size = 1.4, Limited = true, ModelId = 0 },
 	{ Id = "PedroRaccoon", Name = "Pedro Raccoon", Face = "🦝🎶", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(120, 120, 130), Shape = "Ball", Size = 1.3, Limited = true, ModelId = 0 },
 	{ Id = "MooDeng", Name = "Moo Deng", Face = "🦛💢", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(150, 110, 130), Shape = "Ball", Size = 1.4, Limited = true, ModelId = 0 },
 	{ Id = "MewingCat", Name = "Mewing Cat", Face = "😼🤫", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(240, 200, 160), Shape = "Ball", Size = 1.2, Limited = true, ModelId = 0 },
 	-- Эксклюзивы боевого пропуска и колеса (на дорожке не появляются)
-	{ Id = "Golden67", Name = "Golden 67", Face = "🥇6️⃣7️⃣", Rarity = "Exclusive", Price = 900000, Income = 7000, Color = Color3.fromRGB(255, 205, 50), Shape = "Block", Size = 1.7, Exclusive = true, ModelId = 0 },
-	{ Id = "DiamondSahur", Name = "Diamond Sahur", Face = "💎🏏", Rarity = "Exclusive", Price = 5000000, Income = 32000, Color = Color3.fromRGB(130, 230, 255), Shape = "Cylinder", Size = 2, Exclusive = true, ModelId = 0 },
+	{ Id = "Golden67", Name = "Golden 67", Face = "🥇6️⃣7️⃣", Rarity = "Exclusive", Price = 900000, Income = 7000, Color = Color3.fromRGB(255, 205, 50), Shape = "Block", Size = 1.7, Exclusive = true, ModelId = 0, BaseModel = "SixSeven" },
+	{ Id = "DiamondSahur", Name = "Diamond Sahur", Face = "💎🏏", Rarity = "Exclusive", Price = 5000000, Income = 32000, Color = Color3.fromRGB(130, 230, 255), Shape = "Cylinder", Size = 2, Exclusive = true, ModelId = 0, BaseModel = "TungSahur" },
 }
 
 -- Мутации умножают доход и цену. Event = true — только ночью и только в своём сезоне (Season).

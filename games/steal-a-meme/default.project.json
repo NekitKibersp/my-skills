@@ -23,6 +23,11 @@
       "$properties": {
         "StreamingEnabled": true
       }
+    },
+    "ServerStorage": {
+      "MemeModels": {
+        "$className": "Folder"
+      }
     }
   }
 }

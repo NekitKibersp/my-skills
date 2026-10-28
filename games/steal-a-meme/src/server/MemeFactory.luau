@@ -1,8 +1,14 @@
 -- Собирает модель мема: из примитивов (тело + ножки + эмодзи-лицо) или из модели Creator Store
 -- по Config.Creatures[*].ModelId. Подписи (имя, редкость, доход) рисует клиент.
+-- Откуда берётся внешний вид (по порядку):
+--   1. ServerStorage.MemeModels.<Id> — модель, которую вы положили в Studio (имя = Id мема);
+--   2. ServerStorage.MemeModels.<BaseModel> — для вариаций (Santa 67 берёт модель Six Seven и т.п.);
+--   3. ModelId из Config (Creator Store, должна быть в инвентаре владельца игры);
+--   4. примитивы (тело + эмодзи-лицо).
 local CollectionService = game:GetService("CollectionService")
 local InsertService = game:GetService("InsertService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerStorage = game:GetService("ServerStorage")
 
 local Config = require(ReplicatedStorage.Shared.Config)
 
@@ -22,6 +28,50 @@ local function stripScripts(root: Instance)
 	end
 end
 
+-- Модели из Studio-папки ServerStorage.MemeModels (проверены и очищены один раз)
+local folderModels: { [string]: Model | false } = {}
+
+local function prepareTemplate(model: Model)
+	stripScripts(model)
+	-- Гуманоиды в чужих моделях дают таблички с именем и физику — мему они не нужны
+	for _, descendant in model:GetDescendants() do
+		if descendant:IsA("Humanoid") or descendant:IsA("AnimationController") then
+			descendant:Destroy()
+		end
+	end
+end
+
+local function folderTemplate(name: string?): Model?
+	if not name then
+		return nil
+	end
+	local cached = folderModels[name]
+	if cached ~= nil then
+		return if cached then cached else nil
+	end
+	local folder = ServerStorage:FindFirstChild("MemeModels")
+	local found = folder and folder:FindFirstChild(name)
+	local model: Model? = nil
+	if found and found:IsA("Model") then
+		model = found:Clone()
+	elseif found and found:IsA("BasePart") then
+		-- Одиночный MeshPart тоже подходит: заворачиваем в модель
+		local wrapper = Instance.new("Model")
+		wrapper.Name = name
+		found:Clone().Parent = wrapper
+		model = wrapper
+	end
+	if model then
+		prepareTemplate(model)
+		if not model:FindFirstChildWhichIsA("BasePart", true) then
+			warn("[MemeFactory] В MemeModels." .. name .. " нет ни одной детали")
+			model = nil
+		end
+	end
+	folderModels[name] = model or false
+	return model
+end
+
 local function loadTemplate(assetId: number): Model?
 	local cached = loadedModels[assetId]
 	if cached ~= nil then
@@ -32,7 +82,7 @@ local function loadTemplate(assetId: number): Model?
 	end)
 	local model: Model? = nil
 	if ok and container then
-		stripScripts(container)
+		prepareTemplate(container :: any)
 		local found = container:FindFirstChildWhichIsA("Model")
 		if found then
 			model = found
@@ -137,7 +187,8 @@ local function buildPrimitive(model: Model, body: BasePart, creature: any, heigh
 	return visual
 end
 
-local function buildFromAsset(model: Model, body: BasePart, template: Model, height: number)
+-- yaw — поворот модели в градусах (если «лицо» модели смотрит не туда), Config: ModelYaw
+local function buildFromAsset(model: Model, body: BasePart, template: Model, height: number, base: CFrame, yaw: number)
 	local clone = template:Clone()
 	local _, size = clone:GetBoundingBox()
 	local scale = height / math.max(size.Y, 0.1)
@@ -146,10 +197,15 @@ local function buildFromAsset(model: Model, body: BasePart, template: Model, hei
 			clone:ScaleTo(scale)
 		end)
 	end
-	local cf, newSize = clone:GetBoundingBox()
+	-- Ставим модель на место мема: центр габаритов над точкой base, лицом туда же, куда base
+	local boxCFrame, newSize = clone:GetBoundingBox()
+	local pivotOffset = boxCFrame:ToObjectSpace(clone:GetPivot())
+	local center = base * CFrame.new(0, newSize.Y / 2 + newSize.Y * 0.12, 0) * CFrame.Angles(0, math.rad(yaw), 0)
+	clone:PivotTo(center * pivotOffset)
+
 	body.Size = newSize
 	body.Transparency = 1
-	body.CFrame = cf
+	body.CFrame = base * CFrame.new(0, newSize.Y / 2 + newSize.Y * 0.12, 0)
 	for _, part in clone:GetDescendants() do
 		if part:IsA("BasePart") then
 			weld(part, body)
@@ -180,9 +236,17 @@ function MemeFactory.Create(id: string, mutationId: string, viral: boolean, cfra
 	body.Parent = model
 	model.PrimaryPart = body
 
-	local template = if creature.ModelId and creature.ModelId ~= 0 then loadTemplate(creature.ModelId) else nil
+	local baseCreature = if creature.BaseModel then Config.GetCreature(creature.BaseModel) else nil
+	local template = folderTemplate(id) or folderTemplate(creature.BaseModel)
+	if not template and creature.ModelId and creature.ModelId ~= 0 then
+		template = loadTemplate(creature.ModelId)
+	end
+	if not template and baseCreature and baseCreature.ModelId and baseCreature.ModelId ~= 0 then
+		template = loadTemplate(baseCreature.ModelId)
+	end
 	if template then
-		buildFromAsset(model, body, template, height)
+		local yaw = creature.ModelYaw or (baseCreature and baseCreature.ModelYaw) or 0
+		buildFromAsset(model, body, template, height, cframe, yaw)
 	else
 		local visual = buildPrimitive(model, body, creature, height)
 		applyMutation(visual, mutationId)

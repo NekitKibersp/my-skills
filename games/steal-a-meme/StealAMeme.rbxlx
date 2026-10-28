@@ -35,8 +35,11 @@ Config.Rarities = {
 -- Мемы. Face — эмодзи-«лицо», Shape — форма тела (Ball/Block/Cylinder), Size — масштаб.
 -- Event = true — сезонные: появляются только ночью и только в своём сезоне (Season),
 -- EventWeight — шанс среди сезонных. Купленные сезонные мемы остаются у игроков навсегда.
--- ModelId — ID модели из Creator Store (0 = собрать из примитивов). Модель должна лежать
--- в инвентаре владельца игры; скрипты из неё вырезаются при загрузке.
+-- Внешний вид: проще всего положить модель в Studio в ServerStorage → MemeModels с именем = Id мема
+-- (см. README, раздел «Модели»). Иначе ModelId — ID модели из Creator Store (0 = из примитивов,
+-- модель должна лежать в инвентаре владельца игры). BaseModel — чью модель взять вариации, если
+-- своей нет (Santa 67 → Six Seven). ModelYaw — поворот модели в градусах, если она стоит боком.
+-- Скрипты и гуманоиды из моделей вырезаются при загрузке.
 -- Чтобы заменить или удалить персонажа (например, по жалобе правообладателя), правьте только этот список.
 Config.Creatures = {
 	{ Id = "ClapCat", Name = "Black Cat Clapping", Face = "👏🐈‍⬛", Rarity = "Common", Price = 25, Income = 1, Color = Color3.fromRGB(30, 30, 35), Shape = "Ball", Size = 1, ModelId = 0 },
@@ -72,29 +75,29 @@ Config.Creatures = {
 	{ Id = "DjCat", Name = "DJ Cat", Face = "😼🎧", Rarity = "Mythic", Price = 1200000, Income = 9000, Color = Color3.fromRGB(120, 60, 200), Shape = "Ball", Size = 1.7, ModelId = 0 },
 	{ Id = "VaccaSaturno", Name = "La Vacca Saturno Saturnita", Face = "🐄🪐", Rarity = "Mythic", Price = 2000000, Income = 14000, Color = Color3.fromRGB(240, 240, 240), Shape = "Ball", Size = 1.8, ModelId = 0 },
 
-	{ Id = "MegaSixSeven", Name = "MEGA 67", Face = "6️⃣7️⃣🔥", Rarity = "God", Price = 6700000, Income = 40000, Color = Color3.fromRGB(255, 80, 200), Shape = "Block", Size = 2.1, ModelId = 0 },
-	{ Id = "Tralaleritos", Name = "Los Tralaleritos", Face = "🦈🦈🦈", Rarity = "God", Price = 12000000, Income = 65000, Color = Color3.fromRGB(90, 140, 230), Shape = "Cylinder", Size = 2.2, ModelId = 0 },
+	{ Id = "MegaSixSeven", Name = "MEGA 67", Face = "6️⃣7️⃣🔥", Rarity = "God", Price = 6700000, Income = 40000, Color = Color3.fromRGB(255, 80, 200), Shape = "Block", Size = 2.1, ModelId = 0, BaseModel = "SixSeven" },
+	{ Id = "Tralaleritos", Name = "Los Tralaleritos", Face = "🦈🦈🦈", Rarity = "God", Price = 12000000, Income = 65000, Color = Color3.fromRGB(90, 140, 230), Shape = "Cylinder", Size = 2.2, ModelId = 0, BaseModel = "Tralalero" },
 	{ Id = "Gigachad", Name = "Gigachad", Face = "🗿💪", Rarity = "God", Price = 20000000, Income = 100000, Color = Color3.fromRGB(90, 90, 100), Shape = "Block", Size = 2.3, ModelId = 0 },
 
-	{ Id = "GreatCheremsha", Name = "The Great Cheremsha", Face = "🦁🐰👑", Rarity = "Secret", Price = 30000000, Income = 150000, Color = Color3.fromRGB(15, 15, 15), Shape = "Ball", Size = 2.4, ModelId = 0 },
+	{ Id = "GreatCheremsha", Name = "The Great Cheremsha", Face = "🦁🐰👑", Rarity = "Secret", Price = 30000000, Income = 150000, Color = Color3.fromRGB(15, 15, 15), Shape = "Ball", Size = 2.4, ModelId = 0, BaseModel = "Cheremsha" },
 	{ Id = "StrawberryElephant", Name = "Strawberry Elephant", Face = "🍓🐘", Rarity = "Secret", Price = 67000000, Income = 300000, Color = Color3.fromRGB(255, 80, 110), Shape = "Ball", Size = 2.5, ModelId = 0 },
 
-	{ Id = "PumpkinCat", Name = "Pumpkin Cat", Face = "🎃🐈‍⬛", Rarity = "Halloween", Price = 2500, Income = 60, Color = Color3.fromRGB(255, 120, 20), Shape = "Ball", Size = 1.1, Event = true, Season = "Halloween", EventWeight = 60, ModelId = 0 },
+	{ Id = "PumpkinCat", Name = "Pumpkin Cat", Face = "🎃🐈‍⬛", Rarity = "Halloween", Price = 2500, Income = 60, Color = Color3.fromRGB(255, 120, 20), Shape = "Ball", Size = 1.1, Event = true, Season = "Halloween", EventWeight = 60, ModelId = 0, BaseModel = "ClapCat" },
 	{ Id = "SkeletonClap", Name = "Clapping Skeleton", Face = "💀👏", Rarity = "Halloween", Price = 25000, Income = 400, Color = Color3.fromRGB(235, 235, 225), Shape = "Block", Size = 1.3, Event = true, Season = "Halloween", EventWeight = 28, ModelId = 0 },
-	{ Id = "WitchSixSeven", Name = "Witch 67", Face = "🧙‍♀️6️⃣7️⃣", Rarity = "Halloween", Price = 250000, Income = 2800, Color = Color3.fromRGB(90, 30, 120), Shape = "Cylinder", Size = 1.6, Event = true, Season = "Halloween", EventWeight = 10, ModelId = 0 },
-	{ Id = "GhostCheremsha", Name = "Ghost Cheremsha", Face = "👻🦁", Rarity = "Halloween", Price = 2000000, Income = 18000, Color = Color3.fromRGB(200, 230, 255), Shape = "Ball", Size = 1.9, Event = true, Season = "Halloween", EventWeight = 2, ModelId = 0 },
-	{ Id = "SnowCat", Name = "Snow Cat Clapping", Face = "❄️🐈‍⬛", Rarity = "Winter", Price = 2500, Income = 60, Color = Color3.fromRGB(230, 245, 255), Shape = "Ball", Size = 1.1, Event = true, Season = "Winter", EventWeight = 60, ModelId = 0 },
-	{ Id = "GingerSahur", Name = "Gingerbread Sahur", Face = "🍪🏏", Rarity = "Winter", Price = 25000, Income = 400, Color = Color3.fromRGB(180, 110, 60), Shape = "Cylinder", Size = 1.3, Event = true, Season = "Winter", EventWeight = 28, ModelId = 0 },
-	{ Id = "SantaSixSeven", Name = "Santa 67", Face = "🎅6️⃣7️⃣", Rarity = "Winter", Price = 250000, Income = 2800, Color = Color3.fromRGB(220, 40, 50), Shape = "Block", Size = 1.6, Event = true, Season = "Winter", EventWeight = 10, ModelId = 0 },
-	{ Id = "FrostVerity", Name = "Frost Verity", Face = "🥶", Rarity = "Winter", Price = 2000000, Income = 18000, Color = Color3.fromRGB(140, 210, 255), Shape = "Block", Size = 1.9, Event = true, Season = "Winter", EventWeight = 2, ModelId = 0 },
+	{ Id = "WitchSixSeven", Name = "Witch 67", Face = "🧙‍♀️6️⃣7️⃣", Rarity = "Halloween", Price = 250000, Income = 2800, Color = Color3.fromRGB(90, 30, 120), Shape = "Cylinder", Size = 1.6, Event = true, Season = "Halloween", EventWeight = 10, ModelId = 0, BaseModel = "SixSeven" },
+	{ Id = "GhostCheremsha", Name = "Ghost Cheremsha", Face = "👻🦁", Rarity = "Halloween", Price = 2000000, Income = 18000, Color = Color3.fromRGB(200, 230, 255), Shape = "Ball", Size = 1.9, Event = true, Season = "Halloween", EventWeight = 2, ModelId = 0, BaseModel = "Cheremsha" },
+	{ Id = "SnowCat", Name = "Snow Cat Clapping", Face = "❄️🐈‍⬛", Rarity = "Winter", Price = 2500, Income = 60, Color = Color3.fromRGB(230, 245, 255), Shape = "Ball", Size = 1.1, Event = true, Season = "Winter", EventWeight = 60, ModelId = 0, BaseModel = "ClapCat" },
+	{ Id = "GingerSahur", Name = "Gingerbread Sahur", Face = "🍪🏏", Rarity = "Winter", Price = 25000, Income = 400, Color = Color3.fromRGB(180, 110, 60), Shape = "Cylinder", Size = 1.3, Event = true, Season = "Winter", EventWeight = 28, ModelId = 0, BaseModel = "TungSahur" },
+	{ Id = "SantaSixSeven", Name = "Santa 67", Face = "🎅6️⃣7️⃣", Rarity = "Winter", Price = 250000, Income = 2800, Color = Color3.fromRGB(220, 40, 50), Shape = "Block", Size = 1.6, Event = true, Season = "Winter", EventWeight = 10, ModelId = 0, BaseModel = "SixSeven" },
+	{ Id = "FrostVerity", Name = "Frost Verity", Face = "🥶", Rarity = "Winter", Price = 2000000, Income = 18000, Color = Color3.fromRGB(140, 210, 255), Shape = "Block", Size = 1.9, Event = true, Season = "Winter", EventWeight = 2, ModelId = 0, BaseModel = "Verity" },
 	-- Лимитированные мемы недели: на дорожке только свою неделю (Config.Weekly), потом пропадают навсегда
 	{ Id = "AuraFarmer", Name = "Aura Farmer", Face = "🚣✨", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(70, 120, 200), Shape = "Cylinder", Size = 1.4, Limited = true, ModelId = 0 },
 	{ Id = "PedroRaccoon", Name = "Pedro Raccoon", Face = "🦝🎶", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(120, 120, 130), Shape = "Ball", Size = 1.3, Limited = true, ModelId = 0 },
 	{ Id = "MooDeng", Name = "Moo Deng", Face = "🦛💢", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(150, 110, 130), Shape = "Ball", Size = 1.4, Limited = true, ModelId = 0 },
 	{ Id = "MewingCat", Name = "Mewing Cat", Face = "😼🤫", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(240, 200, 160), Shape = "Ball", Size = 1.2, Limited = true, ModelId = 0 },
 	-- Эксклюзивы боевого пропуска и колеса (на дорожке не появляются)
-	{ Id = "Golden67", Name = "Golden 67", Face = "🥇6️⃣7️⃣", Rarity = "Exclusive", Price = 900000, Income = 7000, Color = Color3.fromRGB(255, 205, 50), Shape = "Block", Size = 1.7, Exclusive = true, ModelId = 0 },
-	{ Id = "DiamondSahur", Name = "Diamond Sahur", Face = "💎🏏", Rarity = "Exclusive", Price = 5000000, Income = 32000, Color = Color3.fromRGB(130, 230, 255), Shape = "Cylinder", Size = 2, Exclusive = true, ModelId = 0 },
+	{ Id = "Golden67", Name = "Golden 67", Face = "🥇6️⃣7️⃣", Rarity = "Exclusive", Price = 900000, Income = 7000, Color = Color3.fromRGB(255, 205, 50), Shape = "Block", Size = 1.7, Exclusive = true, ModelId = 0, BaseModel = "SixSeven" },
+	{ Id = "DiamondSahur", Name = "Diamond Sahur", Face = "💎🏏", Rarity = "Exclusive", Price = 5000000, Income = 32000, Color = Color3.fromRGB(130, 230, 255), Shape = "Cylinder", Size = 2, Exclusive = true, ModelId = 0, BaseModel = "TungSahur" },
 }
 
 -- Мутации умножают доход и цену. Event = true — только ночью и только в своём сезоне (Season).
@@ -4882,9 +4885,15 @@ return MapBuilder
           <string name="Name">MemeFactory</string>
           <string name="Source"><![CDATA[-- Собирает модель мема: из примитивов (тело + ножки + эмодзи-лицо) или из модели Creator Store
 -- по Config.Creatures[*].ModelId. Подписи (имя, редкость, доход) рисует клиент.
+-- Откуда берётся внешний вид (по порядку):
+--   1. ServerStorage.MemeModels.<Id> — модель, которую вы положили в Studio (имя = Id мема);
+--   2. ServerStorage.MemeModels.<BaseModel> — для вариаций (Santa 67 берёт модель Six Seven и т.п.);
+--   3. ModelId из Config (Creator Store, должна быть в инвентаре владельца игры);
+--   4. примитивы (тело + эмодзи-лицо).
 local CollectionService = game:GetService("CollectionService")
 local InsertService = game:GetService("InsertService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerStorage = game:GetService("ServerStorage")
 
 local Config = require(ReplicatedStorage.Shared.Config)
 
@@ -4904,6 +4913,50 @@ local function stripScripts(root: Instance)
 	end
 end
 
+-- Модели из Studio-папки ServerStorage.MemeModels (проверены и очищены один раз)
+local folderModels: { [string]: Model | false } = {}
+
+local function prepareTemplate(model: Model)
+	stripScripts(model)
+	-- Гуманоиды в чужих моделях дают таблички с именем и физику — мему они не нужны
+	for _, descendant in model:GetDescendants() do
+		if descendant:IsA("Humanoid") or descendant:IsA("AnimationController") then
+			descendant:Destroy()
+		end
+	end
+end
+
+local function folderTemplate(name: string?): Model?
+	if not name then
+		return nil
+	end
+	local cached = folderModels[name]
+	if cached ~= nil then
+		return if cached then cached else nil
+	end
+	local folder = ServerStorage:FindFirstChild("MemeModels")
+	local found = folder and folder:FindFirstChild(name)
+	local model: Model? = nil
+	if found and found:IsA("Model") then
+		model = found:Clone()
+	elseif found and found:IsA("BasePart") then
+		-- Одиночный MeshPart тоже подходит: заворачиваем в модель
+		local wrapper = Instance.new("Model")
+		wrapper.Name = name
+		found:Clone().Parent = wrapper
+		model = wrapper
+	end
+	if model then
+		prepareTemplate(model)
+		if not model:FindFirstChildWhichIsA("BasePart", true) then
+			warn("[MemeFactory] В MemeModels." .. name .. " нет ни одной детали")
+			model = nil
+		end
+	end
+	folderModels[name] = model or false
+	return model
+end
+
 local function loadTemplate(assetId: number): Model?
 	local cached = loadedModels[assetId]
 	if cached ~= nil then
@@ -4914,7 +4967,7 @@ local function loadTemplate(assetId: number): Model?
 	end)
 	local model: Model? = nil
 	if ok and container then
-		stripScripts(container)
+		prepareTemplate(container :: any)
 		local found = container:FindFirstChildWhichIsA("Model")
 		if found then
 			model = found
@@ -5019,7 +5072,8 @@ local function buildPrimitive(model: Model, body: BasePart, creature: any, heigh
 	return visual
 end
 
-local function buildFromAsset(model: Model, body: BasePart, template: Model, height: number)
+-- yaw — поворот модели в градусах (если «лицо» модели смотрит не туда), Config: ModelYaw
+local function buildFromAsset(model: Model, body: BasePart, template: Model, height: number, base: CFrame, yaw: number)
 	local clone = template:Clone()
 	local _, size = clone:GetBoundingBox()
 	local scale = height / math.max(size.Y, 0.1)
@@ -5028,10 +5082,15 @@ local function buildFromAsset(model: Model, body: BasePart, template: Model, hei
 			clone:ScaleTo(scale)
 		end)
 	end
-	local cf, newSize = clone:GetBoundingBox()
+	-- Ставим модель на место мема: центр габаритов над точкой base, лицом туда же, куда base
+	local boxCFrame, newSize = clone:GetBoundingBox()
+	local pivotOffset = boxCFrame:ToObjectSpace(clone:GetPivot())
+	local center = base * CFrame.new(0, newSize.Y / 2 + newSize.Y * 0.12, 0) * CFrame.Angles(0, math.rad(yaw), 0)
+	clone:PivotTo(center * pivotOffset)
+
 	body.Size = newSize
 	body.Transparency = 1
-	body.CFrame = cf
+	body.CFrame = base * CFrame.new(0, newSize.Y / 2 + newSize.Y * 0.12, 0)
 	for _, part in clone:GetDescendants() do
 		if part:IsA("BasePart") then
 			weld(part, body)
@@ -5062,9 +5121,17 @@ function MemeFactory.Create(id: string, mutationId: string, viral: boolean, cfra
 	body.Parent = model
 	model.PrimaryPart = body
 
-	local template = if creature.ModelId and creature.ModelId ~= 0 then loadTemplate(creature.ModelId) else nil
+	local baseCreature = if creature.BaseModel then Config.GetCreature(creature.BaseModel) else nil
+	local template = folderTemplate(id) or folderTemplate(creature.BaseModel)
+	if not template and creature.ModelId and creature.ModelId ~= 0 then
+		template = loadTemplate(creature.ModelId)
+	end
+	if not template and baseCreature and baseCreature.ModelId and baseCreature.ModelId ~= 0 then
+		template = loadTemplate(baseCreature.ModelId)
+	end
 	if template then
-		buildFromAsset(model, body, template, height)
+		local yaw = creature.ModelYaw or (baseCreature and baseCreature.ModelYaw) or 0
+		buildFromAsset(model, body, template, height, cframe, yaw)
 	else
 		local visual = buildPrimitive(model, body, creature, height)
 		applyMutation(visual, mutationId)
@@ -9710,15 +9777,25 @@ return ZoneService
       </Item>
     </Item>
   </Item>
-  <Item class="StarterPlayer" referent="46">
+  <Item class="ServerStorage" referent="46">
+    <Properties>
+      <string name="Name">ServerStorage</string>
+    </Properties>
+    <Item class="Folder" referent="47">
+      <Properties>
+        <string name="Name">MemeModels</string>
+      </Properties>
+    </Item>
+  </Item>
+  <Item class="StarterPlayer" referent="48">
     <Properties>
       <string name="Name">StarterPlayer</string>
     </Properties>
-    <Item class="StarterPlayerScripts" referent="47">
+    <Item class="StarterPlayerScripts" referent="49">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="LocalScript" referent="48">
+      <Item class="LocalScript" referent="50">
         <Properties>
           <string name="Name">Client</string>
           <string name="Source"><![CDATA[-- Точка входа клиента «Укради Мем»: создаёт экран, общий контекст UI и запускает модули.
@@ -9868,7 +9945,7 @@ for _, name in modules do
 end
 ]]></string>
         </Properties>
-        <Item class="ModuleScript" referent="49">
+        <Item class="ModuleScript" referent="51">
           <Properties>
             <string name="Name">Banners</string>
             <string name="Source"><![CDATA[-- Баннеры сверху по центру: админ-ивент (идёт / до следующего), «В ТРЕНДЕ», Ночь Смайлика
@@ -10044,7 +10121,7 @@ return Banners
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="50">
+        <Item class="ModuleScript" referent="52">
           <Properties>
             <string name="Name">Carry</string>
             <string name="Source"><![CDATA[-- Кража: пока игрок несёт мема (атрибут Carrying), показываем баннер с таймером
@@ -10216,7 +10293,7 @@ return Carry
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="51">
+        <Item class="ModuleScript" referent="53">
           <Properties>
             <string name="Name">CodesWindow</string>
             <string name="Source"><![CDATA[-- Окно кодов: поле ввода + «Активировать» -> Remotes.RedeemCode(text).
@@ -10319,7 +10396,7 @@ return CodesWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="52">
+        <Item class="ModuleScript" referent="54">
           <Properties>
             <string name="Name">DailyWindow</string>
             <string name="Source"><![CDATA[-- Календарь ежедневных наград: 7 клеток из Config.DailyCalendar, забранные дни с галочкой,
@@ -10553,7 +10630,7 @@ return DailyWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="53">
+        <Item class="ModuleScript" referent="55">
           <Properties>
             <string name="Name">DefenseWindow</string>
             <string name="Source"><![CDATA[-- Окно защиты базы: три карточки — страж (Kitten with a Sword), турель и лазерные ворота.
@@ -10765,7 +10842,7 @@ return DefenseWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="54">
+        <Item class="ModuleScript" referent="56">
           <Properties>
             <string name="Name">Effects</string>
             <string name="Source"><![CDATA[-- Клиентские эффекты: отбрасывание с оглушением (Remotes.Knockback), разовые вспышки/конфетти
@@ -11213,7 +11290,7 @@ return Effects
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="55">
+        <Item class="ModuleScript" referent="57">
           <Properties>
             <string name="Name">Emotes</string>
             <string name="Source"><![CDATA[-- Эмоции: окно-сетка из Config.Emotes (закрытые геймпассом — с замком и покупкой) и процедурная
@@ -11655,7 +11732,7 @@ return Emotes
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="56">
+        <Item class="ModuleScript" referent="58">
           <Properties>
             <string name="Name">FxExtra</string>
             <string name="Source"><![CDATA[-- Эффекты v3 по Remotes.Fx: выстрел турели ("Turret" {From, To}), вспышка лазерных ворот ("Laser"
@@ -11964,7 +12041,7 @@ return FxExtra
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="57">
+        <Item class="ModuleScript" referent="59">
           <Properties>
             <string name="Name">Hud</string>
             <string name="Source"><![CDATA[-- HUD: деньги/доход/слоты/бонус друзей слева сверху, таймер подарка за игру и боковые кнопки в две
@@ -12418,7 +12495,7 @@ return Hud
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="58">
+        <Item class="ModuleScript" referent="60">
           <Properties>
             <string name="Name">IndexWindow</string>
             <string name="Source"><![CDATA[-- Окно Индекса: сетка всех мемов из Config.Creatures. Открытые — цветные, закрытые — «???».
@@ -12651,7 +12728,7 @@ return IndexWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="59">
+        <Item class="ModuleScript" referent="61">
           <Properties>
             <string name="Name">Items</string>
             <string name="Source"><![CDATA[-- Окно предметов: оружие и гаджеты из Config.Items, покупка за монеты навсегда.
@@ -12901,7 +12978,7 @@ return Items
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="60">
+        <Item class="ModuleScript" referent="62">
           <Properties>
             <string name="Name">MemeBillboards</string>
             <string name="Source"><![CDATA[-- Таблички над мемами (тег "Meme"): мутация, ВИРУСНЫЙ, имя, редкость, доход/сек, цена на дорожке.
@@ -13119,7 +13196,7 @@ return MemeBillboards
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="61">
+        <Item class="ModuleScript" referent="63">
           <Properties>
             <string name="Name">PassWindow</string>
             <string name="Source"><![CDATA[-- Окно Мем-пропуска (боевой пропуск сезона). Источник — атрибут игрока BPJson:
@@ -13536,7 +13613,7 @@ return PassWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="62">
+        <Item class="ModuleScript" referent="64">
           <Properties>
             <string name="Name">PlotSigns</string>
             <string name="Source"><![CDATA[-- Таблички баз: SurfaceGui на Sign каждой базы (Face = Front) — имя хозяина или «Свободно»,
@@ -13650,7 +13727,7 @@ return PlotSigns
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="63">
+        <Item class="ModuleScript" referent="65">
           <Properties>
             <string name="Name">Popups</string>
             <string name="Source"><![CDATA[-- Всплывающие окна от сервера (Remotes.Popup): оффлайн-доход и ежедневная награда
@@ -13826,7 +13903,7 @@ return Popups
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="64">
+        <Item class="ModuleScript" referent="66">
           <Properties>
             <string name="Name">Prompts</string>
             <string name="Source"><![CDATA[-- ProximityPrompt мемов и замков баз: перевод ActionText/ObjectText и локальное выключение лишних
@@ -14097,7 +14174,7 @@ return Prompts
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="65">
+        <Item class="ModuleScript" referent="67">
           <Properties>
             <string name="Name">QuestsWindow</string>
             <string name="Source"><![CDATA[-- Окно ежедневных квестов. Источник — атрибут игрока QuestsJson:
@@ -14423,7 +14500,7 @@ return QuestsWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="66">
+        <Item class="ModuleScript" referent="68">
           <Properties>
             <string name="Name">RebirthWindow</string>
             <string name="Source"><![CDATA[-- Окно перерождения: цена, прогресс денег до цены, что даёт, кнопка.
@@ -14565,7 +14642,7 @@ return RebirthWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="67">
+        <Item class="ModuleScript" referent="69">
           <Properties>
             <string name="Name">Rewards</string>
             <string name="Source"><![CDATA[-- Общие помощники для наград v4 (коды, Мем-пропуск, колесо): описание награды из Config
@@ -14696,7 +14773,7 @@ return Rewards
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="68">
+        <Item class="ModuleScript" referent="70">
           <Properties>
             <string name="Name">Shop</string>
             <string name="Source"><![CDATA[-- Окно магазина: геймпассы (навсегда) и продукты за Robux (бусты, деньги).
@@ -14896,7 +14973,7 @@ return Shop
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="69">
+        <Item class="ModuleScript" referent="71">
           <Properties>
             <string name="Name">SkinsWindow</string>
             <string name="Source"><![CDATA[-- Окно скинов: две вкладки (база / тапок) из Config.Skins. Источник — атрибут игрока SkinsJson:
@@ -15165,7 +15242,7 @@ return SkinsWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="70">
+        <Item class="ModuleScript" referent="72">
           <Properties>
             <string name="Name">Social</string>
             <string name="Source"><![CDATA[-- Друзья, группа и избранное — только клиентские окна Roblox (бонусы считает сервер):
@@ -15244,7 +15321,7 @@ return Social
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="71">
+        <Item class="ModuleScript" referent="73">
           <Properties>
             <string name="Name">SpinWindow</string>
             <string name="Source"><![CDATA[-- Колесо удачи: сегменты из Config.Spin.Segments по кругу, указатель сверху.
@@ -15594,7 +15671,7 @@ return SpinWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="72">
+        <Item class="ModuleScript" referent="74">
           <Properties>
             <string name="Name">Status</string>
             <string name="Source"><![CDATA[-- Состояние своего персонажа над панелью предметов (снизу по центру):
@@ -15833,7 +15910,7 @@ return Status
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="73">
+        <Item class="ModuleScript" referent="75">
           <Properties>
             <string name="Name">Strings</string>
             <string name="Source"><![CDATA[--!strict
@@ -16150,7 +16227,7 @@ return Locale
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="74">
+        <Item class="ModuleScript" referent="76">
           <Properties>
             <string name="Name">TradeWindow</string>
             <string name="Source"><![CDATA[-- Обмен мемами между игроками. Клиент только показывает состояние и шлёт намерения; что можно
@@ -16766,7 +16843,7 @@ return TradeWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="75">
+        <Item class="ModuleScript" referent="77">
           <Properties>
             <string name="Name">Tutorial</string>
             <string name="Source"><![CDATA[-- Обучение новичка (атрибут игрока TutorialDone == 0): карточка с шагом внизу по центру и
@@ -17046,7 +17123,7 @@ return Tutorial
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="76">
+        <Item class="ModuleScript" referent="78">
           <Properties>
             <string name="Name">UiKit</string>
             <string name="Source"><![CDATA[-- Небольшой набор для построения UI кодом (Studio под рукой нет, поэтому весь интерфейс — в скриптах).
@@ -17218,7 +17295,7 @@ return UiKit
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="77">
+        <Item class="ModuleScript" referent="79">
           <Properties>
             <string name="Name">Util</string>
             <string name="Source"><![CDATA[--!strict
@@ -17410,7 +17487,7 @@ return Util
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="78">
+        <Item class="ModuleScript" referent="80">
           <Properties>
             <string name="Name">Zones</string>
             <string name="Source"><![CDATA[-- Клиентская часть зон большой карты: всплывающее «+$X» над собранным пикапом Конфетного парка
@@ -17485,7 +17562,7 @@ return Zones
       </Item>
     </Item>
   </Item>
-  <Item class="Workspace" referent="79">
+  <Item class="Workspace" referent="81">
     <Properties>
       <string name="Name">Workspace</string>
       <bool name="NeedsPivotMigration">false</bool>
