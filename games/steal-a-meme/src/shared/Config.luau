@@ -6,18 +6,19 @@ Config.StartCoins = 100
 Config.StarterMeme = "ClapCat" -- бесплатный мем, который стоит на базе у новичка
 
 -- Редкости по возрастанию. Weight — относительный шанс появления на дорожке.
+-- Rank — «сила» редкости для требований перерождения (Legendary и выше = Rank ≥ 4).
 Config.Rarities = {
-	{ Id = "Common", Name = "Common", NameRu = "Обычный", Color = Color3.fromRGB(200, 205, 215), Weight = 60 },
-	{ Id = "Rare", Name = "Rare", NameRu = "Редкий", Color = Color3.fromRGB(70, 160, 255), Weight = 25 },
-	{ Id = "Epic", Name = "Epic", NameRu = "Эпический", Color = Color3.fromRGB(170, 90, 255), Weight = 10 },
-	{ Id = "Legendary", Name = "Legendary", NameRu = "Легендарный", Color = Color3.fromRGB(255, 200, 40), Weight = 3.5 },
-	{ Id = "Mythic", Name = "Mythic", NameRu = "Мифический", Color = Color3.fromRGB(255, 60, 80), Weight = 1.2 },
-	{ Id = "God", Name = "Meme God", NameRu = "Мем-Бог", Color = Color3.fromRGB(255, 120, 230), Weight = 0.25 },
-	{ Id = "Secret", Name = "SECRET", NameRu = "СЕКРЕТНЫЙ", Color = Color3.fromRGB(30, 30, 30), Weight = 0.05 },
-	{ Id = "Halloween", Name = "Halloween", NameRu = "Хэллоуин", Color = Color3.fromRGB(255, 130, 20), Weight = 0 },
-	{ Id = "Winter", Name = "Winter", NameRu = "Зимний", Color = Color3.fromRGB(120, 210, 255), Weight = 0 },
-	{ Id = "Limited", Name = "LIMITED", NameRu = "ЛИМИТ", Color = Color3.fromRGB(0, 255, 170), Weight = 0 },
-	{ Id = "Exclusive", Name = "EXCLUSIVE", NameRu = "ЭКСКЛЮЗИВ", Color = Color3.fromRGB(255, 215, 0), Weight = 0 },
+	{ Id = "Common", Name = "Common", NameRu = "Обычный", Rank = 1, Color = Color3.fromRGB(200, 205, 215), Weight = 60 },
+	{ Id = "Rare", Name = "Rare", NameRu = "Редкий", Rank = 2, Color = Color3.fromRGB(70, 160, 255), Weight = 25 },
+	{ Id = "Epic", Name = "Epic", NameRu = "Эпический", Rank = 3, Color = Color3.fromRGB(170, 90, 255), Weight = 10 },
+	{ Id = "Legendary", Name = "Legendary", NameRu = "Легендарный", Rank = 4, Color = Color3.fromRGB(255, 200, 40), Weight = 3.5 },
+	{ Id = "Mythic", Name = "Mythic", NameRu = "Мифический", Rank = 5, Color = Color3.fromRGB(255, 60, 80), Weight = 1.2 },
+	{ Id = "God", Name = "Meme God", NameRu = "Мем-Бог", Rank = 6, Color = Color3.fromRGB(255, 120, 230), Weight = 0.25 },
+	{ Id = "Secret", Name = "SECRET", NameRu = "СЕКРЕТНЫЙ", Rank = 7, Color = Color3.fromRGB(30, 30, 30), Weight = 0.05 },
+	{ Id = "Halloween", Name = "Halloween", NameRu = "Хэллоуин", Rank = 3, Color = Color3.fromRGB(255, 130, 20), Weight = 0 },
+	{ Id = "Winter", Name = "Winter", NameRu = "Зимний", Rank = 3, Color = Color3.fromRGB(120, 210, 255), Weight = 0 },
+	{ Id = "Limited", Name = "LIMITED", NameRu = "ЛИМИТ", Rank = 4, Color = Color3.fromRGB(0, 255, 170), Weight = 0 },
+	{ Id = "Exclusive", Name = "EXCLUSIVE", NameRu = "ЭКСКЛЮЗИВ", Rank = 5, Color = Color3.fromRGB(255, 215, 0), Weight = 0 },
 }
 
 -- Мемы. Face — эмодзи-«лицо», Shape — форма тела (Ball/Block/Cylinder), Size — масштаб.
@@ -86,6 +87,10 @@ Config.Creatures = {
 	-- Эксклюзивы боевого пропуска и колеса (на дорожке не появляются)
 	{ Id = "Golden67", Name = "Golden 67", Face = "🥇6️⃣7️⃣", Rarity = "Exclusive", Price = 900000, Income = 7000, Color = Color3.fromRGB(255, 205, 50), Shape = "Block", Size = 1.7, Exclusive = true, ModelId = 0, BaseModel = "SixSeven" },
 	{ Id = "DiamondSahur", Name = "Diamond Sahur", Face = "💎🏏", Rarity = "Exclusive", Price = 5000000, Income = 32000, Color = Color3.fromRGB(130, 230, 255), Shape = "Cylinder", Size = 2, Exclusive = true, ModelId = 0, BaseModel = "TungSahur" },
+	-- Lucky Blocks (Config.LuckyBlocks): на дорожке редко, на базе открываются случайным мемом редкости LuckyRarity
+	{ Id = "LuckyEpic", Name = "Lucky Block (Epic)", Face = "❓", Rarity = "Epic", Price = 9000, Income = 0, Color = Color3.fromRGB(170, 90, 255), Shape = "Block", Size = 0.9, Lucky = true, LuckyRarity = "Epic", LuckyWeight = 70, ModelId = 0 },
+	{ Id = "LuckyLegendary", Name = "Lucky Block (Legendary)", Face = "❓", Rarity = "Legendary", Price = 90000, Income = 0, Color = Color3.fromRGB(255, 200, 40), Shape = "Block", Size = 1, Lucky = true, LuckyRarity = "Legendary", LuckyWeight = 25, ModelId = 0 },
+	{ Id = "LuckyMythic", Name = "Lucky Block (Mythic)", Face = "❓", Rarity = "Mythic", Price = 900000, Income = 0, Color = Color3.fromRGB(255, 60, 80), Shape = "Block", Size = 1.1, Lucky = true, LuckyRarity = "Mythic", LuckyWeight = 5, ModelId = 0 },
 }
 
 -- Мутации умножают доход и цену. Event = true — только ночью и только в своём сезоне (Season).
@@ -109,11 +114,17 @@ Config.Conveyor = {
 }
 
 -- База игрока
+-- База — 3 этажа по FloorSlots слотов. Этаж открывается на перерождении UnlockRebirth.
+-- Геймпасс «+слоты» добавляет PassSlots на 1-м этаже. Номера слотов: этаж 1 — 1..12,
+-- этаж 2 — 13..24, этаж 3 — 25..36, слоты геймпасса — 37..42.
 Config.Plot = {
-	BaseSlots = 10,
-	SlotsPerRebirth = 2,
-	MaxSlots = 20, -- без геймпасса
-	PassSlots = 5, -- геймпасс «+5 слотов» (итого до 25)
+	FloorSlots = 12,
+	Floors = {
+		{ UnlockRebirth = 0, Height = 0 },
+		{ UnlockRebirth = 1, Height = 14 },
+		{ UnlockRebirth = 3, Height = 28 },
+	},
+	PassSlots = 6,
 	LockDuration = 60,
 	LockCooldown = 30, -- после открытия нельзя сразу закрыть снова
 }
@@ -170,11 +181,44 @@ Config.Night = {
 }
 
 -- Перерождение: цена ×4 каждый раз, +50% к доходу и +2 слота
+-- Перерождение: деньги обнуляются, мемы остаются. Каждое даёт +IncomeBonus к множителю дохода.
+-- Tiers[n] — n-е перерождение: цена, нужные мемы на базе (Rarity — эта редкость или выше по Rank,
+-- Id — конкретный мем; мемы НЕ забираются) и награды. После последнего тира цена растёт ×CostMult.
 Config.Rebirth = {
-	BaseCost = 500000,
-	CostMult = 4,
 	IncomeBonus = 0.5,
+	CostMult = 4,
+	Tiers = {
+		{ Cost = 300000, Requires = { { Rarity = "Epic", Count = 1 } }, Rewards = { Floor = 2, Spins = 1 } },
+		{ Cost = 1500000, Requires = { { Rarity = "Legendary", Count = 1 } }, Rewards = { Spins = 2, Item = "Energy" } },
+		{ Cost = 6000000, Requires = { { Rarity = "Legendary", Count = 2 } }, Rewards = { Floor = 3, Spins = 2 } },
+		{ Cost = 25000000, Requires = { { Rarity = "Mythic", Count = 1 } }, Rewards = { Spins = 3 } },
+		{ Cost = 100000000, Requires = { { Rarity = "Mythic", Count = 2 } }, Rewards = { Spins = 3, Item = "RocketBoots" } },
+		{ Cost = 400000000, Requires = { { Rarity = "God", Count = 1 } }, Rewards = { Spins = 4 } },
+		{ Cost = 1500000000, Requires = { { Rarity = "God", Count = 2 } }, Rewards = { Spins = 5 } },
+		{ Cost = 6000000000, Requires = { { Rarity = "Secret", Count = 1 } }, Rewards = { Spins = 5 } },
+		{ Cost = 25000000000, Requires = { { Rarity = "Secret", Count = 1 }, { Rarity = "God", Count = 2 } }, Rewards = { Spins = 6 } },
+		{ Cost = 100000000000, Requires = { { Rarity = "Secret", Count = 2 } }, Rewards = { Spins = 10 } },
+	},
 }
+
+-- Прокачка скорости (за монеты, навсегда): Bonus прибавляется к скорости ходьбы, и с мемом тоже
+Config.Speed = {
+	{ Price = 5000, Bonus = 2 },
+	{ Price = 30000, Bonus = 4 },
+	{ Price = 200000, Bonus = 6 },
+	{ Price = 1500000, Bonus = 8 },
+	{ Price = 10000000, Bonus = 10 },
+}
+
+-- Lucky Blocks: иногда едут по дорожке; на базе через OpenTime секунд открываются случайным мемом
+-- своей редкости. Пока не открылся — его можно украсть (у вора таймер начинается заново).
+Config.LuckyBlocks = {
+	Chance = 0.03, -- доля Lucky Blocks среди мемов на дорожке
+	OpenTime = 60,
+}
+
+-- Кнопка «Домой»: перезарядка, с мемом в руках не работает
+Config.HomeCooldown = 20
 
 -- Оффлайн-доход
 Config.Offline = {
@@ -606,15 +650,65 @@ function Config.PriceOf(id: string, mutationId: string?): number
 	return math.floor(creature.Price * Config.GetMutation(mutationId).Mult)
 end
 
-function Config.MaxSlots(rebirths: number, hasExtraSlotsPass: boolean?): number
-	local base = math.min(Config.Plot.BaseSlots + rebirths * Config.Plot.SlotsPerRebirth, Config.Plot.MaxSlots)
-	return base + (if hasExtraSlotsPass then Config.Plot.PassSlots else 0)
+-- Сколько этажей открыто при таком числе перерождений
+function Config.FloorsUnlocked(rebirths: number): number
+	local count = 0
+	for _, floor in Config.Plot.Floors do
+		if rebirths >= floor.UnlockRebirth then
+			count += 1
+		end
+	end
+	return count
 end
 
-Config.AbsoluteMaxSlots = Config.Plot.MaxSlots + Config.Plot.PassSlots
+-- Слот → номер этажа (1..3); слоты геймпасса — на 1-м этаже
+function Config.FloorOfSlot(slot: number): number
+	local floorCount = #Config.Plot.Floors
+	if slot > floorCount * Config.Plot.FloorSlots then
+		return 1
+	end
+	return (slot - 1) // Config.Plot.FloorSlots + 1
+end
+
+-- Доступен ли слот игроку (этаж открыт; слоты геймпасса — только с геймпассом)
+function Config.SlotAvailable(slot: number, rebirths: number, hasExtraSlotsPass: boolean?): boolean
+	local floorSlots = #Config.Plot.Floors * Config.Plot.FloorSlots
+	if slot > floorSlots then
+		return hasExtraSlotsPass == true and slot <= floorSlots + Config.Plot.PassSlots
+	end
+	return Config.FloorOfSlot(slot) <= Config.FloorsUnlocked(rebirths)
+end
+
+function Config.MaxSlots(rebirths: number, hasExtraSlotsPass: boolean?): number
+	return Config.FloorsUnlocked(rebirths) * Config.Plot.FloorSlots + (if hasExtraSlotsPass then Config.Plot.PassSlots else 0)
+end
+
+Config.AbsoluteMaxSlots = #Config.Plot.Floors * Config.Plot.FloorSlots + Config.Plot.PassSlots
+
+-- Тир следующего перерождения (rebirths — сколько уже сделано); nil — тиры кончились
+function Config.RebirthTier(rebirths: number)
+	return Config.Rebirth.Tiers[rebirths + 1]
+end
 
 function Config.RebirthCost(rebirths: number): number
-	return Config.Rebirth.BaseCost * Config.Rebirth.CostMult ^ rebirths
+	local tier = Config.RebirthTier(rebirths)
+	if tier then
+		return tier.Cost
+	end
+	local tiers = Config.Rebirth.Tiers
+	return tiers[#tiers].Cost * Config.Rebirth.CostMult ^ (rebirths + 1 - #tiers)
+end
+
+-- Сколько мемов на базе подходят под требование ({ Rarity, Count } или { Id, Count })
+function Config.MatchesRequirement(creatureId: string, requirement: any): boolean
+	local creature = Config.GetCreature(creatureId)
+	if not creature or creature.Lucky then
+		return false
+	end
+	if requirement.Id then
+		return creature.Id == requirement.Id
+	end
+	return (Config.GetRarity(creature.Rarity).Rank or 0) >= (Config.GetRarity(requirement.Rarity).Rank or 99)
 end
 
 function Config.IncomeMult(rebirths: number): number

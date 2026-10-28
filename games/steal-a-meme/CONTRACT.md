@@ -188,3 +188,31 @@ Remotes:
 | `Notify` | ключи из `src/shared/Strings/Zones.luau`: ZoneTpCarrying, TowerLava, TowerCheckpoint {Tier}, TowerPrizeTaken, SafeZoneDrop {Meme}, SafeZoneNoAttack, ParkLimit, SecretFound {Meme}, SecretFoundCoins {Coins}, SecretEmpty |
 
 Данные: таблица `Zones` = `{ Tower1, Tower2, Tower3, Cave }` — UTC-день (`os.time() // 86400`) последнего забранного приза.
+
+## Дополнения v5 (фундамент: этажи, перерождения с требованиями, скорость, Lucky Blocks, тревога, «Домой», настройки, звуки)
+Конфиг: `Config.Plot.Floors`/`FloorSlots`/`PassSlots`, `Config.FloorsUnlocked`, `Config.FloorOfSlot`, `Config.SlotAvailable`,
+`Config.Rebirth.Tiers`, `Config.RebirthTier`, `Config.RebirthCost`, `Config.MatchesRequirement`, `Config.Speed`,
+`Config.LuckyBlocks`, мемы с `Lucky = true` (`LuckyEpic`/`LuckyLegendary`/`LuckyMythic`), `Config.HomeCooldown`, редкости с `Rank`.
+
+| Где | Атрибут | Тип | Смысл |
+|---|---|---|---|
+| игрок | `SpeedLevel` | number | уровень прокачки скорости (0..#Config.Speed), данные |
+| игрок | `StolenBy` | number | UserId вора, который сейчас несёт ТВОЕГО мема (0 — никто); `StolenMeme` — Id этого мема |
+| игрок | `SettingsJson` | string | JSON `{ Sound = bool, LowGraphics = bool, HideBillboards = bool, UiScale = number }` (сохраняется) |
+| игрок | `HomeReadyAt` | number | серверное время, когда «Домой» снова доступно |
+| мем (Model) | `OpensAt` | number | у Lucky Block на базе: серверное время открытия |
+| мем (Model) | `Floor` | number | этаж слота (1..3) |
+| база | `FloorsUnlocked` | number | сколько этажей открыто у хозяина |
+
+Мир: у базы этажи — `Floor2`/`Floor3` (Part, платформа), лестница, ограждения; закрытый этаж перекрыт полупрозрачным
+барьером `FloorLock2`/`FloorLock3` с табличкой «🔒 Rebirth N». Слоты `Slot1..Slot42` (атрибуты `Unlocked`, `Floor`).
+
+Remotes:
+| Имя | Направление | Аргументы |
+|---|---|---|
+| `Rebirth` | C→S RF | (было) теперь проверяет `Config.Rebirth.Tiers[n].Requires`; ключи: Rebirthed, RebirthNeed, RebirthNeedMemes |
+| `BuySpeed` | C→S RF | `() -> (ok, key)`; ключи: SpeedUpgraded, SpeedMax, NotEnoughCash |
+| `GoHome` | C→S | `()` — телепорт на свою базу (перезарядка, не с мемом) |
+| `SetSetting` | C→S | `(key, value)` — Sound/LowGraphics/HideBillboards (bool), UiScale (0.7..1.3) |
+
+Новые Fx: `"LuckyOpen"` {Position, Meme, UserId}.
