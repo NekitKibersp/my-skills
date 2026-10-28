@@ -19,6 +19,9 @@ local AdminEventService = require(script.AdminEventService)
 local TradeService = require(script.TradeService)
 local DefenseService = require(script.DefenseService)
 local EmoteService = require(script.EmoteService)
+local SocialService = require(script.SocialService)
+local AnalyticsService = require(script.AnalyticsService)
+local Grant = require(script.Grant)
 local Remotes = require(script.Remotes)
 
 -- Сезон по дате (UTC): от него зависят ночные мемы, мутации, декор и цвет монстра
@@ -40,6 +43,8 @@ AdminEventService.Start()
 TradeService.Start()
 DefenseService.Start()
 EmoteService.Start()
+SocialService.Start()
+AnalyticsService.Start()
 LeaderboardService.Start(world.Leaderboards)
 
 -- Связи между сервисами (без циклических require)
@@ -50,6 +55,7 @@ end
 -- Геймпассы предметов (золотой тапок, конфетти-пушка) и предмет из календаря — перевыдаём рюкзак
 ShopService.OnToolsChanged = ItemService.RefreshPasses
 RewardService.OnItemGranted = ItemService.RefreshPasses
+Grant.OnItemGranted = ItemService.RefreshPasses
 ShopService.OnMemeRain = function(player)
 	return AdminEventService.StartEvent("MemeRain", Config.AdminEvents.MemeRainDuration, player)
 end
@@ -81,6 +87,8 @@ local function onPlayerAdded(player: Player)
 		return
 	end
 	PlotService.LoadPlayer(player)
+	SocialService.OnLoaded(player)
+	AnalyticsService.OnLoaded(player)
 	RewardService.OnLoaded(player)
 	ItemService.OnLoaded(player)
 	QuestService.OnLoaded(player)
@@ -114,6 +122,8 @@ Players.PlayerRemoving:Connect(function(player)
 	TradeService.OnPlayerRemoving(player)
 	DefenseService.OnPlayerRemoving(player)
 	EmoteService.OnPlayerRemoving(player)
+	SocialService.OnPlayerRemoving(player)
+	AnalyticsService.OnPlayerRemoving(player)
 	PlotService.Release(player)
 	DataService.Release(player)
 end)

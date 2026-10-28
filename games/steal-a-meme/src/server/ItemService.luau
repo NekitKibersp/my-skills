@@ -11,6 +11,7 @@ local DataService = require(script.Parent.DataService)
 local Remotes = require(script.Parent.Remotes)
 local StealService = require(script.Parent.StealService)
 local Hooks = require(script.Parent.Hooks)
+local AnalyticsService = require(script.Parent.AnalyticsService)
 
 local ItemService = {}
 
@@ -609,6 +610,7 @@ function ItemService.Buy(player: Player, id: unknown): (boolean, string)
 		return false, "NotEnoughCash"
 	end
 	DataService.Increment(player, "Coins", -item.Price)
+	AnalyticsService.Economy(player, "Sink", item.Price, "Shop", id)
 	DataService.GetTable(player, "Items")[id] = true
 	syncItems(player)
 	ItemService.GiveTools(player)

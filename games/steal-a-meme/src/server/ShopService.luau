@@ -8,6 +8,7 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local DataService = require(script.Parent.DataService)
 local PlotService = require(script.Parent.PlotService)
 local Remotes = require(script.Parent.Remotes)
+local AnalyticsService = require(script.Parent.AnalyticsService)
 
 local ShopService = {}
 
@@ -113,6 +114,7 @@ local function grantProduct(player: Player, key: string): boolean
 	elseif key == "CashSmall" or key == "CashMedium" or key == "CashLarge" then
 		local coins = incomeCoins(player, product)
 		PlotService.AddCoins(player, coins)
+		AnalyticsService.Economy(player, "Source", coins, "IAP", key)
 		Remotes.Notify:FireClient(player, "CashBought", { Coins = coins }, "success")
 		return true
 	elseif key == "LockExtend" then
@@ -169,6 +171,7 @@ local function processReceipt(receipt): Enum.ProductPurchaseDecision
 		return Enum.ProductPurchaseDecision.PurchaseGranted
 	end
 	DataService.AddReceipt(player, purchaseId)
+	AnalyticsService.Custom(player, "RobuxPurchase", 1, key)
 	-- Сохраняем сразу, чтобы чек не потерялся при падении сервера
 	if not DataService.Save(player) then
 		warn("[ShopService] Покупка выдана, но не сохранена", player.Name, purchaseId)

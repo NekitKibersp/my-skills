@@ -28,6 +28,8 @@ Config.Rarities = {
 	{ Id = "Secret", Name = "SECRET", NameRu = "СЕКРЕТНЫЙ", Color = Color3.fromRGB(30, 30, 30), Weight = 0.05 },
 	{ Id = "Halloween", Name = "Halloween", NameRu = "Хэллоуин", Color = Color3.fromRGB(255, 130, 20), Weight = 0 },
 	{ Id = "Winter", Name = "Winter", NameRu = "Зимний", Color = Color3.fromRGB(120, 210, 255), Weight = 0 },
+	{ Id = "Limited", Name = "LIMITED", NameRu = "ЛИМИТ", Color = Color3.fromRGB(0, 255, 170), Weight = 0 },
+	{ Id = "Exclusive", Name = "EXCLUSIVE", NameRu = "ЭКСКЛЮЗИВ", Color = Color3.fromRGB(255, 215, 0), Weight = 0 },
 }
 
 -- Мемы. Face — эмодзи-«лицо», Shape — форма тела (Ball/Block/Cylinder), Size — масштаб.
@@ -85,6 +87,14 @@ Config.Creatures = {
 	{ Id = "GingerSahur", Name = "Gingerbread Sahur", Face = "🍪🏏", Rarity = "Winter", Price = 25000, Income = 400, Color = Color3.fromRGB(180, 110, 60), Shape = "Cylinder", Size = 1.3, Event = true, Season = "Winter", EventWeight = 28, ModelId = 0 },
 	{ Id = "SantaSixSeven", Name = "Santa 67", Face = "🎅6️⃣7️⃣", Rarity = "Winter", Price = 250000, Income = 2800, Color = Color3.fromRGB(220, 40, 50), Shape = "Block", Size = 1.6, Event = true, Season = "Winter", EventWeight = 10, ModelId = 0 },
 	{ Id = "FrostVerity", Name = "Frost Verity", Face = "🥶", Rarity = "Winter", Price = 2000000, Income = 18000, Color = Color3.fromRGB(140, 210, 255), Shape = "Block", Size = 1.9, Event = true, Season = "Winter", EventWeight = 2, ModelId = 0 },
+	-- Лимитированные мемы недели: на дорожке только свою неделю (Config.Weekly), потом пропадают навсегда
+	{ Id = "AuraFarmer", Name = "Aura Farmer", Face = "🚣✨", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(70, 120, 200), Shape = "Cylinder", Size = 1.4, Limited = true, ModelId = 0 },
+	{ Id = "PedroRaccoon", Name = "Pedro Raccoon", Face = "🦝🎶", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(120, 120, 130), Shape = "Ball", Size = 1.3, Limited = true, ModelId = 0 },
+	{ Id = "MooDeng", Name = "Moo Deng", Face = "🦛💢", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(150, 110, 130), Shape = "Ball", Size = 1.4, Limited = true, ModelId = 0 },
+	{ Id = "MewingCat", Name = "Mewing Cat", Face = "😼🤫", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(240, 200, 160), Shape = "Ball", Size = 1.2, Limited = true, ModelId = 0 },
+	-- Эксклюзивы боевого пропуска и колеса (на дорожке не появляются)
+	{ Id = "Golden67", Name = "Golden 67", Face = "🥇6️⃣7️⃣", Rarity = "Exclusive", Price = 900000, Income = 7000, Color = Color3.fromRGB(255, 205, 50), Shape = "Block", Size = 1.7, Exclusive = true, ModelId = 0 },
+	{ Id = "DiamondSahur", Name = "Diamond Sahur", Face = "💎🏏", Rarity = "Exclusive", Price = 5000000, Income = 32000, Color = Color3.fromRGB(130, 230, 255), Shape = "Cylinder", Size = 2, Exclusive = true, ModelId = 0 },
 }
 
 -- Мутации умножают доход и цену. Event = true — только ночью и только в своём сезоне (Season).
@@ -211,6 +221,7 @@ Config.GamePasses = {
 	OfflinePlus = { Id = 0, Robux = 199, Name = "Offline+ (100%, 12h)", NameRu = "Оффлайн+ (100%, 12ч)" },
 	EmotePack = { Id = 0, Robux = 199, Name = "Meme Emote Pack", NameRu = "Пак мем-эмоций" },
 	ConfettiCannon = { Id = 0, Robux = 349, Name = "Confetti Cannon", NameRu = "Конфетти-пушка" },
+	BattlePass = { Id = 0, Robux = 399, Name = "Premium Meme Pass", NameRu = "Премиум Мем-пропуск" },
 }
 Config.VipIncomeMult = 2
 
@@ -223,6 +234,9 @@ Config.Products = {
 	LockExtend = { Id = 0, Robux = 19, Name = "Lock +60s", NameRu = "Замок +60 сек" },
 	MysteryBox = { Id = 0, Robux = 79, Name = "Mystery Meme Box", NameRu = "Мистери-бокс мемов" },
 	MemeRain = { Id = 0, Robux = 299, Name = "Start Meme Rain (whole server)", NameRu = "Запустить Мем-дождь (весь сервер)" },
+	Spins3 = { Id = 0, Robux = 49, Name = "3 Wheel Spins", NameRu = "3 вращения колеса", Spins = 3 },
+	Spins10 = { Id = 0, Robux = 129, Name = "10 Wheel Spins", NameRu = "10 вращений колеса", Spins = 10 },
+	PassLevels = { Id = 0, Robux = 99, Name = "Meme Pass +5 levels", NameRu = "Мем-пропуск +5 уровней", Levels = 5 },
 }
 -- Мистери-бокс: редкость случайного мема
 Config.MysteryBox = {
@@ -407,6 +421,101 @@ Config.Trade = {
 	RequestCooldown = 5,
 }
 
+-- ===== Коды (вводятся в окне «Коды», регистр не важен). Expires — os.time() окончания или nil =====
+-- Reward.Kind: "Coins" (IncomeSeconds/MinCoins), "Meme" (Rarity), "Spins" (Amount), "Item" (ItemId)
+Config.Codes = {
+	RELEASE = { Reward = { Kind = "Coins", IncomeSeconds = 600, MinCoins = 2500 } },
+	SIXSEVEN = { Reward = { Kind = "Meme", Rarity = "Rare" } },
+	MEMEGOD = { Reward = { Kind = "Spins", Amount = 2 } },
+	SLIPPER = { Reward = { Kind = "Item", ItemId = "RubberChicken" } },
+}
+
+-- ===== Друзья и группа =====
+Config.Social = {
+	FriendBoostPer = 0.1, -- +10% дохода за каждого друга на сервере
+	FriendBoostMax = 0.3,
+	GroupId = 0, -- ID вашей Roblox-группы (0 — бонус выключен)
+	GroupBoost = 0.1, -- +10% дохода участникам группы
+	FavoritePromptAfter = 10 * 60, -- через сколько секунд игры попросить добавить игру в избранное
+}
+
+-- ===== Анти-чит переноски =====
+Config.AntiCheat = {
+	CarrySpeedSlack = 1.6, -- во сколько раз можно превысить скорость (пинг, физика)
+	CarryExtraStuds = 8, -- запас в studs на тик
+	MaxStrikes = 3, -- столько нарушений за переноску — мем возвращается хозяину
+}
+
+-- ===== Мем-пропуск (боевой пропуск сезона) =====
+-- XP за события (Hooks): за каждую единицу Stat. Play — за каждые 60 секунд.
+-- Награда уровня: Free для всех, Premium — с геймпассом BattlePass. Kind как у кодов + "Skin" (SkinId).
+Config.BattlePass = {
+	Season = "S1",
+	Name = "Season 1: Meme Wars",
+	NameRu = "Сезон 1: Мем-войны",
+	EndsAt = 1798761600, -- 2027-01-01 00:00 UTC; после — пропуск нового сезона (смените Season)
+	XpPerLevel = 150,
+	Xp = { Buy = 5, Steal = 30, Slap = 2, MonsterHit = 2, Merge = 30, Defend = 25, Lock = 3, Play = 3, Quest = 60 },
+	Levels = {
+		{ Free = { Kind = "Coins", IncomeSeconds = 120, MinCoins = 500 }, Premium = { Kind = "Spins", Amount = 1 } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 180, MinCoins = 800 }, Premium = { Kind = "Coins", IncomeSeconds = 600, MinCoins = 3000 } },
+		{ Free = { Kind = "Spins", Amount = 1 }, Premium = { Kind = "Meme", Rarity = "Epic" } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 240, MinCoins = 1200 }, Premium = { Kind = "Skin", SkinId = "SlipperFire" } },
+		{ Free = { Kind = "Meme", Rarity = "Rare" }, Premium = { Kind = "Spins", Amount = 2 } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 300, MinCoins = 2000 }, Premium = { Kind = "Coins", IncomeSeconds = 900, MinCoins = 6000 } },
+		{ Free = { Kind = "Spins", Amount = 1 }, Premium = { Kind = "Meme", Rarity = "Legendary" } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 360, MinCoins = 3000 }, Premium = { Kind = "Skin", SkinId = "BaseNeon" } },
+		{ Free = { Kind = "Meme", Rarity = "Epic" }, Premium = { Kind = "Spins", Amount = 2 } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 420, MinCoins = 4000 }, Premium = { Kind = "Meme", Id = "Golden67" } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 480, MinCoins = 5000 }, Premium = { Kind = "Coins", IncomeSeconds = 1200, MinCoins = 10000 } },
+		{ Free = { Kind = "Spins", Amount = 1 }, Premium = { Kind = "Meme", Rarity = "Legendary" } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 540, MinCoins = 6000 }, Premium = { Kind = "Skin", SkinId = "SlipperRainbow" } },
+		{ Free = { Kind = "Meme", Rarity = "Legendary" }, Premium = { Kind = "Spins", Amount = 3 } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 600, MinCoins = 8000 }, Premium = { Kind = "Meme", Rarity = "Mythic" } },
+		{ Free = { Kind = "Spins", Amount = 2 }, Premium = { Kind = "Coins", IncomeSeconds = 1800, MinCoins = 20000 } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 720, MinCoins = 10000 }, Premium = { Kind = "Skin", SkinId = "BaseGalaxy" } },
+		{ Free = { Kind = "Meme", Rarity = "Legendary" }, Premium = { Kind = "Meme", Rarity = "Mythic" } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 900, MinCoins = 15000 }, Premium = { Kind = "Spins", Amount = 3 } },
+		{ Free = { Kind = "Meme", Rarity = "Mythic" }, Premium = { Kind = "Meme", Id = "DiamondSahur" } },
+	},
+}
+
+-- ===== Колесо удачи: 1 бесплатное вращение в день, остальные — за Robux, из пропуска и кодов =====
+Config.Spin = {
+	FreePerDay = 1,
+	Segments = {
+		{ Weight = 30, Reward = { Kind = "Coins", IncomeSeconds = 120, MinCoins = 300 } },
+		{ Weight = 22, Reward = { Kind = "Coins", IncomeSeconds = 300, MinCoins = 800 } },
+		{ Weight = 14, Reward = { Kind = "Meme", Rarity = "Rare" } },
+		{ Weight = 12, Reward = { Kind = "Coins", IncomeSeconds = 900, MinCoins = 3000 } },
+		{ Weight = 9, Reward = { Kind = "Meme", Rarity = "Epic" } },
+		{ Weight = 6, Reward = { Kind = "Item", ItemId = "Energy" } },
+		{ Weight = 4, Reward = { Kind = "Meme", Rarity = "Legendary" } },
+		{ Weight = 2.5, Reward = { Kind = "Meme", Rarity = "Mythic" } },
+		{ Weight = 0.5, Reward = { Kind = "Meme", Id = "Golden67" } },
+	},
+}
+
+-- ===== Лимитированный мем недели =====
+-- Неделя = os.time() // 604800; мем недели = Weekly.Memes[неделя % #Memes + 1]. На дорожке с шансом Chance.
+Config.Weekly = {
+	Memes = { "AuraFarmer", "PedroRaccoon", "MooDeng", "MewingCat" },
+	Chance = 0.025,
+}
+
+-- ===== Скины (база и тапок). Price > 0 — за монеты; Source = "Pass"/"Spin" — только из пропуска/колеса =====
+Config.Skins = {
+	{ Id = "BaseDefault", Kind = "Base", Name = "Classic", NameRu = "Классика", Price = 0 },
+	{ Id = "BaseCandy", Kind = "Base", Name = "Candy", NameRu = "Конфетная", Price = 150000, Floor = Color3.fromRGB(255, 170, 210), Wall = Color3.fromRGB(255, 255, 255), Material = "SmoothPlastic" },
+	{ Id = "BaseGold", Kind = "Base", Name = "Golden", NameRu = "Золотая", Price = 2000000, Floor = Color3.fromRGB(255, 200, 60), Wall = Color3.fromRGB(200, 150, 30), Material = "Foil" },
+	{ Id = "BaseNeon", Kind = "Base", Name = "Neon", NameRu = "Неоновая", Price = 0, Source = "Pass", Floor = Color3.fromRGB(30, 20, 60), Wall = Color3.fromRGB(0, 255, 200), Material = "Neon" },
+	{ Id = "BaseGalaxy", Kind = "Base", Name = "Galaxy", NameRu = "Галактика", Price = 0, Source = "Pass", Floor = Color3.fromRGB(40, 10, 80), Wall = Color3.fromRGB(150, 60, 255), Material = "Glass" },
+	{ Id = "SlipperDefault", Kind = "Slipper", Name = "Classic", NameRu = "Классика", Price = 0 },
+	{ Id = "SlipperCamo", Kind = "Slipper", Name = "Camo", NameRu = "Камуфляж", Price = 40000, Color = Color3.fromRGB(80, 110, 60), Material = "Fabric" },
+	{ Id = "SlipperFire", Kind = "Slipper", Name = "Fire", NameRu = "Огненный", Price = 0, Source = "Pass", Color = Color3.fromRGB(255, 90, 20), Material = "Neon" },
+	{ Id = "SlipperRainbow", Kind = "Slipper", Name = "Rainbow", NameRu = "Радужный", Price = 0, Source = "Pass", Color = Color3.fromRGB(255, 80, 200), Material = "Neon", Rainbow = true },
+}
+
 -- ===== Функции-помощники (общие для сервера и клиента) =====
 
 local creatureById = {}
@@ -498,6 +607,21 @@ function Config.GetAdminEvent(id: string)
 		end
 	end
 	return nil
+end
+
+function Config.GetSkin(id: string)
+	for _, skin in Config.Skins do
+		if skin.Id == id then
+			return skin
+		end
+	end
+	return nil
+end
+
+-- Мем текущей недели (Config.Weekly) и время её окончания (os.time)
+function Config.WeeklyMeme(time: number): (string, number)
+	local week = time // 604800
+	return Config.Weekly.Memes[week % #Config.Weekly.Memes + 1], (week + 1) * 604800
 end
 
 return Config
@@ -751,6 +875,22 @@ return {
         </Item>
         <Item class="ModuleScript" referent="10">
           <Properties>
+            <string name="Name">Social</string>
+            <string name="Source"><![CDATA[-- Тексты кодов, бонуса за друзей и группы (SocialService). { Key = { English, Русский } }
+return {
+	CodeRedeemed = { "Code redeemed!", "Код активирован!" },
+	CodeInvalid = { "This code doesn't exist", "Такого кода нет" },
+	CodeUsed = { "You have already used this code", "Ты уже вводил этот код" },
+	CodeExpired = { "This code has expired", "Срок действия кода истёк" },
+	CodeWait = { "Not so fast! Try again in a second", "Не так быстро! Попробуй через секунду" },
+	FriendBoost = { "+{Percent}% income for playing with friends!", "+{Percent}% дохода за игру с друзьями!" },
+	GroupBoostOn = { "Group bonus: +{Percent}% income!", "Бонус группы: +{Percent}% дохода!" },
+}
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="11">
+          <Properties>
             <string name="Name">Trade</string>
             <string name="Source"><![CDATA[-- Тексты уведомлений обмена (TradeService). { Key = { English, Русский } }
 return {
@@ -773,11 +913,11 @@ return {
       </Item>
     </Item>
   </Item>
-  <Item class="ServerScriptService" referent="11">
+  <Item class="ServerScriptService" referent="12">
     <Properties>
       <string name="Name">ServerScriptService</string>
     </Properties>
-    <Item class="Script" referent="12">
+    <Item class="Script" referent="13">
       <Properties>
         <string name="Name">Server</string>
         <token name="RunContext">0</token>
@@ -902,7 +1042,7 @@ Players.PlayerRemoving:Connect(function(player)
 end)
 ]]></string>
       </Properties>
-      <Item class="ModuleScript" referent="13">
+      <Item class="ModuleScript" referent="14">
         <Properties>
           <string name="Name">AdminEventService</string>
           <string name="Source"><![CDATA[-- Админ-ивенты: по выходным по расписанию (UTC) на всех серверах сразу, вручную — командой в чате
@@ -1171,7 +1311,420 @@ return AdminEventService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="14">
+      <Item class="ModuleScript" referent="15">
+        <Properties>
+          <string name="Name">AnalyticsService</string>
+          <string name="Source"><![CDATA[-- Аналитика Roblox (Creator Hub → Analytics): воронка новичка, экономика монет, свои события.
+-- Все вызовы обёрнуты в pcall: сбой аналитики не должен ломать игру.
+-- Зависит только от DataService/Hooks/Config — его можно подключать из любого сервиса без циклов.
+--   AnalyticsService.Economy(player, "Sink", price, "Shop", memeId)  -- после списания/начисления монет
+--   AnalyticsService.Custom(player, "RobuxPurchase", 1, productKey)
+local Players = game:GetService("Players")
+local RobloxAnalytics = game:GetService("AnalyticsService")
+
+local DataService = require(script.Parent.DataService)
+local Hooks = require(script.Parent.Hooks)
+
+local AnalyticsService = {}
+
+-- Игровые события из Hooks, которые копим и отправляем пачкой (Earn/Play — слишком частые, не шлём)
+local COUNTED = { Steal = true, Merge = true, Defend = true }
+local FLUSH_INTERVAL = 60
+
+-- Шаги воронки новичка
+local STEPS = {
+	Joined = 1,
+	FirstBuy = 2,
+	FirstSteal = 3,
+	TutorialDone = 4,
+	FirstRebirth = 5,
+}
+
+local counts: { [Player]: { [string]: number } } = {}
+local onboarding: { [Player]: { [string]: boolean } } = {} -- только у новых игроков: какие шаги уже отправлены
+local connections: { [Player]: { RBXScriptConnection } } = {}
+
+local function warnFail(what: string, err: any)
+	warn("[AnalyticsService]", what, err)
+end
+
+local function customFields(field: string?): { [string]: string }?
+	if field == nil then
+		return nil
+	end
+	return { [Enum.AnalyticsCustomFieldKeys.CustomField01.Name] = field }
+end
+
+-- Своё событие (value — число, field — необязательная метка, например ключ продукта)
+function AnalyticsService.Custom(player: Player, eventName: string, value: number?, field: string?)
+	local ok, err = pcall(function()
+		RobloxAnalytics:LogCustomEvent(player, eventName, value or 1, customFields(field))
+	end)
+	if not ok then
+		warnFail("LogCustomEvent", err)
+	end
+end
+
+-- Движение монет. flowType: "Source" | "Sink"; transactionType: имя Enum.AnalyticsEconomyTransactionType
+-- ("Shop", "Gameplay", "IAP", "Onboarding", "TimedReward", "ContextualPurchase") или своё.
+-- Вызывать ПОСЛЕ изменения баланса: конечный баланс берётся из DataService.
+function AnalyticsService.Economy(player: Player, flowType: string, amount: number, transactionType: string, itemSku: string?)
+	if not DataService.IsLoaded(player) or type(amount) ~= "number" or amount <= 0 or amount ~= amount then
+		return
+	end
+	local flow = if flowType == "Source"
+		then Enum.AnalyticsEconomyFlowType.Source
+		else Enum.AnalyticsEconomyFlowType.Sink
+	local ok, err = pcall(function()
+		RobloxAnalytics:LogEconomyEvent(
+			player,
+			flow,
+			"Coins",
+			math.floor(amount),
+			math.floor(DataService.Get(player, "Coins")),
+			transactionType,
+			itemSku
+		)
+	end)
+	if not ok then
+		warnFail("LogEconomyEvent", err)
+	end
+end
+
+-- Шаг воронки новичка: только для новых игроков и только один раз за сессию
+local function step(player: Player, name: string)
+	local done = onboarding[player]
+	if not done or done[name] then
+		return
+	end
+	done[name] = true
+	local ok, err = pcall(function()
+		RobloxAnalytics:LogOnboardingStepEvent(player, STEPS[name], name)
+	end)
+	if not ok then
+		warnFail("LogOnboardingStepEvent", err)
+	end
+end
+
+local function flush(player: Player)
+	local pending = counts[player]
+	if not pending then
+		return
+	end
+	counts[player] = {}
+	for stat, amount in pending do
+		if amount > 0 then
+			AnalyticsService.Custom(player, stat, amount)
+		end
+	end
+end
+
+function AnalyticsService.OnLoaded(player: Player)
+	counts[player] = {}
+	if not DataService.IsNew(player) then
+		return
+	end
+	onboarding[player] = {}
+	step(player, "Joined")
+
+	local list = {}
+	local function onTutorial()
+		if (player:GetAttribute("TutorialDone") or 0) >= 1 then
+			step(player, "TutorialDone")
+		end
+	end
+	local function onRebirths()
+		if (player:GetAttribute("Rebirths") or 0) >= 1 then
+			step(player, "FirstRebirth")
+		end
+	end
+	table.insert(list, player:GetAttributeChangedSignal("TutorialDone"):Connect(onTutorial))
+	table.insert(list, player:GetAttributeChangedSignal("Rebirths"):Connect(onRebirths))
+	connections[player] = list
+end
+
+function AnalyticsService.OnPlayerRemoving(player: Player)
+	flush(player)
+	counts[player] = nil
+	onboarding[player] = nil
+	for _, connection in connections[player] or {} do
+		connection:Disconnect()
+	end
+	connections[player] = nil
+end
+
+function AnalyticsService.Start()
+	Hooks.Connect(function(player, stat, amount)
+		if stat == "Buy" then
+			step(player, "FirstBuy")
+		elseif stat == "Steal" then
+			step(player, "FirstSteal")
+		end
+		local pending = counts[player]
+		if COUNTED[stat] and pending then
+			pending[stat] = (pending[stat] or 0) + amount
+		end
+	end)
+	task.spawn(function()
+		while true do
+			task.wait(FLUSH_INTERVAL)
+			for _, player in Players:GetPlayers() do
+				flush(player)
+			end
+		end
+	end)
+end
+
+return AnalyticsService
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="16">
+        <Properties>
+          <string name="Name">BattlePassService</string>
+          <string name="Source"><![CDATA[-- Мем-пропуск (боевой пропуск сезона): XP за игровые события (Hooks), уровни, награды Free/Premium.
+-- Данные: DataService.GetTable(player, "BattlePass") = { Season, Xp, Free = { [level] = true }, Premium = { [level] = true } }.
+-- Ключи уровней в Free/Premium хранятся строками ("1", "5"): разреженный массив с числовыми ключами
+-- не переживёт сохранение в DataStore (JSON). Наружу (BPJson) уходят обычные массивы чисел.
+-- Клиент читает атрибут BPJson и просит награду через Remotes.ClaimPass(level, "Free" | "Premium").
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local DataService = require(script.Parent.DataService)
+local Grant = require(script.Parent.Grant)
+local Hooks = require(script.Parent.Hooks)
+local Remotes = require(script.Parent.Remotes)
+
+local BattlePassService = {}
+
+local PASS = Config.BattlePass
+local SYNC_INTERVAL = 1 -- не чаще раза в секунду обновляем BPJson
+local PLAY_SECONDS = 60 -- Xp.Play даётся за каждую полную минуту в игре
+local TRACKS = { Free = true, Premium = true }
+
+local playSeconds: { [Player]: number } = {}
+local lastSync: { [Player]: number } = {}
+local pendingSync: { [Player]: boolean } = {}
+
+local function maxXp(): number
+	return #PASS.Levels * PASS.XpPerLevel
+end
+
+local function levelOf(xp: number): number
+	return math.min(#PASS.Levels, xp // PASS.XpPerLevel)
+end
+
+-- Сезон ещё идёт (после EndsAt XP не копится, но заработанное можно забрать)
+local function isActive(): boolean
+	return os.time() < PASS.EndsAt
+end
+
+local function isReady(player: Player): boolean
+	return player.Parent ~= nil and player:GetAttribute("DataLoaded") == true and DataService.IsLoaded(player)
+end
+
+-- Таблица забранных уровней: оставляем только корректные ключи "1".."N"
+local function cleanClaims(saved: any): { [string]: boolean }
+	local result = {}
+	if type(saved) ~= "table" then
+		return result
+	end
+	for key, value in saved do
+		local level = tonumber(key)
+		if value == true and level and level % 1 == 0 and level >= 1 and level <= #PASS.Levels then
+			result[tostring(level)] = true
+		end
+	end
+	return result
+end
+
+-- Данные пропуска текущего сезона; чужой сезон или испорченные данные — сброс
+local function ensure(player: Player): { [string]: any }
+	local data = DataService.GetTable(player, "BattlePass")
+	if data.Season ~= PASS.Season then
+		table.clear(data)
+		data.Season = PASS.Season
+		data.Xp = 0
+		data.Free = {}
+		data.Premium = {}
+		return data
+	end
+	if type(data.Xp) ~= "number" or data.Xp ~= data.Xp then
+		data.Xp = 0
+	end
+	data.Xp = math.clamp(math.floor(data.Xp), 0, maxXp())
+	data.Free = cleanClaims(data.Free)
+	data.Premium = cleanClaims(data.Premium)
+	return data
+end
+
+local function claimedList(claims: { [string]: boolean }): { number }
+	local list = {}
+	for key in claims do
+		table.insert(list, tonumber(key) :: number)
+	end
+	table.sort(list)
+	return list
+end
+
+-- Сразу записать BPJson (ShopService зовёт после покупки премиума)
+function BattlePassService.Sync(player: Player)
+	if not DataService.IsLoaded(player) then
+		return
+	end
+	local data = ensure(player)
+	local level = levelOf(data.Xp)
+	lastSync[player] = os.clock()
+	player:SetAttribute("BPJson", HttpService:JSONEncode({
+		Season = data.Season,
+		Xp = data.Xp,
+		Level = level,
+		XpInLevel = data.Xp - level * PASS.XpPerLevel,
+		Free = claimedList(data.Free),
+		Premium = claimedList(data.Premium),
+		EndsAt = PASS.EndsAt,
+	}))
+end
+
+-- Синхронизация с ограничением частоты: лишние вызовы склеиваются в один отложенный
+local function requestSync(player: Player)
+	if pendingSync[player] then
+		return
+	end
+	local waitTime = if lastSync[player] then lastSync[player] + SYNC_INTERVAL - os.clock() else 0
+	if waitTime <= 0 then
+		BattlePassService.Sync(player)
+		return
+	end
+	pendingSync[player] = true
+	task.delay(waitTime, function()
+		pendingSync[player] = nil
+		if player.Parent and DataService.IsLoaded(player) then
+			BattlePassService.Sync(player)
+		end
+	end)
+end
+
+local function giveXp(player: Player, amount: number, ignoreSeason: boolean?)
+	if not DataService.IsLoaded(player) or (not ignoreSeason and not isActive()) then
+		return
+	end
+	local data = ensure(player)
+	if data.Xp >= maxXp() then
+		return
+	end
+	local oldLevel = levelOf(data.Xp)
+	data.Xp = math.min(maxXp(), data.Xp + amount)
+	local newLevel = levelOf(data.Xp)
+	if newLevel > oldLevel then
+		Remotes.Notify:FireClient(player, "PassLevelUp", { Level = newLevel }, "success")
+	end
+	requestSync(player)
+end
+
+-- XP пропуска (например, за забранный квест: Config.BattlePass.Xp.Quest)
+function BattlePassService.AddXp(player: Player, amount: number)
+	if type(amount) ~= "number" or amount ~= amount or amount <= 0 then
+		return
+	end
+	giveXp(player, math.floor(amount))
+end
+
+-- Купленные за Robux уровни (продукт PassLevels). Работает и после конца сезона.
+-- Возвращает false, только если данные игрока не загружены (покупку стоит повторить позже).
+function BattlePassService.AddLevels(player: Player, n: number): boolean
+	if not DataService.IsLoaded(player) then
+		return false
+	end
+	if type(n) == "number" and n == n and n >= 1 then
+		giveXp(player, math.floor(n) * PASS.XpPerLevel, true)
+	end
+	return true
+end
+
+local function onStat(player: Player, stat: string, amount: number)
+	if not isReady(player) or not isActive() or type(amount) ~= "number" or amount ~= amount or amount <= 0 then
+		return
+	end
+	if stat == "Play" then
+		-- Время приходит кусками по 5 сек: копим и платим за каждую полную минуту
+		local total = (playSeconds[player] or 0) + amount
+		local minutes = total // PLAY_SECONDS
+		playSeconds[player] = total - minutes * PLAY_SECONDS
+		if minutes > 0 then
+			giveXp(player, minutes * (PASS.Xp.Play or 0))
+		end
+		return
+	end
+	local perUnit = PASS.Xp[stat]
+	if perUnit and perUnit > 0 then
+		giveXp(player, math.floor(perUnit * amount))
+	end
+end
+
+local function claim(player: Player, level: any, track: any): (boolean, string)
+	if not isReady(player) then
+		return false, "PassNotReady"
+	end
+	if type(level) ~= "number" or level ~= level or level % 1 ~= 0 or level < 1 or level > #PASS.Levels then
+		return false, "PassInvalid"
+	end
+	if type(track) ~= "string" or not TRACKS[track] then
+		return false, "PassInvalid"
+	end
+	local data = ensure(player)
+	if levelOf(data.Xp) < level then
+		return false, "PassLocked"
+	end
+	if track == "Premium" and player:GetAttribute("Pass_BattlePass") ~= true then
+		return false, "PassPremiumOnly"
+	end
+	local claims = data[track]
+	local key = tostring(level)
+	if claims[key] then
+		return false, "PassAlreadyClaimed"
+	end
+	-- Сначала отмечаем, потом выдаём: повторный запрос не получит награду дважды
+	claims[key] = true
+	local result = Grant.Give(player, PASS.Levels[level][track])
+	result.Level = level
+	result.Track = track
+	requestSync(player)
+	Remotes.Popup:FireClient(player, "Pass", result)
+	return true, "PassClaimed"
+end
+
+-- Вызывается из init.server после загрузки данных
+function BattlePassService.OnLoaded(player: Player)
+	BattlePassService.Sync(player)
+end
+
+function BattlePassService.Start()
+	Hooks.Connect(onStat)
+
+	Remotes.ClaimPass.OnServerInvoke = function(player: Player, level: any, track: any)
+		local ok, result, key = pcall(claim, player, level, track)
+		if not ok then
+			warn("[BattlePassService] Ошибка выдачи награды пропуска:", result)
+			return false, "PassNotReady"
+		end
+		return result, key
+	end
+
+	Players.PlayerRemoving:Connect(function(player)
+		playSeconds[player] = nil
+		lastSync[player] = nil
+		pendingSync[player] = nil
+	end)
+end
+
+return BattlePassService
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="17">
         <Properties>
           <string name="Name">ConveyorService</string>
           <string name="Source"><![CDATA[-- «Красная дорожка»: мемы появляются из портала, идут по дорожке, их можно купить.
@@ -1185,6 +1738,7 @@ local MemeFactory = require(script.Parent.MemeFactory)
 local PlotService = require(script.Parent.PlotService)
 local Remotes = require(script.Parent.Remotes)
 local Hooks = require(script.Parent.Hooks)
+local AnalyticsService = require(script.Parent.AnalyticsService)
 
 local ConveyorService = {}
 
@@ -1230,6 +1784,12 @@ local function rollCreature(): string
 		end).Id
 	end
 
+	-- Лимитированный мем недели (WeeklyService) — редкий гость на дорожке
+	local weekly = ReplicatedStorage:GetAttribute("WeeklyMeme")
+	if type(weekly) == "string" and Config.GetCreature(weekly) and random:NextNumber() < Config.Weekly.Chance then
+		return weekly
+	end
+
 	-- Удача: покупка «Удача сервера» и множитель админ-ивента складываются
 	local luck = (if isLucky() then Config.Conveyor.LuckMult else 1) * (ReplicatedStorage:GetAttribute("EventLuckMult") or 1)
 	local rarity = weightedPick(Config.Rarities, function(r)
@@ -1237,7 +1797,7 @@ local function rollCreature(): string
 	end)
 	local pool = {}
 	for _, creature in Config.Creatures do
-		if creature.Rarity == rarity.Id and not creature.Event then
+		if creature.Rarity == rarity.Id and not creature.Event and not creature.Limited and not creature.Exclusive then
 			table.insert(pool, creature)
 		end
 	end
@@ -1303,6 +1863,7 @@ local function tryBuy(player: Player, model: Model)
 	model:Destroy()
 
 	DataService.Increment(player, "Coins", -price)
+	AnalyticsService.Economy(player, "Sink", price, "Shop", id)
 	PlotService.AddMeme(player, id, mutationId, false, from)
 	Remotes.Fx:FireAllClients("Bought", { Position = from.Position, Rarity = Config.GetCreature(id).Rarity })
 	Remotes.Notify:FireClient(player, "Bought", { Meme = id }, "success")
@@ -1402,7 +1963,7 @@ return ConveyorService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="15">
+      <Item class="ModuleScript" referent="18">
         <Properties>
           <string name="Name">DataService</string>
           <string name="Source"><![CDATA[-- Прогресс игроков: загрузка/сохранение в DataStore, leaderstats и зеркало чисел в атрибутах игрока,
@@ -1435,6 +1996,8 @@ local DEFAULT_NUMBERS: { [string]: number } = {
 	PlayedToday = 0, -- секунд сыграно за день (для подарков за время)
 	TurretLevel = 0, -- уровень турели на базе (Config.Defense.Turret)
 	LaserLevel = 0, -- уровень лазерных ворот (Config.Defense.LaserGate)
+	Spins = 0, -- купленные/выигранные вращения колеса
+	LastFreeSpinDay = 0, -- UTC-день последнего бесплатного вращения
 }
 
 -- Табличные поля:
@@ -1443,7 +2006,12 @@ local DEFAULT_NUMBERS: { [string]: number } = {
 --   Receipts — массив PurchaseId обработанных покупок за Robux (защита от двойной выдачи)
 --   Items    — { [itemId] = true } купленные предметы (Config.Items)
 --   Quests   — { Day, List = { { Id, Goal, Progress, Claimed } }, AllClaimed } ежедневные квесты (проверяет QuestService)
-local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items", "Quests" }
+--   BattlePass — { Season, Xp, Free = { [level] = true }, Premium = { [level] = true } } (BattlePassService)
+--   Skins    — { Owned = { [skinId] = true }, Base = id, Slipper = id } (SkinService)
+--   Codes    — { [CODE] = true } введённые коды (SocialService)
+local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items", "Quests", "BattlePass", "Skins", "Codes" }
+-- Таблицы, которые хранятся как есть (проверяют их сами сервисы)
+local FREEFORM_TABLES = { "Quests", "BattlePass", "Skins", "Codes" }
 
 -- Блокировка сессии: пока игрок на одном сервере, другой сервер не загрузит его данные
 -- (иначе при быстром переходе между серверами можно задублировать мемов).
@@ -1567,7 +2135,9 @@ local function sanitize(saved: any): ({ [string]: any }, boolean)
 			end
 		end
 	end
-	data.Quests = if type(savedTable.Quests) == "table" then savedTable.Quests else {}
+	for _, key in FREEFORM_TABLES do
+		data[key] = if type(savedTable[key]) == "table" then savedTable[key] else {}
+	end
 	-- Старые сохранения (до туториала) — туториал не показываем
 	if not isNew and saved.TutorialDone == nil then
 		data.TutorialDone = 1
@@ -1730,7 +2300,9 @@ local function snapshot(data: { [string]: any }): { [string]: any }
 	copy.Index = table.clone(data.Index)
 	copy.Receipts = table.clone(data.Receipts)
 	copy.Items = table.clone(data.Items)
-	copy.Quests = deepCopy(data.Quests)
+	for _, key in FREEFORM_TABLES do
+		copy[key] = deepCopy(data[key])
+	end
 	return copy
 end
 
@@ -1807,7 +2379,7 @@ return DataService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="16">
+      <Item class="ModuleScript" referent="19">
         <Properties>
           <string name="Name">DefenseService</string>
           <string name="Source"><![CDATA[-- Защита базы: турель и лазерные ворота (Config.Defense), покупаются за монеты, уровни навсегда.
@@ -2180,7 +2752,7 @@ return DefenseService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="17">
+      <Item class="ModuleScript" referent="20">
         <Properties>
           <string name="Name">EmoteService</string>
           <string name="Source"><![CDATA[-- Эмоции: клиент просит сыграть эмоцию, сервер проверяет и рассылает всем Fx "Emote".
@@ -2233,7 +2805,7 @@ return EmoteService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="18">
+      <Item class="ModuleScript" referent="21">
         <Properties>
           <string name="Name">EventService</string>
           <string name="Source"><![CDATA[-- Серверные ивенты: «В ТРЕНДЕ» (один вид мема даёт ×3) и Ночь Смайлика — темнеет, по карте
@@ -2693,7 +3265,102 @@ return EventService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="19">
+      <Item class="ModuleScript" referent="22">
+        <Properties>
+          <string name="Name">Grant</string>
+          <string name="Source"><![CDATA[-- Выдача награды по описанию из конфига (коды, колесо удачи, Мем-пропуск, календарь).
+-- reward = { Kind = "Coins" | "Meme" | "Spins" | "Item" | "Skin", ... } — см. Config.Codes.
+-- Возвращает таблицу для Popup: { Coins?, Meme?, Spins?, Item?, Skin? }.
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local DataService = require(script.Parent.DataService)
+local PlotService = require(script.Parent.PlotService)
+
+local Grant = {}
+
+-- Колбэки из init.server: предмет выдан (перевыдать рюкзак), скин выдан (обновить SkinsJson)
+Grant.OnItemGranted = nil :: ((Player) -> ())?
+Grant.OnSkinGranted = nil :: ((Player) -> ())?
+
+local function incomeCoins(player: Player, incomeSeconds: number?, minCoins: number?): number
+	return math.max(minCoins or 0, math.floor(PlotService.IncomeOf(player) * (incomeSeconds or 0)))
+end
+
+local function coins(player: Player, amount: number, result: { [string]: any })
+	PlotService.AddCoins(player, amount)
+	result.Coins = (result.Coins or 0) + amount
+end
+
+-- Случайный обычный мем редкости (без сезонных, лимитированных и эксклюзивов)
+function Grant.RandomMeme(rarity: string): string?
+	local pool = {}
+	for _, creature in Config.Creatures do
+		if creature.Rarity == rarity and not creature.Event and not creature.Limited and not creature.Exclusive then
+			table.insert(pool, creature.Id)
+		end
+	end
+	if #pool == 0 then
+		return nil
+	end
+	return pool[math.random(1, #pool)]
+end
+
+function Grant.Give(player: Player, reward: any): { [string]: any }
+	local result: { [string]: any } = {}
+	if not DataService.IsLoaded(player) or type(reward) ~= "table" then
+		return result
+	end
+	local kind = reward.Kind
+	if kind == "Coins" then
+		coins(player, incomeCoins(player, reward.IncomeSeconds, reward.MinCoins), result)
+	elseif kind == "Spins" then
+		DataService.Increment(player, "Spins", reward.Amount or 1)
+		result.Spins = reward.Amount or 1
+	elseif kind == "Meme" then
+		local id = reward.Id or Grant.RandomMeme(reward.Rarity)
+		if id and Config.GetCreature(id) then
+			if PlotService.AddMeme(player, id, "None", false) then
+				result.Meme = id
+			else
+				-- База заполнена — половина цены мема деньгами
+				coins(player, math.max(1, math.floor(Config.PriceOf(id, "None") * 0.5)), result)
+			end
+		end
+	elseif kind == "Item" then
+		local item = Config.GetItem(reward.ItemId)
+		local items = DataService.GetTable(player, "Items")
+		if item and not item.Pass and not items[item.Id] then
+			items[item.Id] = true
+			result.Item = item.Id
+			if Grant.OnItemGranted then
+				task.spawn(Grant.OnItemGranted, player)
+			end
+		else
+			coins(player, incomeCoins(player, 600, 2500), result)
+		end
+	elseif kind == "Skin" then
+		local skin = Config.GetSkin(reward.SkinId)
+		local skins = DataService.GetTable(player, "Skins")
+		skins.Owned = skins.Owned or {}
+		if skin and not skins.Owned[skin.Id] then
+			skins.Owned[skin.Id] = true
+			result.Skin = skin.Id
+			if Grant.OnSkinGranted then
+				task.spawn(Grant.OnSkinGranted, player)
+			end
+		else
+			coins(player, incomeCoins(player, 600, 2500), result)
+		end
+	end
+	return result
+end
+
+return Grant
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="23">
         <Properties>
           <string name="Name">Hooks</string>
           <string name="Source"><![CDATA[-- Игровые события для квестов и статистики: другие сервисы сообщают «что произошло»,
@@ -2719,7 +3386,7 @@ return Hooks
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="20">
+      <Item class="ModuleScript" referent="24">
         <Properties>
           <string name="Name">ItemService</string>
           <string name="Source"><![CDATA[-- Предметы из Config.Items: оружие (тапок, бита, сковородка, бан-молот) и гаджеты
@@ -2735,6 +3402,7 @@ local DataService = require(script.Parent.DataService)
 local Remotes = require(script.Parent.Remotes)
 local StealService = require(script.Parent.StealService)
 local Hooks = require(script.Parent.Hooks)
+local AnalyticsService = require(script.Parent.AnalyticsService)
 
 local ItemService = {}
 
@@ -2814,7 +3482,7 @@ local function addPart(tool: Tool, handle: BasePart, props: { [string]: any }, o
 	p.Parent = tool
 end
 
-local function buildTool(item: any, gold: boolean): Tool
+local function buildTool(item: any, gold: boolean, skin: any?): Tool
 	local tool = Instance.new("Tool")
 	tool.Name = item.Id
 	tool.ToolTip = item.Face .. " " .. item.Name
@@ -2835,6 +3503,25 @@ local function buildTool(item: any, gold: boolean): Tool
 		handle.Size = Vector3.new(1.2, 2.6, 0.35)
 		handle.Color = if gold then Color3.fromRGB(255, 205, 50) else Color3.fromRGB(70, 90, 200)
 		handle.Material = if gold then Enum.Material.Foil else Enum.Material.Fabric
+		-- Скин тапка (SkinService) поверх золотого/обычного
+		if skin and skin.Color then
+			handle.Color = skin.Color
+			handle.Material = (Enum.Material :: any)[skin.Material or "SmoothPlastic"]
+			if skin.Rainbow then
+				local sparkles = Instance.new("ParticleEmitter")
+				sparkles.Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 60, 60)),
+					ColorSequenceKeypoint.new(0.5, Color3.fromRGB(60, 255, 120)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(80, 120, 255)),
+				})
+				sparkles.LightEmission = 1
+				sparkles.Size = NumberSequence.new(0.25, 0)
+				sparkles.Rate = 12
+				sparkles.Lifetime = NumberRange.new(0.5, 0.8)
+				sparkles.Speed = NumberRange.new(1, 2)
+				sparkles.Parent = handle
+			end
+		end
 		tool.Grip = CFrame.new(0, -0.9, 0) * CFrame.Angles(0, math.rad(90), 0)
 		addPart(tool, handle, { Size = Vector3.new(1.25, 0.35, 0.5), Color = Color3.fromRGB(240, 240, 240) }, CFrame.new(0, 0.6, -0.3))
 	elseif id == "Bat" then
@@ -3216,7 +3903,9 @@ local function useRocket(player: Player, item: any, tool: Tool)
 		return
 	end
 	local look = root.CFrame.LookVector
-	-- Толчок делает клиент владельца (персонажем управляет он), stun = 0 — без падения
+	-- Толчок делает клиент владельца (персонажем управляет он), stun = 0 — без падения.
+	-- MoveGraceUntil: анти-чит переноски не считает этот рывок телепортом.
+	(player.Character :: Model):SetAttribute("MoveGraceUntil", now() + 3)
 	Remotes.Knockback:FireClient(player, Vector3.new(look.X, 0, look.Z) * item.Forward + Vector3.new(0, item.Jump, 0), 0)
 	Remotes.Fx:FireAllClients("Rocket", { Position = root.Position })
 end
@@ -3266,11 +3955,12 @@ function ItemService.GiveTools(player: Player)
 		end
 	end
 	local gold = player:GetAttribute("Pass_GoldSlipper") == true
+	local slipperSkin = Config.GetSkin(player:GetAttribute("SlipperSkin") or "")
 	for _, item in Config.Items do
 		if not ItemService.Owns(player, item.Id) then
 			continue
 		end
-		local tool = buildTool(item, gold)
+		local tool = buildTool(item, gold, if item.Id == "Slipper" then slipperSkin else nil)
 		-- Перезарядка переживает респавн
 		local endsAt = cooldowns[player] and cooldowns[player][item.Id]
 		if endsAt and endsAt > os.clock() then
@@ -3311,6 +4001,7 @@ function ItemService.Buy(player: Player, id: unknown): (boolean, string)
 		return false, "NotEnoughCash"
 	end
 	DataService.Increment(player, "Coins", -item.Price)
+	AnalyticsService.Economy(player, "Sink", item.Price, "Shop", id)
 	DataService.GetTable(player, "Items")[id] = true
 	syncItems(player)
 	ItemService.GiveTools(player)
@@ -3350,7 +4041,7 @@ return ItemService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="21">
+      <Item class="ModuleScript" referent="25">
         <Properties>
           <string name="Name">LeaderboardService</string>
           <string name="Source"><![CDATA[-- Глобальные таблицы лидеров на карте: «Богачи» (всего заработано) и «Воры» (успешные кражи).
@@ -3434,7 +4125,7 @@ return LeaderboardService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="22">
+      <Item class="ModuleScript" referent="26">
         <Properties>
           <string name="Name">MapBuilder</string>
           <string name="Source"><![CDATA[-- Строит карту кодом: земля, «красная дорожка» мемов, 8 баз игроков, сезонный декор,
@@ -3992,7 +4683,7 @@ return MapBuilder
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="23">
+      <Item class="ModuleScript" referent="27">
         <Properties>
           <string name="Name">MemeFactory</string>
           <string name="Source"><![CDATA[-- Собирает модель мема: из примитивов (тело + ножки + эмодзи-лицо) или из модели Creator Store
@@ -4276,7 +4967,7 @@ return MemeFactory
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="24">
+      <Item class="ModuleScript" referent="28">
         <Properties>
           <string name="Name">PlotService</string>
           <string name="Source"><![CDATA[-- Базы игроков: выдача базы, мемы в слотах, доход в секунду, замок, страж, Индекс, перерождения.
@@ -4291,6 +4982,7 @@ local DataService = require(script.Parent.DataService)
 local MemeFactory = require(script.Parent.MemeFactory)
 local Remotes = require(script.Parent.Remotes)
 local Hooks = require(script.Parent.Hooks)
+local AnalyticsService = require(script.Parent.AnalyticsService)
 
 local PlotService = {}
 
@@ -4451,6 +5143,7 @@ function PlotService.IncomeOf(player: Player): number
 	end
 	total *= 1 + (player:GetAttribute("IndexCount") or 0) * Config.IndexBonusPerEntry
 	total *= ReplicatedStorage:GetAttribute("EventIncomeMult") or 1 -- «Двойные деньги» админ-ивента
+	total *= 1 + (player:GetAttribute("FriendBoost") or 0) + (if player:GetAttribute("InGroup") then Config.Social.GroupBoost else 0) -- друзья и группа (SocialService)
 	return total
 end
 
@@ -4774,6 +5467,7 @@ function PlotService.UpgradeGuard(player: Player): (boolean, string)
 		return false, "NotEnoughCash"
 	end
 	DataService.Increment(player, "Coins", -nextLevel.Price)
+	AnalyticsService.Economy(player, "Sink", nextLevel.Price, "Gameplay", "Guard" .. (level + 1))
 	DataService.Set(player, "GuardLevel", level + 1)
 	PlotService.RefreshGuard(player)
 	Remotes.Notify:FireClient(player, "GuardUpgraded", { Level = level + 1 }, "success")
@@ -4790,6 +5484,7 @@ function PlotService.Rebirth(player: Player): (boolean, string)
 		return false, "RebirthNeed"
 	end
 	DataService.Set(player, "Coins", 0)
+	AnalyticsService.Economy(player, "Sink", cost, "Gameplay", "Rebirth")
 	DataService.Set(player, "Rebirths", rebirths + 1)
 	updateSlotsInfo(player)
 	PlotService.RefreshIncome(player)
@@ -4951,7 +5646,7 @@ return PlotService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="25">
+      <Item class="ModuleScript" referent="29">
         <Properties>
           <string name="Name">QuestService</string>
           <string name="Source"><![CDATA[-- Ежедневные квесты: Config.Quests.PerDay случайных заданий из пула, сброс в полночь UTC.
@@ -5163,7 +5858,7 @@ return QuestService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="26">
+      <Item class="ModuleScript" referent="30">
         <Properties>
           <string name="Name">Remotes</string>
           <string name="Source"><![CDATA[-- Создаёт ReplicatedStorage.Remotes. Клиент получает их через
@@ -5217,6 +5912,13 @@ local Remotes = {
 	TradeReady = make("RemoteEvent", "TradeReady") :: RemoteEvent, -- C→S (ready: boolean)
 	TradeCancel = make("RemoteEvent", "TradeCancel") :: RemoteEvent, -- C→S ()
 	TradeState = make("RemoteEvent", "TradeState") :: RemoteEvent, -- S→C (state | nil)
+	-- v4: коды, колесо, пропуск, скины, группа
+	RedeemCode = make("RemoteFunction", "RedeemCode") :: RemoteFunction, -- C→S (code: string) -> (ok, key)
+	Spin = make("RemoteFunction", "Spin") :: RemoteFunction, -- C→S () -> (ok, key, segmentIndex?)
+	ClaimPass = make("RemoteFunction", "ClaimPass") :: RemoteFunction, -- C→S (level: number, track: "Free" | "Premium") -> (ok, key)
+	BuySkin = make("RemoteFunction", "BuySkin") :: RemoteFunction, -- C→S (skinId) -> (ok, key)
+	EquipSkin = make("RemoteFunction", "EquipSkin") :: RemoteFunction, -- C→S (skinId) -> (ok, key)
+	CheckGroup = make("RemoteEvent", "CheckGroup") :: RemoteEvent, -- C→S () — перепроверить членство в группе
 }
 
 folder.Parent = ReplicatedStorage
@@ -5225,7 +5927,7 @@ return Remotes
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="27">
+      <Item class="ModuleScript" referent="31">
         <Properties>
           <string name="Name">RewardService</string>
           <string name="Source"><![CDATA[-- Награды за возвращение: оффлайн-доход, календарь ежедневных наград (игрок забирает сам), подарки за время в игре.
@@ -5425,7 +6127,7 @@ return RewardService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="28">
+      <Item class="ModuleScript" referent="32">
         <Properties>
           <string name="Name">ShopService</string>
           <string name="Source"><![CDATA[-- Покупки за Robux: геймпассы (проверка при входе и после покупки) и продукты (ProcessReceipt).
@@ -5438,6 +6140,7 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local DataService = require(script.Parent.DataService)
 local PlotService = require(script.Parent.PlotService)
 local Remotes = require(script.Parent.Remotes)
+local AnalyticsService = require(script.Parent.AnalyticsService)
 
 local ShopService = {}
 
@@ -5543,6 +6246,7 @@ local function grantProduct(player: Player, key: string): boolean
 	elseif key == "CashSmall" or key == "CashMedium" or key == "CashLarge" then
 		local coins = incomeCoins(player, product)
 		PlotService.AddCoins(player, coins)
+		AnalyticsService.Economy(player, "Source", coins, "IAP", key)
 		Remotes.Notify:FireClient(player, "CashBought", { Coins = coins }, "success")
 		return true
 	elseif key == "LockExtend" then
@@ -5599,6 +6303,7 @@ local function processReceipt(receipt): Enum.ProductPurchaseDecision
 		return Enum.ProductPurchaseDecision.PurchaseGranted
 	end
 	DataService.AddReceipt(player, purchaseId)
+	AnalyticsService.Custom(player, "RobuxPurchase", 1, key)
 	-- Сохраняем сразу, чтобы чек не потерялся при падении сервера
 	if not DataService.Save(player) then
 		warn("[ShopService] Покупка выдана, но не сохранена", player.Name, purchaseId)
@@ -5624,7 +6329,251 @@ return ShopService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="29">
+      <Item class="ModuleScript" referent="33">
+        <Properties>
+          <string name="Name">SocialService</string>
+          <string name="Source"><![CDATA[-- Коды, бонус за друзей на сервере и бонус участникам группы.
+-- Коды: Remotes.RedeemCode(code) -> (ok, key); введённые коды — DataService.GetTable(player, "Codes") = { [CODE] = true }.
+-- Друзья: атрибут FriendBoost (доля, 0..Config.Social.FriendBoostMax) пересчитывается при входе/выходе игроков.
+-- Группа: атрибут InGroup; Remotes.CheckGroup перепроверяет после вступления.
+-- Оба бонуса учитывает PlotService.IncomeOf.
+local GroupService = game:GetService("GroupService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local DataService = require(script.Parent.DataService)
+local PlotService = require(script.Parent.PlotService)
+local Grant = require(script.Parent.Grant)
+local AnalyticsService = require(script.Parent.AnalyticsService)
+local Remotes = require(script.Parent.Remotes)
+
+local SocialService = {}
+
+local CODE_MAX_LENGTH = 30
+local CODE_COOLDOWN = 1
+local GROUP_COOLDOWN = 5
+
+local active: { [Player]: boolean } = {} -- игроки с загруженными данными
+local lastCode: { [Player]: number } = {}
+local lastGroupCheck: { [Player]: number } = {}
+-- Кеш дружбы по паре "меньшийId:большийId" (IsFriendsWith — запрос к сети)
+local friendCache: { [string]: boolean } = {}
+
+local function now(): number
+	return os.clock()
+end
+
+-- ===== Коды =====
+
+local function normalize(code: string): string
+	return (string.upper(code):match("^%s*(.-)%s*$")) or ""
+end
+
+local function redeem(player: Player, code: unknown): (boolean, string)
+	if not active[player] or not DataService.IsLoaded(player) then
+		return false, "CodeInvalid"
+	end
+	local t = now()
+	if t - (lastCode[player] or -math.huge) < CODE_COOLDOWN then
+		return false, "CodeWait"
+	end
+	lastCode[player] = t
+	if type(code) ~= "string" or #code > CODE_MAX_LENGTH then
+		return false, "CodeInvalid"
+	end
+	local key = normalize(code)
+	local entry = Config.Codes[key]
+	if key == "" or type(entry) ~= "table" then
+		return false, "CodeInvalid"
+	end
+	if entry.Expires and os.time() > entry.Expires then
+		return false, "CodeExpired"
+	end
+	local used = DataService.GetTable(player, "Codes")
+	if used[key] then
+		return false, "CodeUsed"
+	end
+	-- Сначала помечаем код, потом выдаём: повторный запрос не получит награду дважды
+	used[key] = true
+	local result = Grant.Give(player, entry.Reward)
+	if result.Coins then
+		AnalyticsService.Economy(player, "Source", result.Coins, "Gameplay", "Code_" .. key)
+	end
+	result.Code = key
+	Remotes.Popup:FireClient(player, "Code", result)
+	return true, "CodeRedeemed"
+end
+
+-- ===== Друзья =====
+
+local function pairKey(a: number, b: number): string
+	if a > b then
+		a, b = b, a
+	end
+	return a .. ":" .. b
+end
+
+local function areFriends(player: Player, other: Player): boolean
+	local key = pairKey(player.UserId, other.UserId)
+	local cached = friendCache[key]
+	if cached ~= nil then
+		return cached
+	end
+	local ok, result = pcall(function()
+		return player:IsFriendsWith(other.UserId)
+	end)
+	if not ok then
+		return false -- не кешируем ошибку: попробуем при следующем пересчёте
+	end
+	friendCache[key] = result == true
+	return result == true
+end
+
+local function applyFriendBoost(player: Player, count: number)
+	local social = Config.Social
+	local boost = math.min(count * social.FriendBoostPer, social.FriendBoostMax)
+	local old = player:GetAttribute("FriendBoost") or 0
+	if math.abs(boost - old) < 1e-6 then
+		return
+	end
+	player:SetAttribute("FriendBoost", boost)
+	PlotService.RefreshIncome(player)
+	if boost > old then
+		Remotes.Notify:FireClient(player, "FriendBoost", { Percent = math.floor(boost * 100 + 0.5) }, "success")
+	end
+end
+
+-- Пересчёт идёт в одном потоке: если состав сервера меняется во время пересчёта, просто повторяем
+local recomputing = false
+local dirty = false
+
+local function recomputeAll()
+	dirty = true
+	if recomputing then
+		return
+	end
+	recomputing = true
+	while dirty do
+		dirty = false
+		local list = {}
+		for player in active do
+			table.insert(list, player)
+		end
+		for _, player in list do
+			if active[player] then
+				local count = 0
+				for _, other in list do
+					if other ~= player and active[other] and areFriends(player, other) then
+						count += 1
+					end
+				end
+				if active[player] then
+					applyFriendBoost(player, count)
+				end
+			end
+		end
+	end
+	recomputing = false
+end
+
+-- ===== Группа =====
+
+local function setInGroup(player: Player, inGroup: boolean)
+	local old = player:GetAttribute("InGroup") == true
+	player:SetAttribute("InGroup", inGroup)
+	if old ~= inGroup then
+		PlotService.RefreshIncome(player)
+		if inGroup then
+			Remotes.Notify:FireClient(player, "GroupBoostOn", { Percent = math.floor(Config.Social.GroupBoost * 100 + 0.5) }, "success")
+		end
+	end
+end
+
+-- Свежая проверка: IsInGroup кеширует ответ на всю сессию, GetGroupsAsync — нет
+local function checkGroupFresh(player: Player)
+	local groupId = Config.Social.GroupId
+	if groupId == 0 or not active[player] then
+		return
+	end
+	local ok, groups = pcall(function()
+		return GroupService:GetGroupsAsync(player.UserId)
+	end)
+	if not ok or type(groups) ~= "table" or not active[player] then
+		return
+	end
+	local found = false
+	for _, group in groups do
+		if type(group) == "table" and group.Id == groupId then
+			found = true
+			break
+		end
+	end
+	setInGroup(player, found)
+end
+
+-- ===== Жизненный цикл =====
+
+function SocialService.OnLoaded(player: Player)
+	if not DataService.IsLoaded(player) then
+		return
+	end
+	active[player] = true
+	player:SetAttribute("FriendBoost", 0)
+	player:SetAttribute("InGroup", false)
+	task.spawn(recomputeAll)
+
+	local groupId = Config.Social.GroupId
+	if groupId ~= 0 then
+		task.spawn(function()
+			local ok, inGroup = pcall(function()
+				return player:IsInGroup(groupId)
+			end)
+			if ok and active[player] then
+				setInGroup(player, inGroup == true)
+			end
+		end)
+	end
+end
+
+function SocialService.OnPlayerRemoving(player: Player)
+	local wasActive = active[player]
+	active[player] = nil
+	lastCode[player] = nil
+	lastGroupCheck[player] = nil
+	local prefix = player.UserId .. ":"
+	local suffix = ":" .. player.UserId
+	for key in friendCache do
+		if string.sub(key, 1, #prefix) == prefix or string.sub(key, -#suffix) == suffix then
+			friendCache[key] = nil
+		end
+	end
+	if wasActive then
+		task.spawn(recomputeAll)
+	end
+end
+
+function SocialService.Start()
+	Remotes.RedeemCode.OnServerInvoke = function(player, code)
+		return redeem(player, code)
+	end
+	Remotes.CheckGroup.OnServerEvent:Connect(function(player)
+		if Config.Social.GroupId == 0 or not active[player] then
+			return
+		end
+		local t = now()
+		if t - (lastGroupCheck[player] or -math.huge) < GROUP_COOLDOWN then
+			return
+		end
+		lastGroupCheck[player] = t
+		checkGroupFresh(player)
+	end)
+end
+
+return SocialService
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="34">
         <Properties>
           <string name="Name">StealService</string>
           <string name="Source"><![CDATA[-- Кражи: удержание «Украсть», переноска мема над головой, доставка на свою базу,
@@ -5641,13 +6590,25 @@ local Hooks = require(script.Parent.Hooks)
 
 local StealService = {}
 
-type Carry = { Owner: Player, Slot: number, Model: Model, Id: string, EndsAt: number }
+type Carry = {
+	Owner: Player,
+	Slot: number,
+	Model: Model,
+	Id: string,
+	EndsAt: number,
+	-- Анти-чит: последняя проверенная позиция вора и число нарушений скорости
+	LastPos: Vector3?,
+	LastTime: number?,
+	Strikes: number?,
+}
 
 local carries: { [Player]: Carry } = {} -- вор -> что несёт
 local holdStart: { [Player]: number } = {}
 local guardLastHit: { [Model]: number } = {}
 
 local BASE_WALK_SPEED = 16
+
+local checkMovement: (thief: Player, carry: Carry, root: BasePart, t: number) -> boolean
 
 -- Колбэк начала кражи (выставляет init.server): снять шапку-невидимку и т.п.
 StealService.OnStealStarted = nil :: ((thief: Player) -> ())?
@@ -5821,6 +6782,36 @@ function StealService.TryStart(thief: Player, owner: Player, slot: number, promp
 	Remotes.Notify:FireClient(owner, "BeingStolen", { Meme = id, Player = thief.DisplayName }, "error")
 end
 
+-- Анти-чит переноски: вор не может двигаться быстрее своей скорости (телепорт домой с мемом).
+-- Возвращает false, если перенос сорван. Отброс и ракетные ботинки ставят персонажу
+-- атрибут MoveGraceUntil — в это время скорость не проверяем.
+function checkMovement(thief: Player, carry: Carry, root: BasePart, t: number): boolean
+	local position = root.Position
+	local lastPos, lastTime = carry.LastPos, carry.LastTime
+	carry.LastPos, carry.LastTime = position, t
+	if not lastPos or not lastTime then
+		return true
+	end
+	local character = thief.Character
+	if character and (character:GetAttribute("MoveGraceUntil") or 0) > t then
+		return true
+	end
+	local humanoid = humanoidOf(thief)
+	local speed = math.max(if humanoid then humanoid.WalkSpeed else BASE_WALK_SPEED, BASE_WALK_SPEED)
+	local flat = Vector3.new(position.X - lastPos.X, 0, position.Z - lastPos.Z).Magnitude
+	local allowed = speed * (t - lastTime) * Config.AntiCheat.CarrySpeedSlack + Config.AntiCheat.CarryExtraStuds
+	if flat <= allowed then
+		return true
+	end
+	carry.Strikes = (carry.Strikes or 0) + 1
+	warn(string.format("[AntiCheat] %s двигается слишком быстро с мемом: %.1f studs (можно %.1f)", thief.Name, flat, allowed))
+	if carry.Strikes >= Config.AntiCheat.MaxStrikes then
+		StealService.Fail(thief)
+		return false
+	end
+	return true
+end
+
 -- Отменить все кражи мемов этого хозяина (хозяин выходит из игры)
 function StealService.CancelFromOwner(owner: Player)
 	for thief, carry in carries do
@@ -5839,6 +6830,10 @@ function StealService.Knock(target: Player, from: Vector3, power: number, stun: 
 	local direction = root.Position - from
 	direction = Vector3.new(direction.X, 0, direction.Z)
 	direction = if direction.Magnitude > 0.01 then direction.Unit else Vector3.new(1, 0, 0)
+	local character = target.Character
+	if character then
+		character:SetAttribute("MoveGraceUntil", now() + 1.5 + (stun or 0.6))
+	end
 	Remotes.Knockback:FireClient(target, direction * power + Vector3.new(0, power * 0.45, 0), stun or 0.6)
 	local carry = carries[target]
 	if carry then
@@ -5928,6 +6923,9 @@ function StealService.Start()
 			end
 			local plot = PlotService.GetPlot(thief)
 			local root = rootOf(thief)
+			if root and not checkMovement(thief, carry, root, t) then
+				continue
+			end
 			if plot and root and PlotService.InPlot(plot, root.Position) then
 				deliver(thief)
 			end
@@ -5950,7 +6948,7 @@ return StealService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="30">
+      <Item class="ModuleScript" referent="35">
         <Properties>
           <string name="Name">TradeService</string>
           <string name="Source"><![CDATA[-- Обмен мемами между игроками (только мемы, без монет).
@@ -6396,15 +7394,15 @@ return TradeService
       </Item>
     </Item>
   </Item>
-  <Item class="StarterPlayer" referent="31">
+  <Item class="StarterPlayer" referent="36">
     <Properties>
       <string name="Name">StarterPlayer</string>
     </Properties>
-    <Item class="StarterPlayerScripts" referent="32">
+    <Item class="StarterPlayerScripts" referent="37">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="LocalScript" referent="33">
+      <Item class="LocalScript" referent="38">
         <Properties>
           <string name="Name">Client</string>
           <string name="Source"><![CDATA[-- Точка входа клиента «Укради Мем»: создаёт экран, общий контекст UI и запускает модули.
@@ -6548,7 +7546,7 @@ for _, name in modules do
 end
 ]]></string>
         </Properties>
-        <Item class="ModuleScript" referent="34">
+        <Item class="ModuleScript" referent="39">
           <Properties>
             <string name="Name">Banners</string>
             <string name="Source"><![CDATA[-- Баннеры сверху по центру: админ-ивент (идёт / до следующего), «В ТРЕНДЕ», Ночь Смайлика
@@ -6700,7 +7698,7 @@ return Banners
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="35">
+        <Item class="ModuleScript" referent="40">
           <Properties>
             <string name="Name">Carry</string>
             <string name="Source"><![CDATA[-- Кража: пока игрок несёт мема (атрибут Carrying), показываем баннер с таймером
@@ -6872,7 +7870,7 @@ return Carry
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="36">
+        <Item class="ModuleScript" referent="41">
           <Properties>
             <string name="Name">DailyWindow</string>
             <string name="Source"><![CDATA[-- Календарь ежедневных наград: 7 клеток из Config.DailyCalendar, забранные дни с галочкой,
@@ -7106,7 +8104,7 @@ return DailyWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="37">
+        <Item class="ModuleScript" referent="42">
           <Properties>
             <string name="Name">DefenseWindow</string>
             <string name="Source"><![CDATA[-- Окно защиты базы: три карточки — страж (Kitten with a Sword), турель и лазерные ворота.
@@ -7318,7 +8316,7 @@ return DefenseWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="38">
+        <Item class="ModuleScript" referent="43">
           <Properties>
             <string name="Name">Effects</string>
             <string name="Source"><![CDATA[-- Клиентские эффекты: отбрасывание с оглушением (Remotes.Knockback), разовые вспышки/конфетти
@@ -7766,7 +8764,7 @@ return Effects
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="39">
+        <Item class="ModuleScript" referent="44">
           <Properties>
             <string name="Name">Emotes</string>
             <string name="Source"><![CDATA[-- Эмоции: окно-сетка из Config.Emotes (закрытые геймпассом — с замком и покупкой) и процедурная
@@ -8208,7 +9206,7 @@ return Emotes
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="40">
+        <Item class="ModuleScript" referent="45">
           <Properties>
             <string name="Name">FxExtra</string>
             <string name="Source"><![CDATA[-- Эффекты v3 по Remotes.Fx: выстрел турели ("Turret" {From, To}), вспышка лазерных ворот ("Laser"
@@ -8517,7 +9515,7 @@ return FxExtra
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="41">
+        <Item class="ModuleScript" referent="46">
           <Properties>
             <string name="Name">Hud</string>
             <string name="Source"><![CDATA[-- HUD: деньги/доход/слоты слева сверху, таймер подарка за игру и боковые кнопки в две колонки:
@@ -8862,7 +9860,7 @@ return Hud
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="42">
+        <Item class="ModuleScript" referent="47">
           <Properties>
             <string name="Name">IndexWindow</string>
             <string name="Source"><![CDATA[-- Окно Индекса: сетка всех мемов из Config.Creatures. Открытые — цветные, закрытые — «???».
@@ -9085,7 +10083,7 @@ return IndexWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="43">
+        <Item class="ModuleScript" referent="48">
           <Properties>
             <string name="Name">Items</string>
             <string name="Source"><![CDATA[-- Окно предметов: оружие и гаджеты из Config.Items, покупка за монеты навсегда.
@@ -9335,7 +10333,7 @@ return Items
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="44">
+        <Item class="ModuleScript" referent="49">
           <Properties>
             <string name="Name">MemeBillboards</string>
             <string name="Source"><![CDATA[-- Таблички над мемами (тег "Meme"): мутация, ВИРУСНЫЙ, имя, редкость, доход/сек, цена на дорожке.
@@ -9539,7 +10537,7 @@ return MemeBillboards
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="45">
+        <Item class="ModuleScript" referent="50">
           <Properties>
             <string name="Name">PlotSigns</string>
             <string name="Source"><![CDATA[-- Таблички баз: SurfaceGui на Sign каждой базы (Face = Front) — имя хозяина или «Свободно»,
@@ -9653,7 +10651,7 @@ return PlotSigns
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="46">
+        <Item class="ModuleScript" referent="51">
           <Properties>
             <string name="Name">Popups</string>
             <string name="Source"><![CDATA[-- Всплывающие окна от сервера (Remotes.Popup): оффлайн-доход и ежедневная награда
@@ -9775,7 +10773,7 @@ return Popups
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="47">
+        <Item class="ModuleScript" referent="52">
           <Properties>
             <string name="Name">Prompts</string>
             <string name="Source"><![CDATA[-- ProximityPrompt мемов и замков баз: перевод ActionText/ObjectText и локальное выключение лишних
@@ -10046,7 +11044,7 @@ return Prompts
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="48">
+        <Item class="ModuleScript" referent="53">
           <Properties>
             <string name="Name">QuestsWindow</string>
             <string name="Source"><![CDATA[-- Окно ежедневных квестов. Источник — атрибут игрока QuestsJson:
@@ -10372,7 +11370,7 @@ return QuestsWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="49">
+        <Item class="ModuleScript" referent="54">
           <Properties>
             <string name="Name">RebirthWindow</string>
             <string name="Source"><![CDATA[-- Окно перерождения: цена, прогресс денег до цены, что даёт, кнопка.
@@ -10514,7 +11512,7 @@ return RebirthWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="50">
+        <Item class="ModuleScript" referent="55">
           <Properties>
             <string name="Name">Shop</string>
             <string name="Source"><![CDATA[-- Окно магазина: геймпассы (навсегда) и продукты за Robux (бусты, деньги).
@@ -10714,7 +11712,7 @@ return Shop
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="51">
+        <Item class="ModuleScript" referent="56">
           <Properties>
             <string name="Name">Status</string>
             <string name="Source"><![CDATA[-- Состояние своего персонажа над панелью предметов (снизу по центру):
@@ -10946,7 +11944,7 @@ return Status
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="52">
+        <Item class="ModuleScript" referent="57">
           <Properties>
             <string name="Name">Strings</string>
             <string name="Source"><![CDATA[--!strict
@@ -11166,7 +12164,7 @@ return Locale
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="53">
+        <Item class="ModuleScript" referent="58">
           <Properties>
             <string name="Name">TradeWindow</string>
             <string name="Source"><![CDATA[-- Обмен мемами между игроками. Клиент только показывает состояние и шлёт намерения; что можно
@@ -11782,7 +12780,7 @@ return TradeWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="54">
+        <Item class="ModuleScript" referent="59">
           <Properties>
             <string name="Name">Tutorial</string>
             <string name="Source"><![CDATA[-- Обучение новичка (атрибут игрока TutorialDone == 0): карточка с шагом внизу по центру и
@@ -12056,7 +13054,7 @@ return Tutorial
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="55">
+        <Item class="ModuleScript" referent="60">
           <Properties>
             <string name="Name">UiKit</string>
             <string name="Source"><![CDATA[-- Небольшой набор для построения UI кодом (Studio под рукой нет, поэтому весь интерфейс — в скриптах).
@@ -12228,7 +13226,7 @@ return UiKit
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="56">
+        <Item class="ModuleScript" referent="61">
           <Properties>
             <string name="Name">Util</string>
             <string name="Source"><![CDATA[--!strict
@@ -12422,5 +13420,12 @@ return Util
         </Item>
       </Item>
     </Item>
+  </Item>
+  <Item class="Workspace" referent="62">
+    <Properties>
+      <string name="Name">Workspace</string>
+      <bool name="NeedsPivotMigration">false</bool>
+      <bool name="StreamingEnabled">true</bool>
+    </Properties>
   </Item>
 </roblox>

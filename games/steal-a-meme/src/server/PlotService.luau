@@ -10,6 +10,7 @@ local DataService = require(script.Parent.DataService)
 local MemeFactory = require(script.Parent.MemeFactory)
 local Remotes = require(script.Parent.Remotes)
 local Hooks = require(script.Parent.Hooks)
+local AnalyticsService = require(script.Parent.AnalyticsService)
 
 local PlotService = {}
 
@@ -170,6 +171,7 @@ function PlotService.IncomeOf(player: Player): number
 	end
 	total *= 1 + (player:GetAttribute("IndexCount") or 0) * Config.IndexBonusPerEntry
 	total *= ReplicatedStorage:GetAttribute("EventIncomeMult") or 1 -- «Двойные деньги» админ-ивента
+	total *= 1 + (player:GetAttribute("FriendBoost") or 0) + (if player:GetAttribute("InGroup") then Config.Social.GroupBoost else 0) -- друзья и группа (SocialService)
 	return total
 end
 
@@ -493,6 +495,7 @@ function PlotService.UpgradeGuard(player: Player): (boolean, string)
 		return false, "NotEnoughCash"
 	end
 	DataService.Increment(player, "Coins", -nextLevel.Price)
+	AnalyticsService.Economy(player, "Sink", nextLevel.Price, "Gameplay", "Guard" .. (level + 1))
 	DataService.Set(player, "GuardLevel", level + 1)
 	PlotService.RefreshGuard(player)
 	Remotes.Notify:FireClient(player, "GuardUpgraded", { Level = level + 1 }, "success")
@@ -509,6 +512,7 @@ function PlotService.Rebirth(player: Player): (boolean, string)
 		return false, "RebirthNeed"
 	end
 	DataService.Set(player, "Coins", 0)
+	AnalyticsService.Economy(player, "Sink", cost, "Gameplay", "Rebirth")
 	DataService.Set(player, "Rebirths", rebirths + 1)
 	updateSlotsInfo(player)
 	PlotService.RefreshIncome(player)

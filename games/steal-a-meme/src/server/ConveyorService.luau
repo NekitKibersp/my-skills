@@ -9,6 +9,7 @@ local MemeFactory = require(script.Parent.MemeFactory)
 local PlotService = require(script.Parent.PlotService)
 local Remotes = require(script.Parent.Remotes)
 local Hooks = require(script.Parent.Hooks)
+local AnalyticsService = require(script.Parent.AnalyticsService)
 
 local ConveyorService = {}
 
@@ -133,6 +134,7 @@ local function tryBuy(player: Player, model: Model)
 	model:Destroy()
 
 	DataService.Increment(player, "Coins", -price)
+	AnalyticsService.Economy(player, "Sink", price, "Shop", id)
 	PlotService.AddMeme(player, id, mutationId, false, from)
 	Remotes.Fx:FireAllClients("Bought", { Position = from.Position, Rarity = Config.GetCreature(id).Rarity })
 	Remotes.Notify:FireClient(player, "Bought", { Meme = id }, "success")
