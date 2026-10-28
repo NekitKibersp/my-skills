@@ -1,6 +1,8 @@
--- HUD: деньги/доход/слоты слева сверху, таймер подарка за игру и боковые кнопки в две колонки:
--- основная (Магазин, Предметы, Индекс, Перерождение, Замок базы, Защита) и вторая (Награды дня,
--- Квесты, Эмоции, Обмен) — на телефоне так кнопки не уезжают под джойстик. Всё рисуется из атрибутов игрока.
+-- HUD: деньги/доход/слоты/бонус друзей слева сверху, таймер подарка за игру и боковые кнопки в две
+-- колонки: главная (Магазин, Мем-пропуск, Колесо, Награды дня, Квесты, Меню — со значками) и база
+-- (Замок, Перерождение, Защита). Остальные окна (Предметы, Индекс, Скины, Эмоции, Обмен, Коды) и
+-- приглашение друзей / группа — в меню «☰»: на телефоне кнопки не закрывают экран.
+-- Всё рисуется из атрибутов игрока.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -10,7 +12,10 @@ local Config = require(Shared:WaitForChild("Config"))
 local Format = require(Shared:WaitForChild("Format"))
 local Locale = require(Shared:WaitForChild("Locale"))
 local DefenseWindow = require(script.Parent:WaitForChild("DefenseWindow"))
+local PassWindow = require(script.Parent:WaitForChild("PassWindow"))
 local QuestsWindow = require(script.Parent:WaitForChild("QuestsWindow"))
+local Social = require(script.Parent:WaitForChild("Social"))
+local SpinWindow = require(script.Parent:WaitForChild("SpinWindow"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
@@ -113,8 +118,13 @@ local function buildStats(ctx)
 			.. Locale.T("UiRebirths", { Count = Util.num(player, "Rebirths") })
 			.. "   "
 			.. Locale.T("UiIndexBonus", { Percent = math.floor(count * Config.IndexBonusPerEntry * 100 + 0.5) })
+		-- Бонус за друзей на сервере и группу
+		local social = Social.BoostPercent()
+		if social > 0 then
+			info.Text ..= "   " .. Locale.T("UiSocialBoost", { Percent = social })
+		end
 	end
-	for _, name in { "Income", "SlotsUsed", "MaxSlots", "Rebirths", "IndexCount" } do
+	for _, name in { "Income", "SlotsUsed", "MaxSlots", "Rebirths", "IndexCount", "FriendBoost", "InGroup" } do
 		player:GetAttributeChangedSignal(name):Connect(renderInfo)
 	end
 	renderInfo()
@@ -201,10 +211,109 @@ local function column(parent: Instance, order: number): Frame
 	})
 end
 
+-- Меню «☰»: второстепенные окна плиткой + друзья и группа. Регистрируется как окно,
+-- поэтому закрывается, когда открывается любое другое.
+local function buildMenu(ctx)
+	local window, body = UiKit.window(ctx.Gui, Locale.T("MenuTitle"), Vector2.new(400, 380))
+	window.Name = "MenuWindow"
+	ctx.Register("Menu", window)
+
+	local scroll = create("ScrollingFrame", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 5,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+		Parent = body,
+	}, {
+		create("UIListLayout", { Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }),
+		create("UIPadding", { PaddingRight = UDim.new(0, 8) }),
+	})
+
+	local grid = create("Frame", {
+		Size = UDim2.fromScale(1, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BackgroundTransparency = 1,
+		LayoutOrder = 1,
+		Parent = scroll,
+	}, {
+		create("UIGridLayout", {
+			CellSize = UDim2.new(1 / 3, -6, 0, 64),
+			CellPadding = UDim2.fromOffset(8, 8),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+	local tiles = {
+		{ Icon = "🗡️", Caption = "BtnItems", Window = "Items" },
+		{ Icon = "📖", Caption = "BtnIndex", Window = "Index" },
+		{ Icon = "🎨", Caption = "BtnSkins", Window = "Skins" },
+		{ Icon = "😀", Caption = "BtnEmotes", Window = "Emotes" },
+		{ Icon = "🤝", Caption = "BtnTrade", Window = "TradePick" },
+		{ Icon = "🎟️", Caption = "BtnCodes", Window = "Codes" },
+	}
+	for order, tile in tiles do
+		local button = sideButton(grid, order, tile.Icon, Locale.T(tile.Caption))
+		button.Activated:Connect(function()
+			ctx.Open(tile.Window, true)
+		end)
+	end
+
+	-- Друзья: приглашение + подсказка про бонус
+	local invite = UiKit.button({
+		Text = Locale.T("SocialInvite"),
+		TextScaled = true,
+		Size = UDim2.new(1, 0, 0, 44),
+		BackgroundColor3 = COLORS.Green,
+		LayoutOrder = 2,
+		Parent = scroll,
+	})
+	create("UITextSizeConstraint", { MaxTextSize = 20, Parent = invite })
+	create("UIPadding", { PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), Parent = invite })
+	UiKit.text({
+		Text = Locale.T("SocialInviteHint", {
+			Per = math.floor(Config.Social.FriendBoostPer * 100 + 0.5),
+			Max = math.floor(Config.Social.FriendBoostMax * 100 + 0.5),
+		}),
+		TextScaled = true,
+		TextWrapped = true,
+		Font = Enum.Font.Gotham,
+		TextColor3 = COLORS.Muted,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		Size = UDim2.new(1, 0, 0, 30),
+		LayoutOrder = 3,
+		Parent = scroll,
+	}, { create("UITextSizeConstraint", { MaxTextSize = 14 }) })
+	invite.Activated:Connect(function()
+		Social.Invite(ctx.Toast)
+	end)
+
+	-- Группа: кнопка только если GroupId задан и игрок ещё не в группе
+	local group = UiKit.button({
+		Text = Locale.T("SocialJoinGroup", { Percent = math.floor(Config.Social.GroupBoost * 100 + 0.5) }),
+		TextScaled = true,
+		Size = UDim2.new(1, 0, 0, 44),
+		BackgroundColor3 = COLORS.Purple,
+		LayoutOrder = 4,
+		Parent = scroll,
+	})
+	create("UITextSizeConstraint", { MaxTextSize = 20, Parent = group })
+	create("UIPadding", { PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), Parent = group })
+	group.Activated:Connect(Social.JoinGroup)
+	local function renderGroup()
+		group.Visible = Social.CanJoinGroup()
+	end
+	player:GetAttributeChangedSignal("InGroup"):Connect(renderGroup)
+	renderGroup()
+end
+
 function Hud.Start(ctx)
 	local renderGift = buildStats(ctx)
+	buildMenu(ctx)
 
-	-- Кнопки слева по центру, две колонки
+	-- Кнопки слева по центру, две колонки: главное (с значками) и база (замок, перерождение, защита).
+	-- Остальное — в меню «☰», чтобы на телефоне кнопки не закрывали экран.
 	local side = create("Frame", {
 		Name = "SideButtons",
 		AnchorPoint = Vector2.new(0, 0.5),
@@ -226,54 +335,54 @@ function Hud.Start(ctx)
 	local extra = column(side, 2)
 
 	local shop = sideButton(main, 1, "🛒", Locale.T("BtnShop"))
-	local items = sideButton(main, 2, "🗡️", Locale.T("BtnItems"))
-	local index = sideButton(main, 3, "📖", Locale.T("BtnIndex"))
-	local rebirth, rebirthCaption = sideButton(main, 4, "♻️", Locale.T("BtnRebirth"))
-	local lock, lockCaption = sideButton(main, 5, "🔒", Locale.T("BtnLock"))
-	local guard, guardCaption = sideButton(main, 6, "🛡️", Locale.T("BtnDefense"))
+	local pass = sideButton(main, 2, "🎫", Locale.T("BtnPass"))
+	local spin = sideButton(main, 3, "🎡", Locale.T("BtnSpin"))
+	local daily = sideButton(main, 4, "📅", Locale.T("BtnDaily"))
+	local quests = sideButton(main, 5, "📜", Locale.T("BtnQuests"))
+	local menu = sideButton(main, 6, "☰", Locale.T("BtnMenu"))
+
+	local lock, lockCaption = sideButton(extra, 1, "🔒", Locale.T("BtnLock"))
+	local rebirth, rebirthCaption = sideButton(extra, 2, "♻️", Locale.T("BtnRebirth"))
+	local guard, guardCaption = sideButton(extra, 3, "🛡️", Locale.T("BtnDefense"))
 	local lockIcon = lock:FindFirstChild("Icon") :: TextLabel
 
-	local daily = sideButton(extra, 1, "📅", Locale.T("BtnDaily"))
-	local quests = sideButton(extra, 2, "📜", Locale.T("BtnQuests"))
-	local emotes = sideButton(extra, 3, "😀", Locale.T("BtnEmotes"))
-	local trade = sideButton(extra, 4, "🤝", Locale.T("BtnTrade"))
+	local passBadge = badge(pass)
+	local spinBadge = badge(spin)
 	local dailyBadge = badge(daily)
 	local questsBadge = badge(quests)
 
-	daily.Activated:Connect(function()
-		ctx.Open("Daily")
-	end)
-	quests.Activated:Connect(function()
-		ctx.Open("Quests")
-	end)
-	emotes.Activated:Connect(function()
-		ctx.Open("Emotes")
-	end)
-	trade.Activated:Connect(function()
-		ctx.Open("TradePick")
-	end)
+	local opens = { [shop] = "Shop", [pass] = "Pass", [spin] = "Spin", [daily] = "Daily", [quests] = "Quests", [menu] = "Menu" }
+	for button, name in opens do
+		button.Activated:Connect(function()
+			ctx.Open(name)
+		end)
+	end
+
+	local function setBadge(label: TextLabel, button: TextButton, count: number)
+		label.Visible = count > 0
+		label.Text = if count > 0 then tostring(count) else ""
+		button.BackgroundColor3 = if count > 0 then COLORS.Purple else COLORS.Panel
+	end
 
 	local function renderBadges()
-		dailyBadge.Visible = Util.bool(player, "DailyReady")
-		daily.BackgroundColor3 = if dailyBadge.Visible then COLORS.Purple else COLORS.Panel
-		local claimable = QuestsWindow.ClaimableCount()
-		questsBadge.Visible = claimable > 0
-		questsBadge.Text = tostring(claimable)
+		setBadge(dailyBadge, daily, if Util.bool(player, "DailyReady") then 1 else 0)
+		dailyBadge.Text = ""
+		setBadge(questsBadge, quests, QuestsWindow.ClaimableCount())
+		setBadge(passBadge, pass, PassWindow.ClaimableCount())
+		setBadge(spinBadge, spin, SpinWindow.Available())
 	end
-	player:GetAttributeChangedSignal("DailyReady"):Connect(renderBadges)
-	player:GetAttributeChangedSignal("QuestsJson"):Connect(renderBadges)
+	local badgeAttributes = { "DailyReady", "QuestsJson" }
+	for _, list in { PassWindow.Attributes, SpinWindow.Attributes } do
+		for _, name in list do
+			table.insert(badgeAttributes, name)
+		end
+	end
+	for _, name in badgeAttributes do
+		player:GetAttributeChangedSignal(name):Connect(renderBadges)
+	end
 	renderBadges()
 
 	shop.BackgroundColor3 = COLORS.Green
-	shop.Activated:Connect(function()
-		ctx.Open("Shop")
-	end)
-	items.Activated:Connect(function()
-		ctx.Open("Items")
-	end)
-	index.Activated:Connect(function()
-		ctx.Open("Index")
-	end)
 	rebirth.Activated:Connect(function()
 		ctx.Open("Rebirth")
 	end)

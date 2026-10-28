@@ -1,12 +1,13 @@
 -- Баннеры сверху по центру: админ-ивент (идёт / до следующего), «В ТРЕНДЕ», Ночь Смайлика
--- (идёт / до следующей, с эмодзи сезона), Удача сервера.
+-- (идёт / до следующей, с эмодзи сезона), Удача сервера и маленький чип «мем недели» (лимитный).
 -- Источник — атрибуты ReplicatedStorage (AdminEvent, AdminEventEndsAt, NextAdminEventAt, TrendingId,
--- TrendEndsAt, NightActive, NightEndsAt, NextNightAt, LuckEndsAt, Season).
+-- TrendEndsAt, NightActive, NightEndsAt, NextNightAt, LuckEndsAt, Season, WeeklyMeme, WeeklyEndsAt).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Locale = require(Shared:WaitForChild("Locale"))
+local Rewards = require(script.Parent:WaitForChild("Rewards"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
@@ -71,6 +72,27 @@ function Banners.Start(ctx)
 	local night = banner(stack, 2, 22, NIGHT_COLOR)
 	local luck = banner(stack, 3, 16, LUCK_COLOR)
 	luck.TextColor3 = LUCK_COLOR
+	local limitedColor = Config.GetRarity("Limited").Color
+	local weekly = banner(stack, 4, 13, limitedColor)
+	weekly.TextColor3 = limitedColor
+
+	-- Мем недели: из атрибутов сервера, запасной вариант — та же формула из Config (время — unix)
+	local function renderWeekly(now: number)
+		local id = Util.str(ReplicatedStorage, "WeeklyMeme")
+		local endsAt = Util.num(ReplicatedStorage, "WeeklyEndsAt")
+		if id == "" and Config.WeeklyMeme then
+			id, endsAt = Config.WeeklyMeme(now)
+		end
+		local creature = Config.GetCreature(id)
+		weekly.Visible = creature ~= nil and endsAt > now
+		if creature then
+			weekly.Text = Locale.T("BannerWeekly", {
+				Face = creature.Face,
+				Name = creature.Name,
+				Time = Rewards.timeLeft(endsAt - now),
+			})
+		end
+	end
 
 	local function renderAdmin(now: number)
 		local event = Config.GetAdminEvent(Util.str(ReplicatedStorage, "AdminEvent"))
@@ -127,6 +149,8 @@ function Banners.Start(ctx)
 			night.BackgroundColor3 = COLORS.Panel
 			night.Text = prefix .. Locale.T("BannerNextNight", { Time = Util.clock(nextAt - now) })
 		end
+
+		renderWeekly(now)
 
 		local luckLeft = Util.num(ReplicatedStorage, "LuckEndsAt") - now
 		luck.Visible = luckLeft > 0

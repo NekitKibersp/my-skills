@@ -65,14 +65,21 @@ local function buildWheel(holder: Frame): Frame
 			Parent = wheel,
 		})
 		local icon, text, color = Rewards.describe(segment.Reward)
+		-- Цветная точка у обода (цвет награды) и подпись без фона — соседние подписи не наезжают
+		create("Frame", {
+			AnchorPoint = Vector2.new(0.5, 0),
+			Position = UDim2.fromScale(0.5, 0.025),
+			Size = UDim2.fromScale(0.05, 0.05),
+			BackgroundColor3 = color,
+			Parent = arm,
+		}, { create("UICorner", { CornerRadius = UDim.new(0.5, 0) }) })
 		local chip = create("Frame", {
 			AnchorPoint = Vector2.new(0.5, 0),
-			Position = UDim2.fromScale(0.5, 0.05),
-			Size = UDim2.fromScale(0.25, 0.34),
-			BackgroundColor3 = color,
-			BackgroundTransparency = 0.55,
+			Position = UDim2.fromScale(0.5, 0.085),
+			Size = UDim2.fromScale(0.21, 0.28),
+			BackgroundTransparency = 1,
 			Parent = arm,
-		}, { UiKit.corner(8) })
+		})
 		UiKit.text({
 			Text = icon,
 			TextScaled = true,
@@ -85,7 +92,8 @@ local function buildWheel(holder: Frame): Frame
 			Text = text,
 			TextScaled = true,
 			TextWrapped = true,
-			TextStrokeTransparency = 0.3,
+			TextColor3 = color,
+			TextStrokeTransparency = 0.2,
 			TextXAlignment = Enum.TextXAlignment.Center,
 			Position = UDim2.fromScale(0.04, 0.5),
 			Size = UDim2.fromScale(0.92, 0.48),

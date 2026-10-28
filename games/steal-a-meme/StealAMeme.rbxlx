@@ -858,6 +858,22 @@ return {
         </Item>
         <Item class="ModuleScript" referent="9">
           <Properties>
+            <string name="Name">Pass</string>
+            <string name="Source"><![CDATA[-- Тексты Мем-пропуска (ответы ClaimPass и уведомления сервера)
+return {
+	PassNotReady = { "Meme Pass is not ready yet", "Мем-пропуск ещё не загрузился" },
+	PassInvalid = { "This reward does not exist", "Такой награды нет" },
+	PassLocked = { "Reach this level first", "Сначала дойди до этого уровня" },
+	PassPremiumOnly = { "This reward is for Premium Meme Pass owners", "Эта награда — для владельцев Премиум Мем-пропуска" },
+	PassAlreadyClaimed = { "Reward already claimed", "Награда уже получена" },
+	PassClaimed = { "Meme Pass reward claimed!", "Награда Мем-пропуска получена!" },
+	PassLevelUp = { "Meme Pass level {Level}!", "Мем-пропуск: уровень {Level}!" },
+}
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="10">
+          <Properties>
             <string name="Name">Quests</string>
             <string name="Source"><![CDATA[-- Тексты ежедневных квестов (уведомления сервера). Описания заданий — в Config.Quests (Desc / DescRu).
 return {
@@ -873,7 +889,24 @@ return {
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="10">
+        <Item class="ModuleScript" referent="11">
+          <Properties>
+            <string name="Name">Skins</string>
+            <string name="Source"><![CDATA[-- Тексты скинов базы и тапка (ответы BuySkin / EquipSkin)
+return {
+	SkinNotReady = { "Skins are not loaded yet", "Скины ещё не загрузились" },
+	SkinInvalid = { "This skin does not exist", "Такого скина нет" },
+	SkinNotForSale = { "This skin can't be bought with cash", "Этот скин не продаётся за деньги" },
+	SkinOwned = { "You already own this skin", "Этот скин уже твой" },
+	SkinBought = { "Skin bought and equipped!", "Скин куплен и надет!" },
+	SkinNotOwned = { "You don't own this skin", "У тебя нет этого скина" },
+	SkinEquipped = { "Skin equipped!", "Скин надет!" },
+	SkinTooFast = { "Not so fast!", "Не так быстро!" },
+}
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="12">
           <Properties>
             <string name="Name">Social</string>
             <string name="Source"><![CDATA[-- Тексты кодов, бонуса за друзей и группы (SocialService). { Key = { English, Русский } }
@@ -889,7 +922,20 @@ return {
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="11">
+        <Item class="ModuleScript" referent="13">
+          <Properties>
+            <string name="Name">Spin</string>
+            <string name="Source"><![CDATA[-- Тексты колеса удачи (ответы Spin)
+return {
+	SpinNotReady = { "The wheel is not ready yet", "Колесо ещё не готово" },
+	SpinTooFast = { "The wheel is still spinning", "Колесо ещё крутится" },
+	NoSpins = { "No spins left. Come back tomorrow for a free one!", "Вращений нет. Бесплатное — завтра!" },
+	SpinDone = { "Spinning!", "Крутим!" },
+}
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="14">
           <Properties>
             <string name="Name">Trade</string>
             <string name="Source"><![CDATA[-- Тексты уведомлений обмена (TradeService). { Key = { English, Русский } }
@@ -910,14 +956,24 @@ return {
 ]]></string>
           </Properties>
         </Item>
+        <Item class="ModuleScript" referent="15">
+          <Properties>
+            <string name="Name">Weekly</string>
+            <string name="Source"><![CDATA[-- Тексты мема недели
+return {
+	WeeklyNew = { "New meme of the week: {Meme}! Catch it on the carpet", "Новый мем недели: {Meme}! Лови его на дорожке" },
+}
+]]></string>
+          </Properties>
+        </Item>
       </Item>
     </Item>
   </Item>
-  <Item class="ServerScriptService" referent="12">
+  <Item class="ServerScriptService" referent="16">
     <Properties>
       <string name="Name">ServerScriptService</string>
     </Properties>
-    <Item class="Script" referent="13">
+    <Item class="Script" referent="17">
       <Properties>
         <string name="Name">Server</string>
         <token name="RunContext">0</token>
@@ -942,6 +998,13 @@ local AdminEventService = require(script.AdminEventService)
 local TradeService = require(script.TradeService)
 local DefenseService = require(script.DefenseService)
 local EmoteService = require(script.EmoteService)
+local SocialService = require(script.SocialService)
+local AnalyticsService = require(script.AnalyticsService)
+local Grant = require(script.Grant)
+local BattlePassService = require(script.BattlePassService)
+local SpinService = require(script.SpinService)
+local SkinService = require(script.SkinService)
+local WeeklyService = require(script.WeeklyService)
 local Remotes = require(script.Remotes)
 
 -- Сезон по дате (UTC): от него зависят ночные мемы, мутации, декор и цвет монстра
@@ -963,6 +1026,12 @@ AdminEventService.Start()
 TradeService.Start()
 DefenseService.Start()
 EmoteService.Start()
+SocialService.Start()
+AnalyticsService.Start()
+BattlePassService.Start()
+SpinService.Start()
+SkinService.Start()
+WeeklyService.Start()
 LeaderboardService.Start(world.Leaderboards)
 
 -- Связи между сервисами (без циклических require)
@@ -973,6 +1042,12 @@ end
 -- Геймпассы предметов (золотой тапок, конфетти-пушка) и предмет из календаря — перевыдаём рюкзак
 ShopService.OnToolsChanged = ItemService.RefreshPasses
 RewardService.OnItemGranted = ItemService.RefreshPasses
+Grant.OnItemGranted = ItemService.RefreshPasses
+Grant.OnSkinGranted = SkinService.Refresh
+SkinService.OnSlipperChanged = ItemService.GiveTools
+ShopService.OnSpins = SpinService.AddSpins
+ShopService.OnPassLevels = BattlePassService.AddLevels
+ShopService.OnBattlePass = BattlePassService.Sync
 ShopService.OnMemeRain = function(player)
 	return AdminEventService.StartEvent("MemeRain", Config.AdminEvents.MemeRainDuration, player)
 end
@@ -1004,6 +1079,11 @@ local function onPlayerAdded(player: Player)
 		return
 	end
 	PlotService.LoadPlayer(player)
+	SocialService.OnLoaded(player)
+	AnalyticsService.OnLoaded(player)
+	SkinService.OnLoaded(player) -- до выдачи тапка: ставит атрибут SlipperSkin
+	BattlePassService.OnLoaded(player)
+	SpinService.OnLoaded(player)
 	RewardService.OnLoaded(player)
 	ItemService.OnLoaded(player)
 	QuestService.OnLoaded(player)
@@ -1037,12 +1117,15 @@ Players.PlayerRemoving:Connect(function(player)
 	TradeService.OnPlayerRemoving(player)
 	DefenseService.OnPlayerRemoving(player)
 	EmoteService.OnPlayerRemoving(player)
+	SocialService.OnPlayerRemoving(player)
+	AnalyticsService.OnPlayerRemoving(player)
+	SkinService.OnPlayerRemoving(player)
 	PlotService.Release(player)
 	DataService.Release(player)
 end)
 ]]></string>
       </Properties>
-      <Item class="ModuleScript" referent="14">
+      <Item class="ModuleScript" referent="18">
         <Properties>
           <string name="Name">AdminEventService</string>
           <string name="Source"><![CDATA[-- Админ-ивенты: по выходным по расписанию (UTC) на всех серверах сразу, вручную — командой в чате
@@ -1311,7 +1394,7 @@ return AdminEventService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="15">
+      <Item class="ModuleScript" referent="19">
         <Properties>
           <string name="Name">AnalyticsService</string>
           <string name="Source"><![CDATA[-- Аналитика Roblox (Creator Hub → Analytics): воронка новичка, экономика монет, свои события.
@@ -1479,7 +1562,7 @@ return AnalyticsService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="16">
+      <Item class="ModuleScript" referent="20">
         <Properties>
           <string name="Name">BattlePassService</string>
           <string name="Source"><![CDATA[-- Мем-пропуск (боевой пропуск сезона): XP за игровые события (Hooks), уровни, награды Free/Premium.
@@ -1724,7 +1807,7 @@ return BattlePassService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="17">
+      <Item class="ModuleScript" referent="21">
         <Properties>
           <string name="Name">ConveyorService</string>
           <string name="Source"><![CDATA[-- «Красная дорожка»: мемы появляются из портала, идут по дорожке, их можно купить.
@@ -1963,7 +2046,7 @@ return ConveyorService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="18">
+      <Item class="ModuleScript" referent="22">
         <Properties>
           <string name="Name">DataService</string>
           <string name="Source"><![CDATA[-- Прогресс игроков: загрузка/сохранение в DataStore, leaderstats и зеркало чисел в атрибутах игрока,
@@ -2379,7 +2462,7 @@ return DataService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="19">
+      <Item class="ModuleScript" referent="23">
         <Properties>
           <string name="Name">DefenseService</string>
           <string name="Source"><![CDATA[-- Защита базы: турель и лазерные ворота (Config.Defense), покупаются за монеты, уровни навсегда.
@@ -2752,7 +2835,7 @@ return DefenseService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="20">
+      <Item class="ModuleScript" referent="24">
         <Properties>
           <string name="Name">EmoteService</string>
           <string name="Source"><![CDATA[-- Эмоции: клиент просит сыграть эмоцию, сервер проверяет и рассылает всем Fx "Emote".
@@ -2805,7 +2888,7 @@ return EmoteService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="21">
+      <Item class="ModuleScript" referent="25">
         <Properties>
           <string name="Name">EventService</string>
           <string name="Source"><![CDATA[-- Серверные ивенты: «В ТРЕНДЕ» (один вид мема даёт ×3) и Ночь Смайлика — темнеет, по карте
@@ -3265,7 +3348,7 @@ return EventService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="22">
+      <Item class="ModuleScript" referent="26">
         <Properties>
           <string name="Name">Grant</string>
           <string name="Source"><![CDATA[-- Выдача награды по описанию из конфига (коды, колесо удачи, Мем-пропуск, календарь).
@@ -3360,7 +3443,7 @@ return Grant
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="23">
+      <Item class="ModuleScript" referent="27">
         <Properties>
           <string name="Name">Hooks</string>
           <string name="Source"><![CDATA[-- Игровые события для квестов и статистики: другие сервисы сообщают «что произошло»,
@@ -3386,7 +3469,7 @@ return Hooks
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="24">
+      <Item class="ModuleScript" referent="28">
         <Properties>
           <string name="Name">ItemService</string>
           <string name="Source"><![CDATA[-- Предметы из Config.Items: оружие (тапок, бита, сковородка, бан-молот) и гаджеты
@@ -4041,7 +4124,7 @@ return ItemService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="25">
+      <Item class="ModuleScript" referent="29">
         <Properties>
           <string name="Name">LeaderboardService</string>
           <string name="Source"><![CDATA[-- Глобальные таблицы лидеров на карте: «Богачи» (всего заработано) и «Воры» (успешные кражи).
@@ -4125,7 +4208,7 @@ return LeaderboardService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="26">
+      <Item class="ModuleScript" referent="30">
         <Properties>
           <string name="Name">MapBuilder</string>
           <string name="Source"><![CDATA[-- Строит карту кодом: земля, «красная дорожка» мемов, 8 баз игроков, сезонный декор,
@@ -4683,7 +4766,7 @@ return MapBuilder
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="27">
+      <Item class="ModuleScript" referent="31">
         <Properties>
           <string name="Name">MemeFactory</string>
           <string name="Source"><![CDATA[-- Собирает модель мема: из примитивов (тело + ножки + эмодзи-лицо) или из модели Creator Store
@@ -4967,7 +5050,7 @@ return MemeFactory
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="28">
+      <Item class="ModuleScript" referent="32">
         <Properties>
           <string name="Name">PlotService</string>
           <string name="Source"><![CDATA[-- Базы игроков: выдача базы, мемы в слотах, доход в секунду, замок, страж, Индекс, перерождения.
@@ -5646,7 +5729,7 @@ return PlotService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="29">
+      <Item class="ModuleScript" referent="33">
         <Properties>
           <string name="Name">QuestService</string>
           <string name="Source"><![CDATA[-- Ежедневные квесты: Config.Quests.PerDay случайных заданий из пула, сброс в полночь UTC.
@@ -5807,6 +5890,7 @@ local function claim(player: Player, index: any): (boolean, string)
 	PlotService.AddCoins(player, coins)
 	sync(player)
 	Remotes.Notify:FireClient(player, "QuestReward", { Coins = coins }, "success")
+	Hooks.Fire(player, "Quest", 1) -- XP Мем-пропуска за квест
 	return true, "QuestClaimed"
 end
 
@@ -5858,7 +5942,7 @@ return QuestService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="30">
+      <Item class="ModuleScript" referent="34">
         <Properties>
           <string name="Name">Remotes</string>
           <string name="Source"><![CDATA[-- Создаёт ReplicatedStorage.Remotes. Клиент получает их через
@@ -5927,7 +6011,7 @@ return Remotes
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="31">
+      <Item class="ModuleScript" referent="35">
         <Properties>
           <string name="Name">RewardService</string>
           <string name="Source"><![CDATA[-- Награды за возвращение: оффлайн-доход, календарь ежедневных наград (игрок забирает сам), подарки за время в игре.
@@ -6127,7 +6211,7 @@ return RewardService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="32">
+      <Item class="ModuleScript" referent="36">
         <Properties>
           <string name="Name">ShopService</string>
           <string name="Source"><![CDATA[-- Покупки за Robux: геймпассы (проверка при входе и после покупки) и продукты (ProcessReceipt).
@@ -6150,6 +6234,11 @@ ShopService.OnSummonGod = nil :: (() -> ())?
 ShopService.OnToolsChanged = nil :: ((player: Player) -> ())?
 -- Запустить Мем-дождь на сервере (продукт MemeRain): (player) -> boolean
 ShopService.OnMemeRain = nil :: ((player: Player) -> boolean)?
+-- Вращения колеса и уровни Мем-пропуска за Robux: (player, n) -> boolean (false — данные не загружены)
+ShopService.OnSpins = nil :: ((player: Player, n: number) -> boolean)?
+ShopService.OnPassLevels = nil :: ((player: Player, n: number) -> boolean)?
+-- Куплен премиум Мем-пропуск
+ShopService.OnBattlePass = nil :: ((player: Player) -> ())?
 
 local function passKeyById(id: number): string?
 	for key, pass in Config.GamePasses do
@@ -6171,6 +6260,8 @@ local function applyPass(player: Player, key: string)
 		PlotService.RefreshIncome(player)
 	elseif (key == "GoldSlipper" or key == "ConfettiCannon") and ShopService.OnToolsChanged then
 		ShopService.OnToolsChanged(player)
+	elseif key == "BattlePass" and ShopService.OnBattlePass then
+		ShopService.OnBattlePass(player)
 	end
 end
 
@@ -6257,6 +6348,10 @@ local function grantProduct(player: Player, key: string): boolean
 		return false
 	elseif key == "MysteryBox" then
 		return openMysteryBox(player)
+	elseif key == "Spins3" or key == "Spins10" then
+		return ShopService.OnSpins ~= nil and ShopService.OnSpins(player, product.Spins)
+	elseif key == "PassLevels" then
+		return ShopService.OnPassLevels ~= nil and ShopService.OnPassLevels(player, product.Levels)
 	elseif key == "MemeRain" then
 		return ShopService.OnMemeRain ~= nil and ShopService.OnMemeRain(player)
 	end
@@ -6329,7 +6424,258 @@ return ShopService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="33">
+      <Item class="ModuleScript" referent="37">
+        <Properties>
+          <string name="Name">SkinService</string>
+          <string name="Source"><![CDATA[-- Скины базы и тапка (Config.Skins). Покупка за монеты — только скины с Price > 0 и без Source
+-- (скины с Source = "Pass"/"Spin" приходят через Grant.Give из пропуска/колеса).
+-- Данные: DataService.GetTable(player, "Skins") = { Owned = { [id] = true }, Base = id, Slipper = id }.
+-- Скин базы: сервер перекрашивает Floor, Wall и GatePillar своей базы; исходный вид хранится в атрибутах
+-- деталей (OrigColor/OrigMaterial), чтобы вернуть его при смене скина и уходе игрока.
+-- Скин тапка: атрибут игрока SlipperSkin, сам тапок перекрашивает ItemService (через OnSlipperChanged).
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local DataService = require(script.Parent.DataService)
+local PlotService = require(script.Parent.PlotService)
+local Remotes = require(script.Parent.Remotes)
+
+local SkinService = {}
+
+-- Колбэк из init.server: скин тапка сменился (перевыдать/перекрасить тапок)
+SkinService.OnSlipperChanged = nil :: ((Player) -> ())?
+
+local DEFAULTS = { Base = "BaseDefault", Slipper = "SlipperDefault" }
+local WALL_PARTS = { Wall = true, GatePillar = true }
+local EQUIP_COOLDOWN = 0.5
+
+local lastEquip: { [Player]: number } = {}
+
+local function isReady(player: Player): boolean
+	return player.Parent ~= nil and player:GetAttribute("DataLoaded") == true and DataService.IsLoaded(player)
+end
+
+local function materialOf(name: any): Enum.Material?
+	if type(name) ~= "string" then
+		return nil
+	end
+	local ok, material = pcall(function()
+		return (Enum.Material :: any)[name]
+	end)
+	return if ok then material else nil
+end
+
+-- Проверенные данные скинов: неизвестные id выкидываем, стандартные скины есть всегда
+local function ensure(player: Player): { [string]: any }
+	local data = DataService.GetTable(player, "Skins")
+	local owned = {}
+	if type(data.Owned) == "table" then
+		for id, value in data.Owned do
+			if type(id) == "string" and value == true and Config.GetSkin(id) then
+				owned[id] = true
+			end
+		end
+	end
+	for _, id in DEFAULTS do
+		owned[id] = true
+	end
+	data.Owned = owned
+	for kind, default in DEFAULTS do
+		local skin = type(data[kind]) == "string" and Config.GetSkin(data[kind])
+		if not skin or skin.Kind ~= kind or not owned[skin.Id] then
+			data[kind] = default
+		end
+	end
+	return data
+end
+
+local function sync(player: Player, data: { [string]: any })
+	local owned = {}
+	for id in data.Owned do
+		table.insert(owned, id)
+	end
+	table.sort(owned)
+	player:SetAttribute("SkinsJson", HttpService:JSONEncode({
+		Owned = owned,
+		Base = data.Base,
+		Slipper = data.Slipper,
+	}))
+end
+
+-- Запомнить исходный вид детали перед первой перекраской
+local function remember(part: BasePart)
+	if part:GetAttribute("OrigColor") == nil then
+		part:SetAttribute("OrigColor", part.Color)
+		part:SetAttribute("OrigMaterial", part.Material.Name)
+	end
+end
+
+local function restore(part: BasePart)
+	local color = part:GetAttribute("OrigColor")
+	if typeof(color) == "Color3" then
+		part.Color = color
+	end
+	local material = materialOf(part:GetAttribute("OrigMaterial"))
+	if material then
+		part.Material = material
+	end
+end
+
+-- Перекрасить базу; skin = nil или скин без цветов — вернуть исходный вид
+local function paintPlot(plot: Model, skin: any)
+	local custom = skin ~= nil and typeof(skin.Floor) == "Color3"
+	for _, part in plot:GetDescendants() do
+		if not part:IsA("BasePart") then
+			continue
+		end
+		if part.Name == "Floor" and part.Parent == plot then
+			if custom then
+				remember(part)
+				part.Color = skin.Floor
+				part.Material = materialOf(skin.Material) or part.Material
+			else
+				restore(part)
+			end
+		elseif WALL_PARTS[part.Name] then
+			if custom and typeof(skin.Wall) == "Color3" then
+				remember(part)
+				part.Color = skin.Wall
+			else
+				restore(part)
+			end
+		end
+	end
+end
+
+local function applyBase(player: Player, data: { [string]: any })
+	local plot = PlotService.GetPlot(player)
+	if plot then
+		paintPlot(plot, Config.GetSkin(data.Base))
+	end
+end
+
+local function applySlipper(player: Player, data: { [string]: any }, notify: boolean)
+	player:SetAttribute("SlipperSkin", data.Slipper)
+	if notify and SkinService.OnSlipperChanged then
+		task.spawn(SkinService.OnSlipperChanged, player)
+	end
+end
+
+local function equip(player: Player, data: { [string]: any }, skin: any)
+	data[skin.Kind] = skin.Id
+	if skin.Kind == "Base" then
+		applyBase(player, data)
+	else
+		applySlipper(player, data, true)
+	end
+	sync(player, data)
+end
+
+local function buy(player: Player, id: any): (boolean, string)
+	if not isReady(player) then
+		return false, "SkinNotReady"
+	end
+	local skin = type(id) == "string" and Config.GetSkin(id)
+	if not skin then
+		return false, "SkinInvalid"
+	end
+	local data = ensure(player)
+	if data.Owned[skin.Id] then
+		return false, "SkinOwned"
+	end
+	if skin.Source or type(skin.Price) ~= "number" or skin.Price <= 0 then
+		return false, "SkinNotForSale"
+	end
+	if DataService.Get(player, "Coins") < skin.Price then
+		Remotes.Notify:FireClient(player, "NotEnoughCash", { Price = skin.Price }, "error")
+		return false, "NotEnoughCash"
+	end
+	DataService.Increment(player, "Coins", -skin.Price)
+	data.Owned[skin.Id] = true
+	-- Купленный скин сразу надеваем
+	equip(player, data, skin)
+	Remotes.Notify:FireClient(player, "SkinBought", nil, "success")
+	return true, "SkinBought"
+end
+
+local function equipRequest(player: Player, id: any): (boolean, string)
+	if not isReady(player) then
+		return false, "SkinNotReady"
+	end
+	local skin = type(id) == "string" and Config.GetSkin(id)
+	if not skin then
+		return false, "SkinInvalid"
+	end
+	local now = os.clock()
+	if lastEquip[player] and now - lastEquip[player] < EQUIP_COOLDOWN then
+		return false, "SkinTooFast"
+	end
+	local data = ensure(player)
+	if not data.Owned[skin.Id] then
+		return false, "SkinNotOwned"
+	end
+	lastEquip[player] = now
+	if data[skin.Kind] ~= skin.Id then
+		equip(player, data, skin)
+	end
+	return true, "SkinEquipped"
+end
+
+-- Пересчитать SkinsJson (например, скин выдан через Grant.Give)
+function SkinService.Refresh(player: Player)
+	if DataService.IsLoaded(player) then
+		sync(player, ensure(player))
+	end
+end
+
+-- Вызывается из init.server после загрузки базы и ДО выдачи тапка (DataLoaded),
+-- чтобы ItemService уже видел атрибут SlipperSkin
+function SkinService.OnLoaded(player: Player)
+	if not DataService.IsLoaded(player) then
+		return
+	end
+	local data = ensure(player)
+	sync(player, data)
+	applyBase(player, data)
+	applySlipper(player, data, false)
+end
+
+-- Вызывается из init.server ДО PlotService.Release: база возвращается к исходному виду
+function SkinService.OnPlayerRemoving(player: Player)
+	lastEquip[player] = nil
+	local plot = PlotService.GetPlot(player)
+	if plot then
+		paintPlot(plot, nil)
+	end
+end
+
+local function guarded(callback: (Player, any) -> (boolean, string), name: string)
+	return function(player: Player, id: any)
+		local ok, result, key = pcall(callback, player, id)
+		if not ok then
+			warn("[SkinService] Ошибка " .. name .. ":", result)
+			return false, "SkinNotReady"
+		end
+		return result, key
+	end
+end
+
+function SkinService.Start()
+	Remotes.BuySkin.OnServerInvoke = guarded(buy, "покупки скина")
+	Remotes.EquipSkin.OnServerInvoke = guarded(equipRequest, "смены скина")
+
+	Players.PlayerRemoving:Connect(function(player)
+		lastEquip[player] = nil
+	end)
+end
+
+return SkinService
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="38">
         <Properties>
           <string name="Name">SocialService</string>
           <string name="Source"><![CDATA[-- Коды, бонус за друзей на сервере и бонус участникам группы.
@@ -6573,7 +6919,140 @@ return SocialService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="34">
+      <Item class="ModuleScript" referent="39">
+        <Properties>
+          <string name="Name">SpinService</string>
+          <string name="Source"><![CDATA[-- Колесо удачи: одно бесплатное вращение в UTC-день, остальные — из запаса Spins (Robux, пропуск, коды).
+-- Клиент зовёт Remotes.Spin() -> (ok, key, segmentIndex), крутит колесо до сегмента,
+-- а награду показывает Popup "Spin", который приходит после анимации.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local DataService = require(script.Parent.DataService)
+local Grant = require(script.Parent.Grant)
+local Remotes = require(script.Parent.Remotes)
+
+local SpinService = {}
+
+local SECONDS_PER_DAY = 86400
+local SPIN_COOLDOWN = 2 -- сек между вращениями (защита от спама)
+local POPUP_DELAY = 4 -- сек: столько клиент крутит колесо
+local REFRESH_INTERVAL = 60
+
+local lastSpin: { [Player]: number } = {}
+
+local function today(): number
+	return os.time() // SECONDS_PER_DAY
+end
+
+local function isReady(player: Player): boolean
+	return player.Parent ~= nil and player:GetAttribute("DataLoaded") == true and DataService.IsLoaded(player)
+end
+
+local function freeReady(player: Player): boolean
+	return DataService.Get(player, "LastFreeSpinDay") ~= today()
+end
+
+local function refresh(player: Player)
+	if DataService.IsLoaded(player) then
+		player:SetAttribute("FreeSpinReady", freeReady(player))
+	end
+end
+
+-- Случайный сегмент с учётом весов
+local function pickSegment(): number
+	local segments = Config.Spin.Segments
+	local total = 0
+	for _, segment in segments do
+		total += segment.Weight
+	end
+	local roll = math.random() * total
+	for index, segment in segments do
+		roll -= segment.Weight
+		if roll <= 0 then
+			return index
+		end
+	end
+	return #segments
+end
+
+local function spin(player: Player): (boolean, string, number?)
+	if not isReady(player) then
+		return false, "SpinNotReady"
+	end
+	local now = os.clock()
+	if lastSpin[player] and now - lastSpin[player] < SPIN_COOLDOWN then
+		return false, "SpinTooFast"
+	end
+
+	if freeReady(player) then
+		DataService.Set(player, "LastFreeSpinDay", today())
+		refresh(player)
+	elseif DataService.Get(player, "Spins") >= 1 then
+		DataService.Increment(player, "Spins", -1)
+	else
+		return false, "NoSpins"
+	end
+	lastSpin[player] = now
+
+	local index = pickSegment()
+	local result = Grant.Give(player, Config.Spin.Segments[index].Reward)
+	-- Награда уже выдана; показываем её, когда колесо на клиенте остановится
+	task.delay(POPUP_DELAY, function()
+		if player.Parent then
+			Remotes.Popup:FireClient(player, "Spin", result)
+		end
+	end)
+	return true, "SpinDone", index
+end
+
+-- Добавить вращения (покупка Spins3/Spins10). false — данные не загружены, покупку повторить позже.
+function SpinService.AddSpins(player: Player, n: number): boolean
+	if not DataService.IsLoaded(player) then
+		return false
+	end
+	if type(n) == "number" and n == n and n >= 1 then
+		DataService.Increment(player, "Spins", math.floor(n))
+	end
+	return true
+end
+
+-- Вызывается из init.server после загрузки данных
+function SpinService.OnLoaded(player: Player)
+	refresh(player)
+end
+
+function SpinService.Start()
+	Remotes.Spin.OnServerInvoke = function(player: Player)
+		local ok, result, key, index = pcall(spin, player)
+		if not ok then
+			warn("[SpinService] Ошибка вращения колеса:", result)
+			return false, "SpinNotReady"
+		end
+		return result, key, index
+	end
+
+	Players.PlayerRemoving:Connect(function(player)
+		lastSpin[player] = nil
+	end)
+
+	-- Полночь UTC: бесплатное вращение снова доступно
+	task.spawn(function()
+		while true do
+			task.wait(REFRESH_INTERVAL)
+			for _, player in Players:GetPlayers() do
+				refresh(player)
+			end
+		end
+	end)
+end
+
+return SpinService
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="40">
         <Properties>
           <string name="Name">StealService</string>
           <string name="Source"><![CDATA[-- Кражи: удержание «Украсть», переноска мема над головой, доставка на свою базу,
@@ -6948,7 +7427,7 @@ return StealService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="35">
+      <Item class="ModuleScript" referent="41">
         <Properties>
           <string name="Name">TradeService</string>
           <string name="Source"><![CDATA[-- Обмен мемами между игроками (только мемы, без монет).
@@ -7392,17 +7871,58 @@ return TradeService
 ]]></string>
         </Properties>
       </Item>
+      <Item class="ModuleScript" referent="42">
+        <Properties>
+          <string name="Name">WeeklyService</string>
+          <string name="Source"><![CDATA[-- Лимитированный мем недели (Config.Weekly): публикует ReplicatedStorage.WeeklyMeme / WeeklyEndsAt
+-- и сообщает всем, когда неделя сменилась. Появление мема на дорожке — в ConveyorService.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Remotes = require(script.Parent.Remotes)
+
+local WeeklyService = {}
+
+local CHECK_INTERVAL = 60
+
+local function update(announce: boolean)
+	local meme, endsAt = Config.WeeklyMeme(os.time())
+	local changed = ReplicatedStorage:GetAttribute("WeeklyMeme") ~= meme
+	ReplicatedStorage:SetAttribute("WeeklyMeme", meme)
+	ReplicatedStorage:SetAttribute("WeeklyEndsAt", endsAt)
+	if changed and announce then
+		for _, player in Players:GetPlayers() do
+			Remotes.Notify:FireClient(player, "WeeklyNew", { Meme = meme }, "info")
+		end
+	end
+end
+
+function WeeklyService.Start()
+	update(false)
+	task.spawn(function()
+		while true do
+			task.wait(CHECK_INTERVAL)
+			update(true)
+		end
+	end)
+end
+
+return WeeklyService
+]]></string>
+        </Properties>
+      </Item>
     </Item>
   </Item>
-  <Item class="StarterPlayer" referent="36">
+  <Item class="StarterPlayer" referent="43">
     <Properties>
       <string name="Name">StarterPlayer</string>
     </Properties>
-    <Item class="StarterPlayerScripts" referent="37">
+    <Item class="StarterPlayerScripts" referent="44">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="LocalScript" referent="38">
+      <Item class="LocalScript" referent="45">
         <Properties>
           <string name="Name">Client</string>
           <string name="Source"><![CDATA[-- Точка входа клиента «Укради Мем»: создаёт экран, общий контекст UI и запускает модули.
@@ -7524,8 +8044,13 @@ local modules = {
 	"QuestsWindow",
 	"Emotes",
 	"TradeWindow",
+	"CodesWindow",
+	"PassWindow",
+	"SpinWindow",
+	"SkinsWindow",
 	"Popups",
 	"Hud",
+	"Social",
 	"Banners",
 	"Carry",
 	"PlotSigns",
@@ -7546,18 +8071,19 @@ for _, name in modules do
 end
 ]]></string>
         </Properties>
-        <Item class="ModuleScript" referent="39">
+        <Item class="ModuleScript" referent="46">
           <Properties>
             <string name="Name">Banners</string>
             <string name="Source"><![CDATA[-- Баннеры сверху по центру: админ-ивент (идёт / до следующего), «В ТРЕНДЕ», Ночь Смайлика
--- (идёт / до следующей, с эмодзи сезона), Удача сервера.
+-- (идёт / до следующей, с эмодзи сезона), Удача сервера и маленький чип «мем недели» (лимитный).
 -- Источник — атрибуты ReplicatedStorage (AdminEvent, AdminEventEndsAt, NextAdminEventAt, TrendingId,
--- TrendEndsAt, NightActive, NightEndsAt, NextNightAt, LuckEndsAt, Season).
+-- TrendEndsAt, NightActive, NightEndsAt, NextNightAt, LuckEndsAt, Season, WeeklyMeme, WeeklyEndsAt).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Locale = require(Shared:WaitForChild("Locale"))
+local Rewards = require(script.Parent:WaitForChild("Rewards"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
@@ -7622,6 +8148,27 @@ function Banners.Start(ctx)
 	local night = banner(stack, 2, 22, NIGHT_COLOR)
 	local luck = banner(stack, 3, 16, LUCK_COLOR)
 	luck.TextColor3 = LUCK_COLOR
+	local limitedColor = Config.GetRarity("Limited").Color
+	local weekly = banner(stack, 4, 13, limitedColor)
+	weekly.TextColor3 = limitedColor
+
+	-- Мем недели: из атрибутов сервера, запасной вариант — та же формула из Config (время — unix)
+	local function renderWeekly(now: number)
+		local id = Util.str(ReplicatedStorage, "WeeklyMeme")
+		local endsAt = Util.num(ReplicatedStorage, "WeeklyEndsAt")
+		if id == "" and Config.WeeklyMeme then
+			id, endsAt = Config.WeeklyMeme(now)
+		end
+		local creature = Config.GetCreature(id)
+		weekly.Visible = creature ~= nil and endsAt > now
+		if creature then
+			weekly.Text = Locale.T("BannerWeekly", {
+				Face = creature.Face,
+				Name = creature.Name,
+				Time = Rewards.timeLeft(endsAt - now),
+			})
+		end
+	end
 
 	local function renderAdmin(now: number)
 		local event = Config.GetAdminEvent(Util.str(ReplicatedStorage, "AdminEvent"))
@@ -7679,6 +8226,8 @@ function Banners.Start(ctx)
 			night.Text = prefix .. Locale.T("BannerNextNight", { Time = Util.clock(nextAt - now) })
 		end
 
+		renderWeekly(now)
+
 		local luckLeft = Util.num(ReplicatedStorage, "LuckEndsAt") - now
 		luck.Visible = luckLeft > 0
 		if luck.Visible then
@@ -7698,7 +8247,7 @@ return Banners
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="40">
+        <Item class="ModuleScript" referent="47">
           <Properties>
             <string name="Name">Carry</string>
             <string name="Source"><![CDATA[-- Кража: пока игрок несёт мема (атрибут Carrying), показываем баннер с таймером
@@ -7870,7 +8419,110 @@ return Carry
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="41">
+        <Item class="ModuleScript" referent="48">
+          <Properties>
+            <string name="Name">CodesWindow</string>
+            <string name="Source"><![CDATA[-- Окно кодов: поле ввода + «Активировать» -> Remotes.RedeemCode(text).
+-- Проверяет код и выдаёт награду сервер (Config.Codes); награда приходит Popup "Code".
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Locale = require(Shared:WaitForChild("Locale"))
+local Rewards = require(script.Parent:WaitForChild("Rewards"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+
+local COLORS = UiKit.Colors
+local create = UiKit.create
+
+local MAX_LENGTH = 32
+
+local CodesWindow = {}
+
+function CodesWindow.Start(ctx)
+	local window, body = UiKit.window(ctx.Gui, Locale.T("CodesTitle"), Vector2.new(420, 230))
+	window.Name = "CodesWindow"
+	ctx.Register("Codes", window)
+
+	UiKit.text({
+		Text = Locale.T("CodesHint"),
+		TextScaled = true,
+		TextWrapped = true,
+		Font = Enum.Font.Gotham,
+		TextColor3 = COLORS.Muted,
+		Size = UDim2.new(1, 0, 0, 36),
+		Parent = body,
+	}, { create("UITextSizeConstraint", { MaxTextSize = 15 }) })
+
+	local box = create("TextBox", {
+		Text = "",
+		PlaceholderText = Locale.T("CodesPlaceholder"),
+		PlaceholderColor3 = COLORS.Muted,
+		ClearTextOnFocus = false,
+		Font = Enum.Font.GothamBold,
+		TextSize = 22,
+		TextColor3 = COLORS.Text,
+		BackgroundColor3 = COLORS.PanelLight,
+		Position = UDim2.fromOffset(0, 44),
+		Size = UDim2.new(1, 0, 0, 50),
+		Parent = body,
+	}, { UiKit.corner(10), create("UIStroke", { Color = COLORS.Purple, Thickness = 2, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }) })
+
+	local redeem = UiKit.button({
+		Text = Locale.T("CodesRedeem"),
+		TextSize = 22,
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 104),
+		Size = UDim2.new(0.7, 0, 0, 50),
+		BackgroundColor3 = COLORS.Green,
+		Parent = body,
+	})
+
+	-- Ограничиваем длину прямо в поле (сервер всё равно проверит)
+	box:GetPropertyChangedSignal("Text"):Connect(function()
+		if #box.Text > MAX_LENGTH then
+			box.Text = string.sub(box.Text, 1, MAX_LENGTH)
+		end
+	end)
+
+	local busy = false
+	local function submit()
+		if busy then
+			return
+		end
+		local code = string.gsub(box.Text, "^%s+", "")
+		code = string.gsub(code, "%s+$", "")
+		if code == "" then
+			ctx.Toast(Locale.T("CodesEmpty"), "error")
+			return
+		end
+		busy = true
+		redeem.AutoButtonColor = false
+		redeem.BackgroundColor3 = COLORS.PanelLight
+		local success, key = Rewards.invoke("RedeemCode", code)
+		busy = false
+		redeem.AutoButtonColor = true
+		redeem.BackgroundColor3 = COLORS.Green
+		if type(key) == "string" then
+			ctx.Toast(Locale.T(key), if success then "success" else "error")
+		end
+		if success then
+			box.Text = ""
+		end
+	end
+
+	redeem.Activated:Connect(submit)
+	box.FocusLost:Connect(function(enterPressed)
+		if enterPressed then
+			submit()
+		end
+	end)
+end
+
+return CodesWindow
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="49">
           <Properties>
             <string name="Name">DailyWindow</string>
             <string name="Source"><![CDATA[-- Календарь ежедневных наград: 7 клеток из Config.DailyCalendar, забранные дни с галочкой,
@@ -8104,7 +8756,7 @@ return DailyWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="42">
+        <Item class="ModuleScript" referent="50">
           <Properties>
             <string name="Name">DefenseWindow</string>
             <string name="Source"><![CDATA[-- Окно защиты базы: три карточки — страж (Kitten with a Sword), турель и лазерные ворота.
@@ -8316,7 +8968,7 @@ return DefenseWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="43">
+        <Item class="ModuleScript" referent="51">
           <Properties>
             <string name="Name">Effects</string>
             <string name="Source"><![CDATA[-- Клиентские эффекты: отбрасывание с оглушением (Remotes.Knockback), разовые вспышки/конфетти
@@ -8764,7 +9416,7 @@ return Effects
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="44">
+        <Item class="ModuleScript" referent="52">
           <Properties>
             <string name="Name">Emotes</string>
             <string name="Source"><![CDATA[-- Эмоции: окно-сетка из Config.Emotes (закрытые геймпассом — с замком и покупкой) и процедурная
@@ -9206,7 +9858,7 @@ return Emotes
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="45">
+        <Item class="ModuleScript" referent="53">
           <Properties>
             <string name="Name">FxExtra</string>
             <string name="Source"><![CDATA[-- Эффекты v3 по Remotes.Fx: выстрел турели ("Turret" {From, To}), вспышка лазерных ворот ("Laser"
@@ -9515,12 +10167,14 @@ return FxExtra
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="46">
+        <Item class="ModuleScript" referent="54">
           <Properties>
             <string name="Name">Hud</string>
-            <string name="Source"><![CDATA[-- HUD: деньги/доход/слоты слева сверху, таймер подарка за игру и боковые кнопки в две колонки:
--- основная (Магазин, Предметы, Индекс, Перерождение, Замок базы, Защита) и вторая (Награды дня,
--- Квесты, Эмоции, Обмен) — на телефоне так кнопки не уезжают под джойстик. Всё рисуется из атрибутов игрока.
+            <string name="Source"><![CDATA[-- HUD: деньги/доход/слоты/бонус друзей слева сверху, таймер подарка за игру и боковые кнопки в две
+-- колонки: главная (Магазин, Мем-пропуск, Колесо, Награды дня, Квесты, Меню — со значками) и база
+-- (Замок, Перерождение, Защита). Остальные окна (Предметы, Индекс, Скины, Эмоции, Обмен, Коды) и
+-- приглашение друзей / группа — в меню «☰»: на телефоне кнопки не закрывают экран.
+-- Всё рисуется из атрибутов игрока.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -9530,7 +10184,10 @@ local Config = require(Shared:WaitForChild("Config"))
 local Format = require(Shared:WaitForChild("Format"))
 local Locale = require(Shared:WaitForChild("Locale"))
 local DefenseWindow = require(script.Parent:WaitForChild("DefenseWindow"))
+local PassWindow = require(script.Parent:WaitForChild("PassWindow"))
 local QuestsWindow = require(script.Parent:WaitForChild("QuestsWindow"))
+local Social = require(script.Parent:WaitForChild("Social"))
+local SpinWindow = require(script.Parent:WaitForChild("SpinWindow"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
@@ -9633,8 +10290,13 @@ local function buildStats(ctx)
 			.. Locale.T("UiRebirths", { Count = Util.num(player, "Rebirths") })
 			.. "   "
 			.. Locale.T("UiIndexBonus", { Percent = math.floor(count * Config.IndexBonusPerEntry * 100 + 0.5) })
+		-- Бонус за друзей на сервере и группу
+		local social = Social.BoostPercent()
+		if social > 0 then
+			info.Text ..= "   " .. Locale.T("UiSocialBoost", { Percent = social })
+		end
 	end
-	for _, name in { "Income", "SlotsUsed", "MaxSlots", "Rebirths", "IndexCount" } do
+	for _, name in { "Income", "SlotsUsed", "MaxSlots", "Rebirths", "IndexCount", "FriendBoost", "InGroup" } do
 		player:GetAttributeChangedSignal(name):Connect(renderInfo)
 	end
 	renderInfo()
@@ -9721,10 +10383,109 @@ local function column(parent: Instance, order: number): Frame
 	})
 end
 
+-- Меню «☰»: второстепенные окна плиткой + друзья и группа. Регистрируется как окно,
+-- поэтому закрывается, когда открывается любое другое.
+local function buildMenu(ctx)
+	local window, body = UiKit.window(ctx.Gui, Locale.T("MenuTitle"), Vector2.new(400, 380))
+	window.Name = "MenuWindow"
+	ctx.Register("Menu", window)
+
+	local scroll = create("ScrollingFrame", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 5,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+		Parent = body,
+	}, {
+		create("UIListLayout", { Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }),
+		create("UIPadding", { PaddingRight = UDim.new(0, 8) }),
+	})
+
+	local grid = create("Frame", {
+		Size = UDim2.fromScale(1, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BackgroundTransparency = 1,
+		LayoutOrder = 1,
+		Parent = scroll,
+	}, {
+		create("UIGridLayout", {
+			CellSize = UDim2.new(1 / 3, -6, 0, 64),
+			CellPadding = UDim2.fromOffset(8, 8),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+	local tiles = {
+		{ Icon = "🗡️", Caption = "BtnItems", Window = "Items" },
+		{ Icon = "📖", Caption = "BtnIndex", Window = "Index" },
+		{ Icon = "🎨", Caption = "BtnSkins", Window = "Skins" },
+		{ Icon = "😀", Caption = "BtnEmotes", Window = "Emotes" },
+		{ Icon = "🤝", Caption = "BtnTrade", Window = "TradePick" },
+		{ Icon = "🎟️", Caption = "BtnCodes", Window = "Codes" },
+	}
+	for order, tile in tiles do
+		local button = sideButton(grid, order, tile.Icon, Locale.T(tile.Caption))
+		button.Activated:Connect(function()
+			ctx.Open(tile.Window, true)
+		end)
+	end
+
+	-- Друзья: приглашение + подсказка про бонус
+	local invite = UiKit.button({
+		Text = Locale.T("SocialInvite"),
+		TextScaled = true,
+		Size = UDim2.new(1, 0, 0, 44),
+		BackgroundColor3 = COLORS.Green,
+		LayoutOrder = 2,
+		Parent = scroll,
+	})
+	create("UITextSizeConstraint", { MaxTextSize = 20, Parent = invite })
+	create("UIPadding", { PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), Parent = invite })
+	UiKit.text({
+		Text = Locale.T("SocialInviteHint", {
+			Per = math.floor(Config.Social.FriendBoostPer * 100 + 0.5),
+			Max = math.floor(Config.Social.FriendBoostMax * 100 + 0.5),
+		}),
+		TextScaled = true,
+		TextWrapped = true,
+		Font = Enum.Font.Gotham,
+		TextColor3 = COLORS.Muted,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		Size = UDim2.new(1, 0, 0, 30),
+		LayoutOrder = 3,
+		Parent = scroll,
+	}, { create("UITextSizeConstraint", { MaxTextSize = 14 }) })
+	invite.Activated:Connect(function()
+		Social.Invite(ctx.Toast)
+	end)
+
+	-- Группа: кнопка только если GroupId задан и игрок ещё не в группе
+	local group = UiKit.button({
+		Text = Locale.T("SocialJoinGroup", { Percent = math.floor(Config.Social.GroupBoost * 100 + 0.5) }),
+		TextScaled = true,
+		Size = UDim2.new(1, 0, 0, 44),
+		BackgroundColor3 = COLORS.Purple,
+		LayoutOrder = 4,
+		Parent = scroll,
+	})
+	create("UITextSizeConstraint", { MaxTextSize = 20, Parent = group })
+	create("UIPadding", { PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), Parent = group })
+	group.Activated:Connect(Social.JoinGroup)
+	local function renderGroup()
+		group.Visible = Social.CanJoinGroup()
+	end
+	player:GetAttributeChangedSignal("InGroup"):Connect(renderGroup)
+	renderGroup()
+end
+
 function Hud.Start(ctx)
 	local renderGift = buildStats(ctx)
+	buildMenu(ctx)
 
-	-- Кнопки слева по центру, две колонки
+	-- Кнопки слева по центру, две колонки: главное (с значками) и база (замок, перерождение, защита).
+	-- Остальное — в меню «☰», чтобы на телефоне кнопки не закрывали экран.
 	local side = create("Frame", {
 		Name = "SideButtons",
 		AnchorPoint = Vector2.new(0, 0.5),
@@ -9746,54 +10507,54 @@ function Hud.Start(ctx)
 	local extra = column(side, 2)
 
 	local shop = sideButton(main, 1, "🛒", Locale.T("BtnShop"))
-	local items = sideButton(main, 2, "🗡️", Locale.T("BtnItems"))
-	local index = sideButton(main, 3, "📖", Locale.T("BtnIndex"))
-	local rebirth, rebirthCaption = sideButton(main, 4, "♻️", Locale.T("BtnRebirth"))
-	local lock, lockCaption = sideButton(main, 5, "🔒", Locale.T("BtnLock"))
-	local guard, guardCaption = sideButton(main, 6, "🛡️", Locale.T("BtnDefense"))
+	local pass = sideButton(main, 2, "🎫", Locale.T("BtnPass"))
+	local spin = sideButton(main, 3, "🎡", Locale.T("BtnSpin"))
+	local daily = sideButton(main, 4, "📅", Locale.T("BtnDaily"))
+	local quests = sideButton(main, 5, "📜", Locale.T("BtnQuests"))
+	local menu = sideButton(main, 6, "☰", Locale.T("BtnMenu"))
+
+	local lock, lockCaption = sideButton(extra, 1, "🔒", Locale.T("BtnLock"))
+	local rebirth, rebirthCaption = sideButton(extra, 2, "♻️", Locale.T("BtnRebirth"))
+	local guard, guardCaption = sideButton(extra, 3, "🛡️", Locale.T("BtnDefense"))
 	local lockIcon = lock:FindFirstChild("Icon") :: TextLabel
 
-	local daily = sideButton(extra, 1, "📅", Locale.T("BtnDaily"))
-	local quests = sideButton(extra, 2, "📜", Locale.T("BtnQuests"))
-	local emotes = sideButton(extra, 3, "😀", Locale.T("BtnEmotes"))
-	local trade = sideButton(extra, 4, "🤝", Locale.T("BtnTrade"))
+	local passBadge = badge(pass)
+	local spinBadge = badge(spin)
 	local dailyBadge = badge(daily)
 	local questsBadge = badge(quests)
 
-	daily.Activated:Connect(function()
-		ctx.Open("Daily")
-	end)
-	quests.Activated:Connect(function()
-		ctx.Open("Quests")
-	end)
-	emotes.Activated:Connect(function()
-		ctx.Open("Emotes")
-	end)
-	trade.Activated:Connect(function()
-		ctx.Open("TradePick")
-	end)
+	local opens = { [shop] = "Shop", [pass] = "Pass", [spin] = "Spin", [daily] = "Daily", [quests] = "Quests", [menu] = "Menu" }
+	for button, name in opens do
+		button.Activated:Connect(function()
+			ctx.Open(name)
+		end)
+	end
+
+	local function setBadge(label: TextLabel, button: TextButton, count: number)
+		label.Visible = count > 0
+		label.Text = if count > 0 then tostring(count) else ""
+		button.BackgroundColor3 = if count > 0 then COLORS.Purple else COLORS.Panel
+	end
 
 	local function renderBadges()
-		dailyBadge.Visible = Util.bool(player, "DailyReady")
-		daily.BackgroundColor3 = if dailyBadge.Visible then COLORS.Purple else COLORS.Panel
-		local claimable = QuestsWindow.ClaimableCount()
-		questsBadge.Visible = claimable > 0
-		questsBadge.Text = tostring(claimable)
+		setBadge(dailyBadge, daily, if Util.bool(player, "DailyReady") then 1 else 0)
+		dailyBadge.Text = ""
+		setBadge(questsBadge, quests, QuestsWindow.ClaimableCount())
+		setBadge(passBadge, pass, PassWindow.ClaimableCount())
+		setBadge(spinBadge, spin, SpinWindow.Available())
 	end
-	player:GetAttributeChangedSignal("DailyReady"):Connect(renderBadges)
-	player:GetAttributeChangedSignal("QuestsJson"):Connect(renderBadges)
+	local badgeAttributes = { "DailyReady", "QuestsJson" }
+	for _, list in { PassWindow.Attributes, SpinWindow.Attributes } do
+		for _, name in list do
+			table.insert(badgeAttributes, name)
+		end
+	end
+	for _, name in badgeAttributes do
+		player:GetAttributeChangedSignal(name):Connect(renderBadges)
+	end
 	renderBadges()
 
 	shop.BackgroundColor3 = COLORS.Green
-	shop.Activated:Connect(function()
-		ctx.Open("Shop")
-	end)
-	items.Activated:Connect(function()
-		ctx.Open("Items")
-	end)
-	index.Activated:Connect(function()
-		ctx.Open("Index")
-	end)
 	rebirth.Activated:Connect(function()
 		ctx.Open("Rebirth")
 	end)
@@ -9860,11 +10621,13 @@ return Hud
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="47">
+        <Item class="ModuleScript" referent="55">
           <Properties>
             <string name="Name">IndexWindow</string>
             <string name="Source"><![CDATA[-- Окно Индекса: сетка всех мемов из Config.Creatures. Открытые — цветные, закрытые — «???».
 -- Источник — атрибут игрока IndexJson (JSON-массив ключей "Id|Mutation", см. Config.IndexKey).
+-- Лимитные мемы помечены «Лимитный» («На этой неделе!» — мем недели WeeklyMeme), эксклюзивы —
+-- «Только пропуск / колесо».
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -10029,6 +10792,7 @@ function IndexWindow.Start(ctx)
 
 	local function render()
 		local set = discoveredSet()
+		local weeklyId = Util.str(ReplicatedStorage, "WeeklyMeme")
 		local found, mutated = 0, 0
 		for _, cell in cells do
 			local creature = cell.Creature
@@ -10056,7 +10820,13 @@ function IndexWindow.Start(ctx)
 			cell.Name.Text = if known then Locale.Name(creature) else Locale.T("IndexUnknown")
 			cell.Name.TextColor3 = if known then COLORS.Text else COLORS.Muted
 			paintRarity(cell.Rarity, creature.Rarity)
-			if #dots > 0 then
+			if creature.Limited or creature.Rarity == "Limited" then
+				cell.Extra.Text = Locale.T(if creature.Id == weeklyId then "IndexLimitedNow" else "IndexLimited")
+				cell.Extra.TextColor3 = Config.GetRarity("Limited").Color
+			elseif creature.Exclusive or creature.Rarity == "Exclusive" then
+				cell.Extra.Text = Locale.T("IndexExclusive")
+				cell.Extra.TextColor3 = Config.GetRarity("Exclusive").Color
+			elseif #dots > 0 then
 				cell.Extra.Text = table.concat(dots, " ")
 			elseif creature.Event then
 				-- Сезонные: «Ночь Хэллоуина» / «Зимняя ночь», без сезона — просто «Только ночью»
@@ -10076,6 +10846,7 @@ function IndexWindow.Start(ctx)
 
 	player:GetAttributeChangedSignal("IndexJson"):Connect(render)
 	player:GetAttributeChangedSignal("IndexCount"):Connect(render)
+	ReplicatedStorage:GetAttributeChangedSignal("WeeklyMeme"):Connect(render)
 	render()
 end
 
@@ -10083,7 +10854,7 @@ return IndexWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="48">
+        <Item class="ModuleScript" referent="56">
           <Properties>
             <string name="Name">Items</string>
             <string name="Source"><![CDATA[-- Окно предметов: оружие и гаджеты из Config.Items, покупка за монеты навсегда.
@@ -10333,14 +11104,16 @@ return Items
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="49">
+        <Item class="ModuleScript" referent="57">
           <Properties>
             <string name="Name">MemeBillboards</string>
             <string name="Source"><![CDATA[-- Таблички над мемами (тег "Meme"): мутация, ВИРУСНЫЙ, имя, редкость, доход/сек, цена на дорожке.
 -- BillboardGui создаются локально в PlayerGui и привязываются к Body (Adornee), поэтому
 -- переживают стриминг: Body ушёл — табличка пустая, вернулся — снова привязываем.
+-- Редкость «Лимит» пульсирует (мем недели), цвета Limited/Exclusive — из Config.Rarities.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
@@ -10355,6 +11128,8 @@ local player = Players.LocalPlayer
 
 local VIRAL_COLOR = Color3.fromRGB(255, 80, 220)
 local MAX_DISTANCE = 60
+local PULSE = TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+local PULSE_RARITIES = { Limited = true }
 
 local MemeBillboards = {}
 
@@ -10366,6 +11141,7 @@ type Entry = {
 	Rarity: TextLabel,
 	Income: TextLabel,
 	Price: TextLabel,
+	Pulse: Tween?,
 }
 local entries: { [Instance]: Entry } = {}
 
@@ -10416,6 +11192,12 @@ local function render(entry: Entry)
 		entry.Rarity.TextColor3 = rarity.Color
 		entry.Rarity.TextStrokeColor3 = Color3.new(0, 0, 0)
 		entry.Rarity.TextStrokeTransparency = 0.2
+	end
+	-- Пульсация подписи редкости (один бесконечный твин на табличку)
+	if PULSE_RARITIES[rarityId] and not entry.Pulse then
+		local scale = create("UIScale", { Parent = entry.Rarity })
+		entry.Pulse = TweenService:Create(scale, PULSE, { Scale = 1.25 })
+		entry.Pulse:Play()
 	end
 
 	-- Доход/сек: базовый × тренд (без личных множителей игрока)
@@ -10503,6 +11285,9 @@ local function track(model: Instance): () -> ()
 
 	return function()
 		entries[model] = nil
+		if entry.Pulse then
+			entry.Pulse:Cancel()
+		end
 		for _, connection in connections do
 			connection:Disconnect()
 		end
@@ -10537,7 +11322,424 @@ return MemeBillboards
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="50">
+        <Item class="ModuleScript" referent="58">
+          <Properties>
+            <string name="Name">PassWindow</string>
+            <string name="Source"><![CDATA[-- Окно Мем-пропуска (боевой пропуск сезона). Источник — атрибут игрока BPJson:
+-- { Season, Xp, Level, XpInLevel, Free = { забранные уровни }, Premium = { ... }, EndsAt }.
+-- Уровни и награды — Config.BattlePass.Levels; премиум-ряд — с геймпассом BattlePass (Pass_BattlePass).
+-- Забрать — Remotes.ClaimPass(level, "Free" | "Premium"); награду выдаёт сервер (Popup "Pass").
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Locale = require(Shared:WaitForChild("Locale"))
+local Rewards = require(script.Parent:WaitForChild("Rewards"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local COLORS = UiKit.Colors
+local create = UiKit.create
+local player = Players.LocalPlayer
+
+local BP = Config.BattlePass
+local COLUMN_WIDTH = 112
+local GAP = 8
+local PREMIUM_COLOR = Color3.fromRGB(255, 200, 50)
+local PREMIUM_BG = Color3.fromRGB(60, 48, 24)
+local TRACKS = { "Free", "Premium" }
+
+local PassWindow = {}
+
+type Data = { Level: number, XpInLevel: number, EndsAt: number, Free: { [number]: boolean }, Premium: { [number]: boolean } }
+
+local function levelSet(list: any): { [number]: boolean }
+	local set = {}
+	if type(list) == "table" then
+		for _, level in list do
+			if type(level) == "number" then
+				set[level] = true
+			end
+		end
+	end
+	return set
+end
+
+-- Разобрать BPJson; нет данных — уровень 0
+function PassWindow.Read(): Data
+	local raw = Util.json(player, "BPJson")
+	if type(raw) ~= "table" then
+		raw = {}
+	end
+	return {
+		Level = math.clamp(if type(raw.Level) == "number" then raw.Level else 0, 0, #BP.Levels),
+		XpInLevel = if type(raw.XpInLevel) == "number" then raw.XpInLevel else 0,
+		EndsAt = if type(raw.EndsAt) == "number" and raw.EndsAt > 0 then raw.EndsAt else BP.EndsAt,
+		Free = levelSet(raw.Free),
+		Premium = levelSet(raw.Premium),
+	}
+end
+
+local function claimable(data: Data, level: number, track: string): boolean
+	if level > data.Level then
+		return false
+	end
+	if track == "Premium" then
+		return Util.bool(player, "Pass_BattlePass") and not data.Premium[level]
+	end
+	return not data.Free[level]
+end
+
+-- Сколько наград можно забрать прямо сейчас (значок на кнопке HUD)
+function PassWindow.ClaimableCount(): number
+	local data = PassWindow.Read()
+	local count = 0
+	for level = 1, data.Level do
+		for _, track in TRACKS do
+			if claimable(data, level, track) then
+				count += 1
+			end
+		end
+	end
+	return count
+end
+
+PassWindow.Attributes = { "BPJson", "Pass_BattlePass" }
+
+function PassWindow.Start(ctx)
+	local window, body = UiKit.window(ctx.Gui, Locale.T("PassTitle"), Vector2.new(780, 470))
+	window.Name = "PassWindow"
+	ctx.Register("Pass", window)
+
+	-- Шапка: сезон и сколько осталось
+	local season = UiKit.text({
+		Text = Locale.Name(BP),
+		TextScaled = true,
+		TextColor3 = COLORS.Gold,
+		Size = UDim2.new(0.6, 0, 0, 22),
+		Parent = body,
+	}, { create("UITextSizeConstraint", { MaxTextSize = 18 }) })
+	season.Name = "Season"
+	local endsIn = UiKit.text({
+		TextScaled = true,
+		TextColor3 = COLORS.Muted,
+		TextXAlignment = Enum.TextXAlignment.Right,
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.fromScale(1, 0),
+		Size = UDim2.new(0.4, 0, 0, 22),
+		Parent = body,
+	}, { create("UITextSizeConstraint", { MaxTextSize = 15 }) })
+
+	-- Уровень и полоса XP текущего уровня
+	local levelLabel = UiKit.text({
+		TextScaled = true,
+		Position = UDim2.fromOffset(0, 26),
+		Size = UDim2.new(0, 130, 0, 22),
+		Parent = body,
+	}, { create("UITextSizeConstraint", { MaxTextSize = 18 }) })
+	local bar = create("Frame", {
+		Position = UDim2.fromOffset(136, 29),
+		Size = UDim2.new(1, -136, 0, 18),
+		BackgroundColor3 = COLORS.PanelLight,
+		Parent = body,
+	}, { UiKit.corner(8) })
+	local fill = create("Frame", {
+		Size = UDim2.fromScale(0, 1),
+		BackgroundColor3 = COLORS.Purple,
+		Parent = bar,
+	}, { UiKit.corner(8) })
+	local barText = UiKit.text({
+		TextSize = 13,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		TextStrokeTransparency = 0.4,
+		Size = UDim2.fromScale(1, 1),
+		ZIndex = 2,
+		Parent = bar,
+	})
+	UiKit.text({
+		Text = Locale.T("PassXpHint"),
+		TextScaled = true,
+		Font = Enum.Font.Gotham,
+		TextColor3 = COLORS.Muted,
+		Position = UDim2.fromOffset(0, 50),
+		Size = UDim2.new(1, 0, 0, 16),
+		Parent = body,
+	}, { create("UITextSizeConstraint", { MaxTextSize = 13 }) })
+
+	-- Кнопки покупки снизу: премиум (геймпасс) и +5 уровней (продукт)
+	local footer = create("Frame", {
+		AnchorPoint = Vector2.new(0, 1),
+		Position = UDim2.fromScale(0, 1),
+		Size = UDim2.new(1, 0, 0, 44),
+		BackgroundTransparency = 1,
+		Parent = body,
+	}, {
+		create("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+			Padding = UDim.new(0, 8),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+	local premiumButton = UiKit.button({
+		Text = Locale.T("PassUnlockPremium", { Robux = Config.GamePasses.BattlePass.Robux }),
+		TextScaled = true,
+		Size = UDim2.new(0.55, -4, 1, 0),
+		BackgroundColor3 = Color3.fromRGB(200, 140, 20),
+		LayoutOrder = 1,
+		Parent = footer,
+	})
+	create("UITextSizeConstraint", { MaxTextSize = 18, Parent = premiumButton })
+	create("UIPadding", { PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6), Parent = premiumButton })
+	local levelsProduct = Config.Products.PassLevels
+	local levelsButton = UiKit.button({
+		Text = Locale.T("PassBuyLevels", { Count = levelsProduct.Levels or 5, Robux = levelsProduct.Robux }),
+		TextScaled = true,
+		Size = UDim2.new(0.45, -4, 1, 0),
+		BackgroundColor3 = COLORS.Purple,
+		LayoutOrder = 2,
+		Parent = footer,
+	})
+	create("UITextSizeConstraint", { MaxTextSize = 18, Parent = levelsButton })
+	create("UIPadding", { PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6), Parent = levelsButton })
+
+	premiumButton.Activated:Connect(function()
+		if not Util.bool(player, "Pass_BattlePass") then
+			Util.promptPass("BattlePass", ctx.Toast)
+		end
+	end)
+	levelsButton.Activated:Connect(function()
+		Rewards.promptProduct("PassLevels", ctx.Toast)
+	end)
+
+	-- Лента уровней: колонка на уровень (номер, бесплатная клетка, премиум-клетка), прокрутка по X
+	local strip = create("ScrollingFrame", {
+		Position = UDim2.fromOffset(0, 72),
+		Size = UDim2.new(1, 0, 1, -72 - 52),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 6,
+		AutomaticCanvasSize = Enum.AutomaticSize.X,
+		CanvasSize = UDim2.fromScale(0, 1), -- высота холста = высота ленты, колонки тянутся по ней
+		ScrollingDirection = Enum.ScrollingDirection.X,
+		Parent = body,
+	}, {
+		create("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			Padding = UDim.new(0, GAP),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+		create("UIPadding", { PaddingBottom = UDim.new(0, 10) }),
+	})
+
+	local current: Data = PassWindow.Read()
+	local busy = false
+	local function claim(level: number, track: string)
+		if busy then
+			return
+		end
+		if track == "Premium" and not Util.bool(player, "Pass_BattlePass") then
+			Util.promptPass("BattlePass", ctx.Toast)
+			return
+		end
+		if not claimable(current, level, track) then
+			return
+		end
+		busy = true
+		local success, key = Rewards.invoke("ClaimPass", level, track)
+		busy = false
+		-- Успех показывает всплывающее окно с наградой; ошибку — тостом
+		if not success and type(key) == "string" then
+			ctx.Toast(Locale.T(key), "error")
+		end
+	end
+
+	-- Клетка награды: иконка, подпись, кнопка состояния
+	local function cell(parent: Instance, order: number, reward: any, premium: boolean)
+		local frame = create("Frame", {
+			Size = UDim2.new(1, 0, 0.5, -16),
+			BackgroundColor3 = if premium then PREMIUM_BG else COLORS.PanelLight,
+			LayoutOrder = order,
+			Parent = parent,
+		}, { UiKit.corner(10) })
+		local stroke = create("UIStroke", {
+			Color = if premium then PREMIUM_COLOR else COLORS.PanelLight,
+			Thickness = 2,
+			Parent = frame,
+		})
+		local icon, text, color = Rewards.describe(reward)
+		UiKit.text({
+			Text = icon,
+			TextScaled = true,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			Position = UDim2.new(0, 6, 0, 4),
+			Size = UDim2.new(1, -12, 0.38, 0),
+			Parent = frame,
+		})
+		local label = UiKit.text({
+			Text = text,
+			TextScaled = true,
+			TextWrapped = true,
+			TextColor3 = color,
+			TextStrokeTransparency = 0.5,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			Position = UDim2.new(0, 4, 0.38, 4),
+			Size = UDim2.new(1, -8, 0.3, -4),
+			Parent = frame,
+		})
+		create("UITextSizeConstraint", { MaxTextSize = 14, MinTextSize = 8, Parent = label })
+		local button = UiKit.button({
+			Text = "",
+			TextScaled = true,
+			AnchorPoint = Vector2.new(0.5, 1),
+			Position = UDim2.new(0.5, 0, 1, -4),
+			Size = UDim2.new(1, -10, 0.3, -4),
+			Parent = frame,
+		})
+		create("UITextSizeConstraint", { MaxTextSize = 15, Parent = button })
+		return { Frame = frame, Stroke = stroke, Label = label, Button = button }
+	end
+
+	local columns = {}
+	for level, entry in BP.Levels do
+		local column = create("Frame", {
+			Size = UDim2.new(0, COLUMN_WIDTH, 1, 0),
+			BackgroundTransparency = 1,
+			LayoutOrder = level,
+			Parent = strip,
+		}, {
+			create("UIListLayout", { Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder }),
+		})
+		local title = UiKit.text({
+			Text = Locale.T("PassLv", { Level = level }),
+			TextSize = 16,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			Size = UDim2.new(1, 0, 0, 22),
+			BackgroundTransparency = 0,
+			BackgroundColor3 = COLORS.Panel,
+			LayoutOrder = 0,
+			Parent = column,
+		}, { UiKit.corner(8) })
+		local free = cell(column, 1, entry.Free, false)
+		local premium = cell(column, 2, entry.Premium, true)
+		free.Button.Activated:Connect(function()
+			claim(level, "Free")
+		end)
+		premium.Button.Activated:Connect(function()
+			claim(level, "Premium")
+		end)
+		columns[level] = { Title = title, Free = free, Premium = premium }
+	end
+
+	local function paint(c, data: Data, level: number, track: string)
+		local hasPass = Util.bool(player, "Pass_BattlePass")
+		local claimed = if track == "Premium" then data.Premium[level] else data.Free[level]
+		local reached = level <= data.Level
+		local button: TextButton = c.Button
+		if claimed then
+			button.Text = "✅"
+			button.BackgroundColor3 = COLORS.Panel
+			button.AutoButtonColor = false
+			c.Frame.BackgroundTransparency = 0.4
+		elseif track == "Premium" and not hasPass then
+			button.Text = "🔒 " .. Locale.T("PassPremium")
+			button.BackgroundColor3 = Color3.fromRGB(120, 90, 20)
+			button.AutoButtonColor = true
+			c.Frame.BackgroundTransparency = 0
+		elseif reached then
+			button.Text = Locale.T("PassClaim")
+			button.BackgroundColor3 = COLORS.Green
+			button.AutoButtonColor = true
+			c.Frame.BackgroundTransparency = 0
+		else
+			button.Text = "🔒"
+			button.BackgroundColor3 = COLORS.Panel
+			button.AutoButtonColor = false
+			c.Frame.BackgroundTransparency = 0.4
+		end
+		c.Stroke.Color = if not claimed and reached and (track == "Free" or hasPass)
+			then COLORS.Green
+			elseif track == "Premium" then PREMIUM_COLOR
+			else COLORS.PanelLight
+	end
+
+	local function render()
+		current = PassWindow.Read()
+		local hasPass = Util.bool(player, "Pass_BattlePass")
+		local max = #BP.Levels
+		levelLabel.Text = Locale.T("PassLevel", { Level = current.Level, Max = max })
+		if current.Level >= max then
+			fill.Size = UDim2.fromScale(1, 1)
+			barText.Text = Locale.T("PassMaxLevel")
+		else
+			local ratio = math.clamp(current.XpInLevel / math.max(BP.XpPerLevel, 1), 0, 1)
+			TweenService:Create(fill, TweenInfo.new(0.25), { Size = UDim2.fromScale(ratio, 1) }):Play()
+			barText.Text = Locale.T("PassXp", { Xp = math.floor(current.XpInLevel), Need = BP.XpPerLevel })
+		end
+		for level, c in columns do
+			c.Title.TextColor3 = if level <= current.Level then COLORS.Gold else COLORS.Muted
+			paint(c.Free, current, level, "Free")
+			paint(c.Premium, current, level, "Premium")
+		end
+		premiumButton.Text = if hasPass
+			then Locale.T("PassPremiumOwned")
+			else Locale.T("PassUnlockPremium", { Robux = Config.GamePasses.BattlePass.Robux })
+		premiumButton.AutoButtonColor = not hasPass
+		premiumButton.BackgroundColor3 = if hasPass then COLORS.PanelLight else Color3.fromRGB(200, 140, 20)
+		levelsButton.Visible = current.Level < max
+	end
+
+	for _, name in PassWindow.Attributes do
+		player:GetAttributeChangedSignal(name):Connect(render)
+	end
+	player:GetAttributeChangedSignal("Income"):Connect(function()
+		if window.Visible then
+			-- Подписи «~$X» зависят от дохода: перерисовываем текст клеток с монетами
+			for level, c in columns do
+				local entry = BP.Levels[level]
+				c.Free.Label.Text = select(2, Rewards.describe(entry.Free))
+				c.Premium.Label.Text = select(2, Rewards.describe(entry.Premium))
+			end
+		end
+	end)
+
+	-- При открытии — прокрутить к первой незабранной награде (или к текущему уровню)
+	window:GetPropertyChangedSignal("Visible"):Connect(function()
+		if not window.Visible then
+			return
+		end
+		render()
+		local target = math.max(current.Level, 1)
+		for level = 1, current.Level do
+			if claimable(current, level, "Free") or claimable(current, level, "Premium") then
+				target = level
+				break
+			end
+		end
+		task.defer(function()
+			strip.CanvasPosition = Vector2.new(math.max(0, (target - 1) * (COLUMN_WIDTH + GAP) - COLUMN_WIDTH), 0)
+		end)
+	end)
+	render()
+
+	task.spawn(function()
+		while true do
+			if window.Visible then
+				local left = current.EndsAt - Util.now()
+				endsIn.Text = if left > 0 then Locale.T("PassEndsIn", { Time = Rewards.timeLeft(left) }) else Locale.T("PassEnded")
+			end
+			task.wait(1)
+		end
+	end)
+end
+
+return PassWindow
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="59">
           <Properties>
             <string name="Name">PlotSigns</string>
             <string name="Source"><![CDATA[-- Таблички баз: SurfaceGui на Sign каждой базы (Face = Front) — имя хозяина или «Свободно»,
@@ -10651,16 +11853,20 @@ return PlotSigns
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="51">
+        <Item class="ModuleScript" referent="60">
           <Properties>
             <string name="Name">Popups</string>
             <string name="Source"><![CDATA[-- Всплывающие окна от сервера (Remotes.Popup): оффлайн-доход и ежедневная награда
--- (Daily: Day + одно или несколько из Coins / Meme (Id) / Item (Id)).
+-- (Daily: Day + одно или несколько из Coins / Meme (Id) / Item (Id)), а также v4:
+-- "Code" { Code, Coins?, Meme?, Spins?, Item? }, "Spin" { ... } (после анимации колеса),
+-- "Pass" { Level, Track, Coins?, Meme?, Spins?, Skin?, Item? }.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Locale = require(Shared:WaitForChild("Locale"))
+local Rewards = require(script.Parent:WaitForChild("Rewards"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
@@ -10691,6 +11897,18 @@ local function dailyText(data): string
 	return Locale.T("PopupDailyHead", { Day = day }) .. "\n" .. table.concat(lines, "\n")
 end
 
+-- Текст награды кода / колеса / пропуска: строка на каждую часть (RichText, мем — цветом редкости)
+local function rewardText(data, header: string?): string
+	local lines = Rewards.lines(data)
+	if #lines == 0 then
+		table.insert(lines, Locale.T("PopupRewardEmpty"))
+	end
+	if header then
+		table.insert(lines, 1, header)
+	end
+	return table.concat(lines, "\n")
+end
+
 function Popups.Start(ctx)
 	-- Очередь: если пришли и «Оффлайн», и «Ежедневная», показываем по одному
 	local queue: { { Title: string, Text: string } } = {}
@@ -10700,6 +11918,11 @@ function Popups.Start(ctx)
 	window.Name = "PopupWindow"
 	window.ZIndex = 10
 	local title = window:FindFirstChildWhichIsA("TextLabel")
+	if title then
+		-- Заголовки наград бывают длинными («Мем-пропуск — уровень 20»): ужимаем, а не обрезаем
+		title.TextScaled = true
+		create("UITextSizeConstraint", { MaxTextSize = 26, Parent = title })
+	end
 
 	local message = UiKit.text({
 		TextSize = 22,
@@ -10711,6 +11934,8 @@ function Popups.Start(ctx)
 	})
 	create("UITextSizeConstraint", { MaxTextSize = 24, Parent = message })
 	message.TextScaled = true
+	message.RichText = true
+	local pop = create("UIScale", { Parent = window })
 	local ok = UiKit.button({
 		Text = Locale.T("PopupOk"),
 		TextSize = 22,
@@ -10734,6 +11959,9 @@ function Popups.Start(ctx)
 		end
 		message.Text = item.Text
 		window.Visible = true
+		-- Награда «выскакивает»
+		pop.Scale = 0.7
+		TweenService:Create(pop, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
 	end
 
 	ok.Activated:Connect(showNext)
@@ -10744,12 +11972,35 @@ function Popups.Start(ctx)
 		end
 	end)
 
+	local function enqueue(item: { Title: string, Text: string })
+		table.insert(queue, item)
+		if not showing then
+			showNext()
+		end
+	end
+
 	Remotes:WaitForChild("Popup").OnClientEvent:Connect(function(kind, data)
 		if type(data) ~= "table" then
 			return
 		end
 		local coins = if type(data.Coins) == "number" then data.Coins else 0
-		if kind == "Offline" then
+		if kind == "Spin" then
+			-- Ждём, пока колесо докрутится (SpinWindow держит Rewards.SpinHoldUntil)
+			task.spawn(function()
+				while os.clock() < Rewards.SpinHoldUntil do
+					task.wait(0.1)
+				end
+				enqueue({ Title = Locale.T("PopupSpinTitle"), Text = rewardText(data) })
+			end)
+			return
+		elseif kind == "Code" then
+			local code = if type(data.Code) == "string" then string.upper(string.sub(data.Code, 1, 32)) else ""
+			table.insert(queue, { Title = Locale.T("PopupCodeTitle", { Code = code }), Text = rewardText(data) })
+		elseif kind == "Pass" then
+			local level = if type(data.Level) == "number" then data.Level else 0
+			local header = if data.Track == "Premium" then Locale.T("PopupPassPremium") else nil
+			table.insert(queue, { Title = Locale.T("PopupPassTitle", { Level = level }), Text = rewardText(data, header) })
+		elseif kind == "Offline" then
 			local seconds = if type(data.Seconds) == "number" then data.Seconds else 0
 			table.insert(queue, {
 				Title = Locale.T("PopupOfflineTitle"),
@@ -10773,7 +12024,7 @@ return Popups
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="52">
+        <Item class="ModuleScript" referent="61">
           <Properties>
             <string name="Name">Prompts</string>
             <string name="Source"><![CDATA[-- ProximityPrompt мемов и замков баз: перевод ActionText/ObjectText и локальное выключение лишних
@@ -11044,7 +12295,7 @@ return Prompts
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="53">
+        <Item class="ModuleScript" referent="62">
           <Properties>
             <string name="Name">QuestsWindow</string>
             <string name="Source"><![CDATA[-- Окно ежедневных квестов. Источник — атрибут игрока QuestsJson:
@@ -11370,7 +12621,7 @@ return QuestsWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="54">
+        <Item class="ModuleScript" referent="63">
           <Properties>
             <string name="Name">RebirthWindow</string>
             <string name="Source"><![CDATA[-- Окно перерождения: цена, прогресс денег до цены, что даёт, кнопка.
@@ -11512,7 +12763,138 @@ return RebirthWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="55">
+        <Item class="ModuleScript" referent="64">
+          <Properties>
+            <string name="Name">Rewards</string>
+            <string name="Source"><![CDATA[-- Общие помощники для наград v4 (коды, Мем-пропуск, колесо): описание награды из Config
+-- (Kind = Coins / Meme / Spins / Item / Skin), строки всплывающего окна по данным от сервера,
+-- цвет редкости и «осталось N д M ч». Сумму награды всегда считает сервер, клиент пишет «~».
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Locale = require(Shared:WaitForChild("Locale"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local COLORS = UiKit.Colors
+local player = Players.LocalPlayer
+
+local Rewards = {}
+
+-- Пока колесо крутится, всплывашка «Spin» ждёт (os.clock(), см. SpinWindow и Popups)
+Rewards.SpinHoldUntil = 0
+
+-- Цвет редкости для текста: «Секретный» почти чёрный — рисуем белым
+function Rewards.rarityColor(rarityId: string): Color3
+	if rarityId == "Secret" then
+		return Color3.new(1, 1, 1)
+	end
+	return Config.GetRarity(rarityId).Color
+end
+
+local function colored(text: string, color: Color3): string
+	return '<font color="#' .. color:ToHex() .. '">' .. text .. "</font>"
+end
+
+-- 200000 -> "2д 7ч", 5000 -> "1ч 23м", 300 -> "5:00"
+function Rewards.timeLeft(seconds: number): string
+	local total = math.max(0, math.floor(seconds))
+	if total >= 86400 then
+		return Locale.T("TimeDH", { D = total // 86400, H = (total % 86400) // 3600 })
+	elseif total >= 3600 then
+		return Locale.T("TimeHM", { H = total // 3600, M = (total % 3600) // 60 })
+	end
+	return Util.clock(total)
+end
+
+-- Награда из Config (уровень пропуска, сегмент колеса): иконка, короткая подпись, цвет
+function Rewards.describe(reward: any): (string, string, Color3)
+	if type(reward) ~= "table" then
+		return "❔", "?", COLORS.Muted
+	end
+	local kind = reward.Kind
+	if kind == "Meme" then
+		local creature = if type(reward.Id) == "string" then Config.GetCreature(reward.Id) else nil
+		if creature then
+			return creature.Face, creature.Name, Rewards.rarityColor(creature.Rarity)
+		end
+		local rarity = Config.GetRarity(reward.Rarity)
+		return "🎲", Locale.T("DailyMeme", { Rarity = Locale.Name(rarity) }), Rewards.rarityColor(rarity.Id)
+	elseif kind == "Spins" then
+		return "🎡", Locale.T("RewardSpins", { Count = reward.Amount or 1 }), COLORS.Purple
+	elseif kind == "Item" then
+		local item = Config.GetItem(reward.ItemId)
+		if item then
+			return item.Face, Locale.Name(item), COLORS.Purple
+		end
+		return "🎁", "?", COLORS.Purple
+	elseif kind == "Skin" then
+		local skin = Config.GetSkin(reward.SkinId)
+		local icon = if skin and skin.Kind == "Base" then "🏠" else "🩴"
+		return icon, Locale.T("RewardSkin", { Name = Locale.Name(skin) }), Color3.fromRGB(0, 230, 200)
+	end
+	return "💰", Locale.T("RewardCoinsApprox", { Coins = Util.coinsFor(reward.IncomeSeconds, reward.MinCoins) }), COLORS.Gold
+end
+
+-- Строки RichText для всплывающего окна по данным Popup { Coins?, Meme?, Spins?, Item?, Skin? }
+function Rewards.lines(data: { [string]: any }): { string }
+	local lines = {}
+	local creature = if type(data.Meme) == "string" then Config.GetCreature(data.Meme) else nil
+	if creature then
+		local color = Rewards.rarityColor(creature.Rarity)
+		table.insert(lines, colored(Locale.T("PopupDailyMeme", { Face = creature.Face, Name = creature.Name }), color))
+		table.insert(lines, colored(Locale.Name(Config.GetRarity(creature.Rarity)), color))
+	end
+	if type(data.Coins) == "number" and data.Coins > 0 then
+		table.insert(lines, "💰 " .. Locale.T("RewardCoins", { Coins = data.Coins }))
+	end
+	if type(data.Spins) == "number" and data.Spins > 0 then
+		table.insert(lines, "🎡 " .. Locale.T("RewardSpins", { Count = data.Spins }))
+	end
+	local item = if type(data.Item) == "string" then Config.GetItem(data.Item) else nil
+	if item then
+		table.insert(lines, Locale.T("PopupDailyItem", { Face = item.Face, Name = Locale.Name(item) }))
+	end
+	local skin = if type(data.Skin) == "string" then Config.GetSkin(data.Skin) else nil
+	if skin then
+		table.insert(lines, "🎨 " .. Locale.T("RewardSkin", { Name = Locale.Name(skin) }))
+	end
+	return lines
+end
+
+-- Вызов RemoteFunction -> (success, key, extra). Нет ремоута или ошибка сети -> (false, "NotLoaded")
+function Rewards.invoke(name: string, ...: any): (boolean, any, any)
+	local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(name, 5)
+	if not remote or not remote:IsA("RemoteFunction") then
+		return false, "NotLoaded", nil
+	end
+	local args = table.pack(...)
+	local ok, success, key, extra = pcall(function()
+		return remote:InvokeServer(table.unpack(args, 1, args.n))
+	end)
+	if not ok then
+		return false, "NotLoaded", nil
+	end
+	return success == true, key, extra
+end
+
+-- Купить продукт по ключу Config.Products; Id = 0 -> «не настроено»
+function Rewards.promptProduct(key: string, toast: (string, string?) -> ())
+	local product = Config.Products[key]
+	if not product or product.Id == 0 then
+		toast(Locale.T("NotConfigured"), "error")
+		return
+	end
+	game:GetService("MarketplaceService"):PromptProductPurchase(player, product.Id)
+end
+
+return Rewards
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="65">
           <Properties>
             <string name="Name">Shop</string>
             <string name="Source"><![CDATA[-- Окно магазина: геймпассы (навсегда) и продукты за Robux (бусты, деньги).
@@ -11712,7 +13094,705 @@ return Shop
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="56">
+        <Item class="ModuleScript" referent="66">
+          <Properties>
+            <string name="Name">SkinsWindow</string>
+            <string name="Source"><![CDATA[-- Окно скинов: две вкладки (база / тапок) из Config.Skins. Источник — атрибут игрока SkinsJson:
+-- { Owned = { id… }, Base = id, Slipper = id }. Купить за монеты — Remotes.BuySkin(id)
+-- (только Price > 0 без Source), надеть — Remotes.EquipSkin(id). Скины с Source = "Pass" / "Spin"
+-- не продаются: их выдаёт Мем-пропуск или колесо. Цену и владение проверяет сервер.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Format = require(Shared:WaitForChild("Format"))
+local Locale = require(Shared:WaitForChild("Locale"))
+local Rewards = require(script.Parent:WaitForChild("Rewards"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local COLORS = UiKit.Colors
+local create = UiKit.create
+local player = Players.LocalPlayer
+
+local CELL_HEIGHT = 150
+local GAP = 8
+local DEFAULT_SWATCH = Color3.fromRGB(150, 150, 160)
+local TABS = { { Kind = "Base", Key = "SkinsBase" }, { Kind = "Slipper", Key = "SkinsSlipper" } }
+
+local SkinsWindow = {}
+
+type State = { Owned: { [string]: boolean }, Base: string, Slipper: string }
+
+local function readState(): State
+	local raw = Util.json(player, "SkinsJson")
+	local state: State = { Owned = {}, Base = "BaseDefault", Slipper = "SlipperDefault" }
+	if type(raw) ~= "table" then
+		return state
+	end
+	if type(raw.Owned) == "table" then
+		for _, id in raw.Owned do
+			if type(id) == "string" then
+				state.Owned[id] = true
+			end
+		end
+	end
+	if type(raw.Base) == "string" then
+		state.Base = raw.Base
+	end
+	if type(raw.Slipper) == "string" then
+		state.Slipper = raw.Slipper
+	end
+	return state
+end
+
+-- Бесплатные скины без Source (классика) есть у всех
+local function owns(state: State, skin): boolean
+	return state.Owned[skin.Id] == true or (skin.Price == 0 and skin.Source == nil)
+end
+
+-- Образец цвета: пол базы (обводка — стены) или цвет тапка; радужный — градиент
+local function swatch(parent: Instance, skin)
+	local main = skin.Floor or skin.Color or DEFAULT_SWATCH
+	local frame = create("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 8),
+		Size = UDim2.fromOffset(56, 56),
+		BackgroundColor3 = main,
+		Parent = parent,
+	}, {
+		UiKit.corner(if skin.Kind == "Slipper" then 28 else 10),
+		create("UIStroke", { Color = skin.Wall or Color3.new(1, 1, 1), Thickness = 3 }),
+	})
+	if skin.Rainbow then
+		frame.BackgroundColor3 = Color3.new(1, 1, 1)
+		create("UIGradient", {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 60, 60)),
+				ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 220, 40)),
+				ColorSequenceKeypoint.new(0.5, Color3.fromRGB(60, 230, 90)),
+				ColorSequenceKeypoint.new(0.75, Color3.fromRGB(60, 140, 255)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 70, 255)),
+			}),
+			Rotation = 45,
+			Parent = frame,
+		})
+	end
+	return frame
+end
+
+function SkinsWindow.Start(ctx)
+	local window, body = UiKit.window(ctx.Gui, Locale.T("SkinsTitle"), Vector2.new(620, 440))
+	window.Name = "SkinsWindow"
+	ctx.Register("Skins", window)
+
+	local tabRow = create("Frame", {
+		Size = UDim2.new(1, 0, 0, 38),
+		BackgroundTransparency = 1,
+		Parent = body,
+	}, {
+		create("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			Padding = UDim.new(0, 8),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+
+	local grid = create("ScrollingFrame", {
+		Position = UDim2.fromOffset(0, 46),
+		Size = UDim2.new(1, 0, 1, -46),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 6,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+		Parent = body,
+	}, {
+		create("UIPadding", { PaddingRight = UDim.new(0, 10), PaddingBottom = UDim.new(0, 6) }),
+	})
+	local layout = create("UIGridLayout", {
+		CellPadding = UDim2.fromOffset(GAP, GAP),
+		CellSize = UDim2.fromOffset(130, CELL_HEIGHT),
+		SortOrder = Enum.SortOrder.LayoutOrder,
+		Parent = grid,
+	})
+	-- Колонки по ширине: 2 на узком телефоне, до 4 на ПК
+	local function relayout()
+		local width = grid.AbsoluteSize.X - 10
+		if width <= 0 then
+			return
+		end
+		local columns = math.clamp(math.floor((width + GAP) / (130 + GAP)), 2, 4)
+		layout.CellSize = UDim2.fromOffset(math.floor((width - GAP * (columns - 1)) / columns), CELL_HEIGHT)
+	end
+	grid:GetPropertyChangedSignal("AbsoluteSize"):Connect(relayout)
+	relayout()
+
+	local busy = false
+	local function call(remote: string, id: string)
+		if busy then
+			return
+		end
+		busy = true
+		local success, key = Rewards.invoke(remote, id)
+		busy = false
+		if type(key) == "string" then
+			ctx.Toast(Locale.T(key), if success then "success" else "error")
+		end
+	end
+
+	-- Клетки создаются один раз; вкладка только скрывает чужой вид
+	local cells = {}
+	for order, skin in Config.Skins do
+		local cell = create("Frame", {
+			BackgroundColor3 = COLORS.PanelLight,
+			LayoutOrder = order,
+			Visible = false,
+			Parent = grid,
+		}, { UiKit.corner(10) })
+		local stroke = create("UIStroke", { Color = COLORS.PanelLight, Thickness = 2, Parent = cell })
+		swatch(cell, skin)
+		local name = UiKit.text({
+			Text = Locale.Name(skin),
+			TextScaled = true,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			Position = UDim2.new(0, 4, 0, 70),
+			Size = UDim2.new(1, -8, 0, 22),
+			Parent = cell,
+		}, { create("UITextSizeConstraint", { MaxTextSize = 16, MinTextSize = 9 }) })
+		name.Name = "SkinName"
+		local button = UiKit.button({
+			Text = "",
+			TextScaled = true,
+			AnchorPoint = Vector2.new(0.5, 1),
+			Position = UDim2.new(0.5, 0, 1, -8),
+			Size = UDim2.new(1, -16, 0, 40),
+			Parent = cell,
+		})
+		create("UITextSizeConstraint", { MaxTextSize = 16, Parent = button })
+		create("UIPadding", { PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4), Parent = button })
+		cells[skin.Id] = { Skin = skin, Frame = cell, Stroke = stroke, Button = button }
+	end
+
+	local currentKind = "Base"
+	local tabButtons = {}
+
+	local function render()
+		local state = readState()
+		local coins = Util.num(player, "Coins")
+		for _, c in cells do
+			local skin = c.Skin
+			c.Frame.Visible = skin.Kind == currentKind
+			local equipped = (if skin.Kind == "Base" then state.Base else state.Slipper) == skin.Id
+			local button: TextButton = c.Button
+			if equipped then
+				button.Text = "✅ " .. Locale.T("SkinEquipped")
+				button.BackgroundColor3 = COLORS.Panel
+				button.AutoButtonColor = false
+				c.Stroke.Color = COLORS.Green
+			elseif owns(state, skin) then
+				button.Text = Locale.T("SkinEquip")
+				button.BackgroundColor3 = COLORS.Purple
+				button.AutoButtonColor = true
+				c.Stroke.Color = COLORS.PanelLight
+			elseif skin.Source then
+				button.Text = if skin.Source == "Spin" then Locale.T("SkinFromSpin") else Locale.T("SkinFromPass")
+				button.BackgroundColor3 = Color3.fromRGB(90, 70, 20)
+				button.AutoButtonColor = skin.Source == "Pass"
+				c.Stroke.Color = COLORS.Gold
+			else
+				button.Text = "$" .. Format.Number(skin.Price)
+				button.BackgroundColor3 = if coins >= skin.Price then COLORS.Green else COLORS.Panel
+				button.AutoButtonColor = true
+				c.Stroke.Color = COLORS.PanelLight
+			end
+		end
+		for kind, tab in tabButtons do
+			tab.BackgroundColor3 = if kind == currentKind then COLORS.Purple else COLORS.PanelLight
+		end
+	end
+
+	for order, tab in TABS do
+		local button = UiKit.button({
+			Text = Locale.T(tab.Key),
+			TextScaled = true,
+			Size = UDim2.new(0.5, -4, 1, 0),
+			BackgroundColor3 = COLORS.PanelLight,
+			LayoutOrder = order,
+			Parent = tabRow,
+		})
+		create("UITextSizeConstraint", { MaxTextSize = 18, Parent = button })
+		tabButtons[tab.Kind] = button
+		button.Activated:Connect(function()
+			currentKind = tab.Kind
+			grid.CanvasPosition = Vector2.zero
+			render()
+		end)
+	end
+
+	for id, c in cells do
+		c.Button.Activated:Connect(function()
+			local state = readState()
+			local skin = c.Skin
+			local equipped = (if skin.Kind == "Base" then state.Base else state.Slipper) == id
+			if equipped then
+				return
+			elseif owns(state, skin) then
+				call("EquipSkin", id)
+			elseif skin.Source == "Pass" then
+				ctx.Open("Pass", true) -- где взять — в Мем-пропуске
+			elseif not skin.Source and skin.Price > 0 then
+				call("BuySkin", id)
+			end
+		end)
+	end
+
+	player:GetAttributeChangedSignal("SkinsJson"):Connect(render)
+	player:GetAttributeChangedSignal("Coins"):Connect(function()
+		if window.Visible then
+			render()
+		end
+	end)
+	window:GetPropertyChangedSignal("Visible"):Connect(render)
+	render()
+end
+
+return SkinsWindow
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="67">
+          <Properties>
+            <string name="Name">Social</string>
+            <string name="Source"><![CDATA[-- Друзья, группа и избранное — только клиентские окна Roblox (бонусы считает сервер):
+--  * Invite — SocialService:PromptGameInvite (друзья на сервере дают FriendBoost);
+--  * JoinGroup — GroupService:PromptJoinAsync(Config.Social.GroupId), затем Remotes.CheckGroup;
+--  * через Config.Social.FavoritePromptAfter секунд игры (раз за сессию) — «Добавить в избранное».
+-- Все вызовы в pcall: в Studio и на части устройств эти окна недоступны.
+local AvatarEditorService = game:GetService("AvatarEditorService")
+local GroupService = game:GetService("GroupService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SocialService = game:GetService("SocialService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Locale = require(Shared:WaitForChild("Locale"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local player = Players.LocalPlayer
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+
+local Social = {}
+
+-- Суммарный бонус дохода от друзей и группы, в процентах (для строки HUD)
+function Social.BoostPercent(): number
+	local boost = Util.num(player, "FriendBoost")
+	if Util.bool(player, "InGroup") and Config.Social.GroupId ~= 0 then
+		boost += Config.Social.GroupBoost
+	end
+	return math.floor(boost * 100 + 0.5)
+end
+
+-- Показывать ли кнопку «Вступить в группу»
+function Social.CanJoinGroup(): boolean
+	return Config.Social.GroupId ~= 0 and not Util.bool(player, "InGroup")
+end
+
+function Social.Invite(toast: (string, string?) -> ())
+	task.spawn(function()
+		local okCheck, canSend = pcall(SocialService.CanSendGameInviteAsync, SocialService, player)
+		if not okCheck or not canSend then
+			toast(Locale.T("SocialInviteUnavailable"), "error")
+			return
+		end
+		local ok = pcall(SocialService.PromptGameInvite, SocialService, player)
+		if not ok then
+			toast(Locale.T("SocialInviteUnavailable"), "error")
+		end
+	end)
+end
+
+function Social.JoinGroup()
+	if not Social.CanJoinGroup() then
+		return
+	end
+	task.spawn(function()
+		pcall(GroupService.PromptJoinAsync, GroupService, Config.Social.GroupId)
+		-- Вступил или нет — проверяет сервер (IsInGroup), клиент только просит перепроверить
+		local remote = Remotes:FindFirstChild("CheckGroup")
+		if remote and remote:IsA("RemoteEvent") then
+			remote:FireServer()
+		end
+	end)
+end
+
+function Social.Start()
+	-- Раз за сессию, после N секунд игры: окно «Добавить игру в избранное»
+	task.delay(Config.Social.FavoritePromptAfter, function()
+		pcall(function()
+			AvatarEditorService:PromptSetFavorite(game.PlaceId, Enum.AvatarItemType.Asset, true)
+		end)
+	end)
+end
+
+return Social
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="68">
+          <Properties>
+            <string name="Name">SpinWindow</string>
+            <string name="Source"><![CDATA[-- Колесо удачи: сегменты из Config.Spin.Segments по кругу, указатель сверху.
+-- «Крутить» -> Remotes.Spin() -> (ok, key, segmentIndex): награду выбирает сервер, клиент только
+-- докручивает колесо до выпавшего сегмента (~3.5 с). Награда приходит Popup "Spin" — Popups
+-- показывает её после анимации (Rewards.SpinHoldUntil). Атрибуты игрока: Spins, FreeSpinReady.
+-- Шансы сегментов показаны в окне: вращения продаются за Robux (правила Roblox о случайных наградах).
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Locale = require(Shared:WaitForChild("Locale"))
+local Rewards = require(script.Parent:WaitForChild("Rewards"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local COLORS = UiKit.Colors
+local create = UiKit.create
+local player = Players.LocalPlayer
+
+local SEGMENTS = Config.Spin.Segments
+local SPIN_TIME = 3.5
+local TURNS = 5 -- полных оборотов до остановки
+local WHEEL_BG = Color3.fromRGB(32, 30, 52)
+
+local SpinWindow = {}
+
+-- Сколько вращений доступно сейчас (бесплатное + купленные)
+function SpinWindow.Available(): number
+	return Util.num(player, "Spins") + (if Util.bool(player, "FreeSpinReady") then 1 else 0)
+end
+
+SpinWindow.Attributes = { "Spins", "FreeSpinReady" }
+
+local function totalWeight(): number
+	local total = 0
+	for _, segment in SEGMENTS do
+		total += segment.Weight
+	end
+	return math.max(total, 0.0001)
+end
+
+-- Колесо: круг, разделители и подписи сегментов. Всё внутри wheel, который вращается целиком.
+local function buildWheel(holder: Frame): Frame
+	local wheel = create("Frame", {
+		Name = "Wheel",
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromScale(0.94, 0.94),
+		BackgroundColor3 = WHEEL_BG,
+		Parent = holder,
+	}, {
+		create("UICorner", { CornerRadius = UDim.new(0.5, 0) }),
+		create("UIStroke", { Color = COLORS.Gold, Thickness = 4 }),
+	})
+	local step = 360 / #SEGMENTS
+	for index, segment in SEGMENTS do
+		-- Подпись: «контейнер на весь круг» повёрнут к центру сегмента, сама подпись — у обода.
+		-- Rotation поворачивает вокруг центра объекта, поэтому контейнер размером с колесо.
+		local arm = create("Frame", {
+			Name = "Segment" .. index,
+			Size = UDim2.fromScale(1, 1),
+			BackgroundTransparency = 1,
+			Rotation = (index - 0.5) * step,
+			Parent = wheel,
+		})
+		local icon, text, color = Rewards.describe(segment.Reward)
+		-- Цветная точка у обода (цвет награды) и подпись без фона — соседние подписи не наезжают
+		create("Frame", {
+			AnchorPoint = Vector2.new(0.5, 0),
+			Position = UDim2.fromScale(0.5, 0.025),
+			Size = UDim2.fromScale(0.05, 0.05),
+			BackgroundColor3 = color,
+			Parent = arm,
+		}, { create("UICorner", { CornerRadius = UDim.new(0.5, 0) }) })
+		local chip = create("Frame", {
+			AnchorPoint = Vector2.new(0.5, 0),
+			Position = UDim2.fromScale(0.5, 0.085),
+			Size = UDim2.fromScale(0.21, 0.28),
+			BackgroundTransparency = 1,
+			Parent = arm,
+		})
+		UiKit.text({
+			Text = icon,
+			TextScaled = true,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			Size = UDim2.fromScale(1, 0.5),
+			Parent = chip,
+		})
+		local label = UiKit.text({
+			Name = "Label",
+			Text = text,
+			TextScaled = true,
+			TextWrapped = true,
+			TextColor3 = color,
+			TextStrokeTransparency = 0.2,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			Position = UDim2.fromScale(0.04, 0.5),
+			Size = UDim2.fromScale(0.92, 0.48),
+			Parent = chip,
+		})
+		create("UITextSizeConstraint", { MaxTextSize = 13, MinTextSize = 6, Parent = label })
+
+		-- Разделитель на границе сегмента
+		local divider = create("Frame", {
+			Size = UDim2.fromScale(1, 1),
+			BackgroundTransparency = 1,
+			Rotation = index * step,
+			Parent = wheel,
+		})
+		create("Frame", {
+			AnchorPoint = Vector2.new(0.5, 0),
+			Position = UDim2.fromScale(0.5, 0),
+			Size = UDim2.new(0, 2, 0.5, 0),
+			BackgroundColor3 = Color3.new(1, 1, 1),
+			BackgroundTransparency = 0.6,
+			BorderSizePixel = 0,
+			Parent = divider,
+		})
+	end
+	-- Ступица по центру
+	create("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromScale(0.16, 0.16),
+		BackgroundColor3 = COLORS.Gold,
+		ZIndex = 2,
+		Parent = wheel,
+	}, { create("UICorner", { CornerRadius = UDim.new(0.5, 0) }) })
+	return wheel
+end
+
+function SpinWindow.Start(ctx)
+	local window, body = UiKit.window(ctx.Gui, Locale.T("SpinTitle"), Vector2.new(660, 430))
+	window.Name = "SpinWindow"
+	ctx.Register("Spin", window)
+
+	-- Слева колесо (квадрат по высоте), справа кнопки и шансы
+	local holder = create("Frame", {
+		Size = UDim2.fromScale(0.5, 1),
+		BackgroundTransparency = 1,
+		Parent = body,
+	}, { create("UIAspectRatioConstraint", { AspectRatio = 1 }) })
+	local wheel = buildWheel(holder)
+	UiKit.text({
+		Text = "▼",
+		TextScaled = true,
+		TextColor3 = COLORS.Red,
+		TextStrokeTransparency = 0,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		AnchorPoint = Vector2.new(0.5, 0.35),
+		Position = UDim2.fromScale(0.5, 0),
+		Size = UDim2.fromScale(0.14, 0.14),
+		ZIndex = 5,
+		Parent = holder,
+	})
+
+	local side = create("Frame", {
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.fromScale(1, 0),
+		Size = UDim2.new(0.5, -10, 1, 0),
+		BackgroundTransparency = 1,
+		Parent = body,
+	})
+	local spinButton = UiKit.button({
+		Text = "",
+		TextScaled = true,
+		Size = UDim2.new(1, 0, 0, 52),
+		BackgroundColor3 = COLORS.Green,
+		Parent = side,
+	})
+	create("UITextSizeConstraint", { MaxTextSize = 22, Parent = spinButton })
+	create("UIPadding", { PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), Parent = spinButton })
+	UiKit.text({
+		Text = Locale.T("SpinHint"),
+		TextScaled = true,
+		Font = Enum.Font.Gotham,
+		TextColor3 = COLORS.Muted,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		Position = UDim2.fromOffset(0, 56),
+		Size = UDim2.new(1, 0, 0, 18),
+		Parent = side,
+	}, { create("UITextSizeConstraint", { MaxTextSize = 14 }) })
+
+	-- Покупка вращений
+	local buyRow = create("Frame", {
+		Position = UDim2.fromOffset(0, 78),
+		Size = UDim2.new(1, 0, 0, 40),
+		BackgroundTransparency = 1,
+		Parent = side,
+	}, {
+		create("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			Padding = UDim.new(0, 6),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+	for order, key in { "Spins3", "Spins10" } do
+		local product = Config.Products[key]
+		local buy = UiKit.button({
+			Text = "🎡 +" .. tostring(product.Spins or 0) .. " · R$ " .. product.Robux,
+			TextScaled = true,
+			Size = UDim2.new(0.5, -3, 1, 0),
+			BackgroundColor3 = COLORS.Purple,
+			LayoutOrder = order,
+			Parent = buyRow,
+		})
+		create("UITextSizeConstraint", { MaxTextSize = 16, Parent = buy })
+		create("UIPadding", { PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4), Parent = buy })
+		buy.Activated:Connect(function()
+			Rewards.promptProduct(key, ctx.Toast)
+		end)
+	end
+
+	-- Шансы
+	UiKit.text({
+		Text = Locale.T("SpinOdds"),
+		TextSize = 16,
+		TextColor3 = COLORS.Gold,
+		Position = UDim2.fromOffset(0, 124),
+		Size = UDim2.new(1, 0, 0, 20),
+		Parent = side,
+	})
+	local odds = create("ScrollingFrame", {
+		Position = UDim2.fromOffset(0, 146),
+		Size = UDim2.new(1, 0, 1, -146),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 5,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+		Parent = side,
+	}, {
+		create("UIListLayout", { Padding = UDim.new(0, 2), SortOrder = Enum.SortOrder.LayoutOrder }),
+		create("UIPadding", { PaddingRight = UDim.new(0, 8) }),
+	})
+	local oddsLabels = {}
+	local total = totalWeight()
+	for index, segment in SEGMENTS do
+		local label = UiKit.text({
+			Text = "",
+			RichText = true,
+			TextScaled = true,
+			Font = Enum.Font.Gotham,
+			Size = UDim2.new(1, 0, 0, 18),
+			LayoutOrder = index,
+			Parent = odds,
+		}, { create("UITextSizeConstraint", { MaxTextSize = 14 }) })
+		oddsLabels[index] = { Label = label, Percent = segment.Weight / total * 100 }
+	end
+
+	local function renderOdds()
+		for index, segment in SEGMENTS do
+			local entry = oddsLabels[index]
+			local icon, text, color = Rewards.describe(segment.Reward)
+			local percent = entry.Percent
+			local percentText = if percent >= 1 then string.format("%.0f%%", percent) else string.format("%.1f%%", percent)
+			entry.Label.Text = icon .. ' <font color="#' .. color:ToHex() .. '">' .. text .. "</font> — " .. percentText
+		end
+	end
+
+	local spinning = false
+	local function renderButton()
+		if spinning then
+			spinButton.Text = Locale.T("SpinSpinning")
+			spinButton.BackgroundColor3 = COLORS.PanelLight
+			spinButton.AutoButtonColor = false
+			return
+		end
+		local spins = Util.num(player, "Spins")
+		if Util.bool(player, "FreeSpinReady") then
+			spinButton.Text = Locale.T("SpinFree")
+		elseif spins > 0 then
+			spinButton.Text = Locale.T("SpinLeft", { Count = spins })
+		else
+			spinButton.Text = Locale.T("SpinNone")
+		end
+		local can = SpinWindow.Available() > 0
+		spinButton.BackgroundColor3 = if can then COLORS.Green else COLORS.Panel
+		spinButton.AutoButtonColor = can
+	end
+
+	-- Докрутить колесо так, чтобы сегмент index оказался под указателем сверху
+	local function spinTo(index: number)
+		local step = 360 / #SEGMENTS
+		local center = (index - 0.5) * step
+		local jitter = (math.random() - 0.5) * step * 0.6
+		local current = wheel.Rotation % 360
+		wheel.Rotation = current
+		local base = current + 360 * TURNS
+		local desired = (-center + jitter) % 360
+		local target = base + (desired - base) % 360
+		local tween = TweenService:Create(wheel, TweenInfo.new(SPIN_TIME, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+			Rotation = target,
+		})
+		tween:Play()
+		tween.Completed:Wait()
+	end
+
+	spinButton.Activated:Connect(function()
+		if spinning or SpinWindow.Available() <= 0 then
+			return
+		end
+		spinning = true
+		renderButton()
+		-- Пока ждём ответа и крутим, всплывашку с наградой придерживаем
+		Rewards.SpinHoldUntil = os.clock() + 15
+		local success, key, segmentIndex = Rewards.invoke("Spin")
+		if success and type(segmentIndex) == "number" and SEGMENTS[segmentIndex] then
+			Rewards.SpinHoldUntil = os.clock() + SPIN_TIME + 0.3
+			spinTo(segmentIndex)
+		else
+			Rewards.SpinHoldUntil = 0
+			if not success and type(key) == "string" then
+				ctx.Toast(Locale.T(key), "error")
+			end
+		end
+		Rewards.SpinHoldUntil = 0
+		spinning = false
+		renderButton()
+	end)
+
+	for _, name in SpinWindow.Attributes do
+		player:GetAttributeChangedSignal(name):Connect(renderButton)
+	end
+	-- Подписи «~$X» зависят от дохода — обновляем при открытии окна
+	window:GetPropertyChangedSignal("Visible"):Connect(function()
+		if window.Visible then
+			renderOdds()
+			for index, segment in SEGMENTS do
+				local label = wheel:FindFirstChild("Segment" .. index, true)
+				local text = label and label:FindFirstChild("Label", true)
+				if text and text:IsA("TextLabel") then
+					text.Text = select(2, Rewards.describe(segment.Reward))
+				end
+			end
+		end
+	end)
+	renderOdds()
+	renderButton()
+end
+
+return SpinWindow
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="69">
           <Properties>
             <string name="Name">Status</string>
             <string name="Source"><![CDATA[-- Состояние своего персонажа над панелью предметов (снизу по центру):
@@ -11944,7 +14024,7 @@ return Status
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="57">
+        <Item class="ModuleScript" referent="70">
           <Properties>
             <string name="Name">Strings</string>
             <string name="Source"><![CDATA[--!strict
@@ -12160,11 +14240,108 @@ Locale.Add({
 	MysteryBoxOther = { "📦 {Player} got {Meme} from a Mystery Box!", "📦 {Player} получил {Meme} из Мистери-бокса!" },
 })
 
+-- v4: коды, друзья/группа, Мем-пропуск, колесо, мем недели, скины, меню HUD
+Locale.Add({
+	-- боковые кнопки и меню
+	BtnPass = { "Pass", "Пропуск" },
+	BtnSpin = { "Spin", "Колесо" },
+	BtnMenu = { "Menu", "Меню" },
+	BtnCodes = { "Codes", "Коды" },
+	BtnSkins = { "Skins", "Скины" },
+	MenuTitle = { "☰ Menu", "☰ Меню" },
+
+	-- время «д ч»
+	TimeDH = { "{D}d {H}h", "{D}д {H}ч" },
+	TimeHM = { "{H}h {M}m", "{H}ч {M}м" },
+
+	-- друзья и группа
+	UiSocialBoost = { "👥 +{Percent}%", "👥 +{Percent}%" },
+	SocialInvite = { "👥 Invite friends", "👥 Позвать друзей" },
+	SocialInviteHint = { "+{Per}% income per friend on the server (max {Max}%)", "+{Per}% дохода за каждого друга на сервере (макс. {Max}%)" },
+	SocialInviteUnavailable = { "Invites are not available right now", "Приглашения сейчас недоступны" },
+	SocialJoinGroup = { "⭐ Join group (+{Percent}%)", "⭐ Вступить в группу (+{Percent}%)" },
+
+	-- коды
+	CodesTitle = { "🎟️ Codes", "🎟️ Коды" },
+	CodesHint = { "Find codes in our group and update notes", "Ищи коды в нашей группе и в описании обновлений" },
+	CodesPlaceholder = { "Enter code...", "Введи код..." },
+	CodesRedeem = { "REDEEM", "АКТИВИРОВАТЬ" },
+	CodesEmpty = { "Type a code first", "Сначала введи код" },
+
+	-- награды (окна и всплывашки)
+	RewardCoins = { "+{Coins}", "+{Coins}" },
+	RewardCoinsApprox = { "~{Coins}", "~{Coins}" },
+	RewardSpins = { "Spins: +{Count}", "Вращения: +{Count}" },
+	RewardSkin = { "Skin: {Name}", "Скин: {Name}" },
+	PopupCodeTitle = { "🎟️ Code {Code}", "🎟️ Код {Code}" },
+	PopupSpinTitle = { "🎡 Wheel reward!", "🎡 Награда колеса!" },
+	PopupPassTitle = { "🎫 Meme Pass — level {Level}", "🎫 Мем-пропуск — уровень {Level}" },
+	PopupPassPremium = { "⭐ PREMIUM", "⭐ ПРЕМИУМ" },
+	PopupRewardEmpty = { "Reward received!", "Награда получена!" },
+
+	-- Мем-пропуск
+	PassTitle = { "🎫 Meme Pass", "🎫 Мем-пропуск" },
+	PassEndsIn = { "Ends in {Time}", "До конца: {Time}" },
+	PassEnded = { "Season is over", "Сезон окончен" },
+	PassLevel = { "Level {Level}/{Max}", "Уровень {Level}/{Max}" },
+	PassXp = { "{Xp}/{Need} XP", "{Xp}/{Need} XP" },
+	PassMaxLevel = { "MAX LEVEL", "МАКС. УРОВЕНЬ" },
+	PassLv = { "Lv {Level}", "Ур. {Level}" },
+	PassFree = { "FREE", "БЕСПЛАТНО" },
+	PassPremium = { "⭐ PREMIUM", "⭐ ПРЕМИУМ" },
+	PassClaim = { "CLAIM", "ЗАБРАТЬ" },
+	PassUnlockPremium = { "⭐ Unlock Premium ({Robux} R$)", "⭐ Открыть Премиум ({Robux} R$)" },
+	PassPremiumOwned = { "⭐ Premium active", "⭐ Премиум активен" },
+	PassBuyLevels = { "+{Count} levels ({Robux} R$)", "+{Count} уровней ({Robux} R$)" },
+	PassXpHint = { "XP for buying, stealing, merging, defending, quests and playtime", "XP за покупки, кражи, слияния, защиту, квесты и время в игре" },
+
+	-- колесо
+	SpinTitle = { "🎡 Lucky Wheel", "🎡 Колесо удачи" },
+	SpinFree = { "SPIN (free)", "КРУТИТЬ (бесплатно)" },
+	SpinLeft = { "SPIN ({Count} left)", "КРУТИТЬ (ещё {Count})" },
+	SpinNone = { "No spins left", "Вращений нет" },
+	SpinSpinning = { "Spinning...", "Крутится..." },
+	SpinHint = { "1 free spin every day", "1 бесплатное вращение каждый день" },
+	SpinOdds = { "Chances", "Шансы" },
+
+	-- мем недели и Индекс
+	BannerWeekly = { "⏳ LIMITED: {Face} {Name} — ends in {Time}", "⏳ ЛИМИТ: {Face} {Name} — ещё {Time}" },
+	IndexLimited = { "⏳ Limited", "⏳ Лимитный" },
+	IndexLimitedNow = { "⏳ This week!", "⏳ На этой неделе!" },
+	IndexExclusive = { "Pass / Wheel only", "Только пропуск / колесо" },
+
+	-- скины
+	SkinsTitle = { "🎨 Skins", "🎨 Скины" },
+	SkinsBase = { "🏠 Base", "🏠 База" },
+	SkinsSlipper = { "🩴 Slipper", "🩴 Тапок" },
+	SkinEquipped = { "EQUIPPED", "ВЫБРАН" },
+	SkinEquip = { "EQUIP", "ВЫБРАТЬ" },
+	SkinFromPass = { "From Meme Pass", "Из Мем-пропуска" },
+	SkinFromSpin = { "From the Wheel", "С колеса удачи" },
+})
+
+-- Ответы сервера v4: добавляем, только если сервер не положил свои строки в Shared/Strings
+do
+	local fallback: { [string]: { string } } = {
+		CodeRedeemed = { "Code redeemed!", "Код активирован!" },
+		CodeInvalid = { "This code doesn't exist", "Такого кода нет" },
+		CodeUsed = { "You already used this code", "Ты уже активировал этот код" },
+		CodeExpired = { "This code has expired", "Срок действия кода истёк" },
+	}
+	local missing = {}
+	for key, value in fallback do
+		if Locale.T(key) == key then
+			missing[key] = value
+		end
+	end
+	Locale.Add(missing)
+end
+
 return Locale
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="58">
+        <Item class="ModuleScript" referent="71">
           <Properties>
             <string name="Name">TradeWindow</string>
             <string name="Source"><![CDATA[-- Обмен мемами между игроками. Клиент только показывает состояние и шлёт намерения; что можно
@@ -12780,7 +14957,7 @@ return TradeWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="59">
+        <Item class="ModuleScript" referent="72">
           <Properties>
             <string name="Name">Tutorial</string>
             <string name="Source"><![CDATA[-- Обучение новичка (атрибут игрока TutorialDone == 0): карточка с шагом внизу по центру и
@@ -13054,7 +15231,7 @@ return Tutorial
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="60">
+        <Item class="ModuleScript" referent="73">
           <Properties>
             <string name="Name">UiKit</string>
             <string name="Source"><![CDATA[-- Небольшой набор для построения UI кодом (Studio под рукой нет, поэтому весь интерфейс — в скриптах).
@@ -13226,7 +15403,7 @@ return UiKit
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="61">
+        <Item class="ModuleScript" referent="74">
           <Properties>
             <string name="Name">Util</string>
             <string name="Source"><![CDATA[--!strict
@@ -13421,7 +15598,7 @@ return Util
       </Item>
     </Item>
   </Item>
-  <Item class="Workspace" referent="62">
+  <Item class="Workspace" referent="75">
     <Properties>
       <string name="Name">Workspace</string>
       <bool name="NeedsPivotMigration">false</bool>

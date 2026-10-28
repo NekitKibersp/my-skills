@@ -1,5 +1,7 @@
 -- Окно Индекса: сетка всех мемов из Config.Creatures. Открытые — цветные, закрытые — «???».
 -- Источник — атрибут игрока IndexJson (JSON-массив ключей "Id|Mutation", см. Config.IndexKey).
+-- Лимитные мемы помечены «Лимитный» («На этой неделе!» — мем недели WeeklyMeme), эксклюзивы —
+-- «Только пропуск / колесо».
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -164,6 +166,7 @@ function IndexWindow.Start(ctx)
 
 	local function render()
 		local set = discoveredSet()
+		local weeklyId = Util.str(ReplicatedStorage, "WeeklyMeme")
 		local found, mutated = 0, 0
 		for _, cell in cells do
 			local creature = cell.Creature
@@ -191,7 +194,13 @@ function IndexWindow.Start(ctx)
 			cell.Name.Text = if known then Locale.Name(creature) else Locale.T("IndexUnknown")
 			cell.Name.TextColor3 = if known then COLORS.Text else COLORS.Muted
 			paintRarity(cell.Rarity, creature.Rarity)
-			if #dots > 0 then
+			if creature.Limited or creature.Rarity == "Limited" then
+				cell.Extra.Text = Locale.T(if creature.Id == weeklyId then "IndexLimitedNow" else "IndexLimited")
+				cell.Extra.TextColor3 = Config.GetRarity("Limited").Color
+			elseif creature.Exclusive or creature.Rarity == "Exclusive" then
+				cell.Extra.Text = Locale.T("IndexExclusive")
+				cell.Extra.TextColor3 = Config.GetRarity("Exclusive").Color
+			elseif #dots > 0 then
 				cell.Extra.Text = table.concat(dots, " ")
 			elseif creature.Event then
 				-- Сезонные: «Ночь Хэллоуина» / «Зимняя ночь», без сезона — просто «Только ночью»
@@ -211,6 +220,7 @@ function IndexWindow.Start(ctx)
 
 	player:GetAttributeChangedSignal("IndexJson"):Connect(render)
 	player:GetAttributeChangedSignal("IndexCount"):Connect(render)
+	ReplicatedStorage:GetAttributeChangedSignal("WeeklyMeme"):Connect(render)
 	render()
 end
 

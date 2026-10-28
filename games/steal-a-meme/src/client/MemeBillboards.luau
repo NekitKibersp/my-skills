@@ -1,8 +1,10 @@
 -- Таблички над мемами (тег "Meme"): мутация, ВИРУСНЫЙ, имя, редкость, доход/сек, цена на дорожке.
 -- BillboardGui создаются локально в PlayerGui и привязываются к Body (Adornee), поэтому
 -- переживают стриминг: Body ушёл — табличка пустая, вернулся — снова привязываем.
+-- Редкость «Лимит» пульсирует (мем недели), цвета Limited/Exclusive — из Config.Rarities.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
@@ -17,6 +19,8 @@ local player = Players.LocalPlayer
 
 local VIRAL_COLOR = Color3.fromRGB(255, 80, 220)
 local MAX_DISTANCE = 60
+local PULSE = TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+local PULSE_RARITIES = { Limited = true }
 
 local MemeBillboards = {}
 
@@ -28,6 +32,7 @@ type Entry = {
 	Rarity: TextLabel,
 	Income: TextLabel,
 	Price: TextLabel,
+	Pulse: Tween?,
 }
 local entries: { [Instance]: Entry } = {}
 
@@ -78,6 +83,12 @@ local function render(entry: Entry)
 		entry.Rarity.TextColor3 = rarity.Color
 		entry.Rarity.TextStrokeColor3 = Color3.new(0, 0, 0)
 		entry.Rarity.TextStrokeTransparency = 0.2
+	end
+	-- Пульсация подписи редкости (один бесконечный твин на табличку)
+	if PULSE_RARITIES[rarityId] and not entry.Pulse then
+		local scale = create("UIScale", { Parent = entry.Rarity })
+		entry.Pulse = TweenService:Create(scale, PULSE, { Scale = 1.25 })
+		entry.Pulse:Play()
 	end
 
 	-- Доход/сек: базовый × тренд (без личных множителей игрока)
@@ -165,6 +176,9 @@ local function track(model: Instance): () -> ()
 
 	return function()
 		entries[model] = nil
+		if entry.Pulse then
+			entry.Pulse:Cancel()
+		end
 		for _, connection in connections do
 			connection:Disconnect()
 		end
