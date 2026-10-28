@@ -124,4 +124,92 @@ Locale.Add({
 	IndexSeasonWinter = { "Winter night", "Зимняя ночь" },
 })
 
+-- v3: календарь, квесты, админ-ивенты, обмен, защита базы, эмоции, мистери-бокс
+Locale.Add({
+	-- боковые кнопки
+	BtnDaily = { "Daily", "Награды" },
+	BtnQuests = { "Quests", "Квесты" },
+	BtnTrade = { "Trade", "Обмен" },
+	BtnEmotes = { "Emotes", "Эмоции" },
+	BtnDefense = { "Defense", "Защита" },
+
+	-- календарь
+	DailyTitle = { "📅 Daily Rewards", "📅 Ежедневные награды" },
+	DailyHint = { "Come back every day! Miss a day and the streak resets.", "Заходи каждый день! Пропустишь день — серия сбросится." },
+	DailyDayN = { "Day {Day}", "День {Day}" },
+	DailyToday = { "TODAY", "СЕГОДНЯ" },
+	DailyNext = { "NEXT", "ДАЛЬШЕ" },
+	DailyCoins = { "~{Coins}", "~{Coins}" },
+	DailyMeme = { "{Rarity} meme", "{Rarity} мем" },
+	DailyClaim = { "CLAIM", "ЗАБРАТЬ" },
+	DailyTomorrow = { "Come back tomorrow", "Приходи завтра" },
+
+	-- всплывающее окно календаря
+	PopupDailyHead = { "Day {Day} reward:", "Награда за день {Day}:" },
+	PopupDailyMeme = { "{Face} {Name} joined your base!", "{Face} {Name} теперь на твоей базе!" },
+	PopupDailyItem = { "{Face} {Name} is in your hotbar!", "{Face} {Name} — в панели предметов!" },
+
+	-- квесты
+	QuestsTitle = { "📜 Daily Quests", "📜 Ежедневные квесты" },
+	QuestsResetIn = { "New quests in {Time}", "Новые квесты через {Time}" },
+	QuestsEmpty = { "Quests are loading...", "Квесты загружаются..." },
+	QuestReward = { "🎁 ~{Coins}", "🎁 ~{Coins}" },
+	QuestClaim = { "CLAIM", "ЗАБРАТЬ" },
+	QuestDoneMark = { "✅ Done", "✅ Готово" },
+	QuestAllBonus = { "🏆 All quests bonus", "🏆 Бонус за все квесты" },
+	QuestAllHint = { "Claim every quest above to unlock", "Забери награды всех квестов выше" },
+
+	-- админ-ивенты
+	BannerAdminEvent = { "{Face} {Name} — {Time}", "{Face} {Name} — {Time}" },
+	BannerNextAdminEvent = { "⭐ Next admin event in {Time}", "⭐ Админ-ивент через {Time}" },
+	SplashAdminEvent = { "ADMIN EVENT!", "АДМИН-ИВЕНТ!" },
+
+	-- обмен
+	TradePickTitle = { "🤝 Trade with...", "🤝 Обмен с..." },
+	TradePickEmpty = { "No other players on this server", "На сервере нет других игроков" },
+	TradeRequestSent = { "Trade request sent to {Player}", "Запрос обмена отправлен: {Player}" },
+	TradeIncomingText = { "🤝 {Player} wants to trade!", "🤝 {Player} предлагает обмен!" },
+	TradeAccept = { "Accept", "Принять" },
+	TradeDecline = { "Decline", "Отказать" },
+	TradeTitle = { "🤝 Trade with {Player}", "🤝 Обмен: {Player}" },
+	TradeYourOffer = { "Your offer {Count}/{Max}", "Ты отдаёшь {Count}/{Max}" },
+	TradeTheirOffer = { "{Player} offers", "{Player} отдаёт" },
+	TradeNothing = { "Nothing yet", "Пока ничего" },
+	TradeNoMemes = { "You have no memes to trade", "Нет мемов для обмена" },
+	TradeReady = { "READY", "ГОТОВ" },
+	TradeUnready = { "Not ready", "Не готов" },
+	TradeCancel = { "Cancel", "Отмена" },
+	TradeCountdown = { "Trading in {Seconds}...", "Обмен через {Seconds}..." },
+	TradeWaiting = { "Both players must press READY", "Оба игрока должны нажать ГОТОВ" },
+	TradeMaxMemes = { "You can offer up to {Count} memes", "Можно предложить до {Count} мемов" },
+	TradeTip = { "Tap your memes to add them", "Нажимай на своих мемов, чтобы добавить" },
+
+	-- защита базы
+	DefenseTitle = { "🛡️ Base Defense", "🛡️ Защита базы" },
+	DefenseGuardName = { "🐱⚔️ Sword Kitten", "🐱⚔️ Kitten with a Sword" },
+	DefenseTurretName = { "🔫 Turret", "🔫 Турель" },
+	DefenseTurretInfo = { "Shoots thieves carrying your memes and strangers on your base.", "Стреляет в воров с твоими мемами и в чужаков на базе." },
+	DefenseLaserName = { "🚨 Laser Gate", "🚨 Лазерные ворота" },
+	DefenseLaserInfo = { "A thief with your meme who walks through the entrance falls and drops it.", "Вор с твоим мемом падает на входе и роняет его." },
+	DefenseTurretNext = { "Next: range {Range} · shot every {Cooldown}s · stun {Stun}s", "Дальше: радиус {Range} · выстрел раз в {Cooldown} сек · оглушение {Stun} сек" },
+	DefenseLaserNext = { "Next: recharge {Cooldown}s · stun {Stun}s", "Дальше: перезарядка {Cooldown} сек · оглушение {Stun} сек" },
+
+	-- эмоции
+	EmotesTitle = { "😀 Emotes", "😀 Эмоции" },
+	EmotePackLocked = { "🔒 Emote Pack", "🔒 Пак эмоций" },
+	EmoteWait = { "Wait {Seconds}s", "Подожди {Seconds} сек" },
+
+	-- предметы за геймпасс
+	ItemRobuxPass = { "Robux pass", "Геймпасс за Robux" },
+
+	-- магазин: подсказки к новым товарам
+	ShopHintMysteryBox = { "Legendary {A}% · Mythic {B}% · Meme God {C}%", "Легендарный {A}% · Мифический {B}% · Мем-Бог {C}%" },
+	ShopHintMemeRain = { "x4 memes for everyone · {Time}", "×4 мемов для всех · {Time}" },
+	ShopHintEmotePack = { "+{Count} emotes", "+{Count} эмоции" },
+
+	-- мистери-бокс
+	MysteryBoxYou = { "You got", "Тебе выпал" },
+	MysteryBoxOther = { "📦 {Player} got {Meme} from a Mystery Box!", "📦 {Player} получил {Meme} из Мистери-бокса!" },
+})
+
 return Locale
