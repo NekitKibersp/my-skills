@@ -13065,7 +13065,7 @@ local function mysteryReveal(memeId: string)
 end
 
 -- Lucky Block открылся: вспышка и конфетти цвета редкости, над ним — лицо и имя мема
-local function onLuckyOpen(ctx, data)
+local function onLuckyOpen(_ctx, data)
 	local creature = if type(data.Meme) == "string" then Config.GetCreature(data.Meme) else nil
 	if not creature then
 		return
