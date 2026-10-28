@@ -27,10 +27,12 @@ Config.Rarities = {
 	{ Id = "God", Name = "Meme God", NameRu = "Мем-Бог", Color = Color3.fromRGB(255, 120, 230), Weight = 0.25 },
 	{ Id = "Secret", Name = "SECRET", NameRu = "СЕКРЕТНЫЙ", Color = Color3.fromRGB(30, 30, 30), Weight = 0.05 },
 	{ Id = "Halloween", Name = "Halloween", NameRu = "Хэллоуин", Color = Color3.fromRGB(255, 130, 20), Weight = 0 },
+	{ Id = "Winter", Name = "Winter", NameRu = "Зимний", Color = Color3.fromRGB(120, 210, 255), Weight = 0 },
 }
 
 -- Мемы. Face — эмодзи-«лицо», Shape — форма тела (Ball/Block/Cylinder), Size — масштаб.
--- Event = true — появляются только Ночью Смайлика (сезонные), EventWeight — шанс среди сезонных.
+-- Event = true — сезонные: появляются только ночью и только в своём сезоне (Season),
+-- EventWeight — шанс среди сезонных. Купленные сезонные мемы остаются у игроков навсегда.
 -- ModelId — ID модели из Creator Store (0 = собрать из примитивов). Модель должна лежать
 -- в инвентаре владельца игры; скрипты из неё вырезаются при загрузке.
 -- Чтобы заменить или удалить персонажа (например, по жалобе правообладателя), правьте только этот список.
@@ -59,19 +61,25 @@ Config.Creatures = {
 
 	{ Id = "GreatCheremsha", Name = "The Great Cheremsha", Face = "🦁🐰👑", Rarity = "Secret", Price = 30000000, Income = 150000, Color = Color3.fromRGB(15, 15, 15), Shape = "Ball", Size = 2.4, ModelId = 0 },
 
-	{ Id = "PumpkinCat", Name = "Pumpkin Cat", Face = "🎃🐈‍⬛", Rarity = "Halloween", Price = 2500, Income = 60, Color = Color3.fromRGB(255, 120, 20), Shape = "Ball", Size = 1.1, Event = true, EventWeight = 60, ModelId = 0 },
-	{ Id = "SkeletonClap", Name = "Clapping Skeleton", Face = "💀👏", Rarity = "Halloween", Price = 25000, Income = 400, Color = Color3.fromRGB(235, 235, 225), Shape = "Block", Size = 1.3, Event = true, EventWeight = 28, ModelId = 0 },
-	{ Id = "WitchSixSeven", Name = "Witch 67", Face = "🧙‍♀️6️⃣7️⃣", Rarity = "Halloween", Price = 250000, Income = 2800, Color = Color3.fromRGB(90, 30, 120), Shape = "Cylinder", Size = 1.6, Event = true, EventWeight = 10, ModelId = 0 },
-	{ Id = "GhostCheremsha", Name = "Ghost Cheremsha", Face = "👻🦁", Rarity = "Halloween", Price = 2000000, Income = 18000, Color = Color3.fromRGB(200, 230, 255), Shape = "Ball", Size = 1.9, Event = true, EventWeight = 2, ModelId = 0 },
+	{ Id = "PumpkinCat", Name = "Pumpkin Cat", Face = "🎃🐈‍⬛", Rarity = "Halloween", Price = 2500, Income = 60, Color = Color3.fromRGB(255, 120, 20), Shape = "Ball", Size = 1.1, Event = true, Season = "Halloween", EventWeight = 60, ModelId = 0 },
+	{ Id = "SkeletonClap", Name = "Clapping Skeleton", Face = "💀👏", Rarity = "Halloween", Price = 25000, Income = 400, Color = Color3.fromRGB(235, 235, 225), Shape = "Block", Size = 1.3, Event = true, Season = "Halloween", EventWeight = 28, ModelId = 0 },
+	{ Id = "WitchSixSeven", Name = "Witch 67", Face = "🧙‍♀️6️⃣7️⃣", Rarity = "Halloween", Price = 250000, Income = 2800, Color = Color3.fromRGB(90, 30, 120), Shape = "Cylinder", Size = 1.6, Event = true, Season = "Halloween", EventWeight = 10, ModelId = 0 },
+	{ Id = "GhostCheremsha", Name = "Ghost Cheremsha", Face = "👻🦁", Rarity = "Halloween", Price = 2000000, Income = 18000, Color = Color3.fromRGB(200, 230, 255), Shape = "Ball", Size = 1.9, Event = true, Season = "Halloween", EventWeight = 2, ModelId = 0 },
+	{ Id = "SnowCat", Name = "Snow Cat Clapping", Face = "❄️🐈‍⬛", Rarity = "Winter", Price = 2500, Income = 60, Color = Color3.fromRGB(230, 245, 255), Shape = "Ball", Size = 1.1, Event = true, Season = "Winter", EventWeight = 60, ModelId = 0 },
+	{ Id = "GingerSahur", Name = "Gingerbread Sahur", Face = "🍪🏏", Rarity = "Winter", Price = 25000, Income = 400, Color = Color3.fromRGB(180, 110, 60), Shape = "Cylinder", Size = 1.3, Event = true, Season = "Winter", EventWeight = 28, ModelId = 0 },
+	{ Id = "SantaSixSeven", Name = "Santa 67", Face = "🎅6️⃣7️⃣", Rarity = "Winter", Price = 250000, Income = 2800, Color = Color3.fromRGB(220, 40, 50), Shape = "Block", Size = 1.6, Event = true, Season = "Winter", EventWeight = 10, ModelId = 0 },
+	{ Id = "FrostVerity", Name = "Frost Verity", Face = "🥶", Rarity = "Winter", Price = 2000000, Income = 18000, Color = Color3.fromRGB(140, 210, 255), Shape = "Block", Size = 1.9, Event = true, Season = "Winter", EventWeight = 2, ModelId = 0 },
 }
 
--- Мутации умножают доход и цену. Event = true — только Ночью Смайлика.
+-- Мутации умножают доход и цену. Event = true — только ночью и только в своём сезоне (Season).
 Config.Mutations = {
 	{ Id = "None", Name = "", NameRu = "", Mult = 1, Weight = 88 },
 	{ Id = "Gold", Name = "Gold", NameRu = "Золотой", Mult = 1.5, Weight = 10, Color = Color3.fromRGB(255, 210, 60) },
 	{ Id = "Diamond", Name = "Diamond", NameRu = "Алмазный", Mult = 3, Weight = 2, Color = Color3.fromRGB(120, 230, 255) },
-	{ Id = "Pumpkin", Name = "Pumpkin", NameRu = "Тыквенный", Mult = 2, Weight = 15, Color = Color3.fromRGB(255, 120, 20), Event = true },
-	{ Id = "Ghost", Name = "Ghost", NameRu = "Призрачный", Mult = 4, Weight = 5, Color = Color3.fromRGB(190, 255, 240), Event = true },
+	{ Id = "Pumpkin", Name = "Pumpkin", NameRu = "Тыквенный", Mult = 2, Weight = 15, Color = Color3.fromRGB(255, 120, 20), Event = true, Season = "Halloween" },
+	{ Id = "Ghost", Name = "Ghost", NameRu = "Призрачный", Mult = 4, Weight = 5, Color = Color3.fromRGB(190, 255, 240), Event = true, Season = "Halloween" },
+	{ Id = "Frozen", Name = "Frozen", NameRu = "Ледяной", Mult = 2, Weight = 15, Color = Color3.fromRGB(150, 220, 255), Event = true, Season = "Winter" },
+	{ Id = "Festive", Name = "Festive", NameRu = "Новогодний", Mult = 4, Weight = 5, Color = Color3.fromRGB(255, 70, 90), Event = true, Season = "Winter" },
 }
 
 -- Дорожка с мемами
@@ -197,6 +205,68 @@ Config.Products = {
 	LockExtend = { Id = 0, Robux = 19, Name = "Lock +60s", NameRu = "Замок +60 сек" },
 }
 Config.ServerLuckDuration = 15 * 60
+
+-- Сезоны: определяются по дате на сервере (месяц/день включительно, может переходить через Новый год).
+-- От сезона зависят ночные мемы и мутации, декор карты и цвет монстра. Override = "Winter" — включить вручную.
+Config.SeasonOverride = nil :: string?
+Config.Seasons = {
+	{ Id = "Halloween", From = { 10, 1 }, To = { 11, 5 }, MonsterColor = Color3.fromRGB(255, 220, 30) },
+	{ Id = "Winter", From = { 11, 6 }, To = { 2, 28 }, MonsterColor = Color3.fromRGB(150, 220, 255) },
+}
+
+-- Сезон для даты (month 1..12, day 1..31); "None" — вне сезонов (ночные мемы не появляются)
+function Config.SeasonFor(month: number, day: number): string
+	if Config.SeasonOverride then
+		return Config.SeasonOverride
+	end
+	local value = month * 100 + day
+	for _, season in Config.Seasons do
+		local from = season.From[1] * 100 + season.From[2]
+		local to = season.To[1] * 100 + season.To[2]
+		local inside = if from <= to then value >= from and value <= to else value >= from or value <= to
+		if inside then
+			return season.Id
+		end
+	end
+	return "None"
+end
+
+-- Предметы: оружие (бьёт игроков и монстра) и гаджеты. Покупаются за монеты навсегда.
+-- Weapon: Range — дальность, Cooldown — перезарядка, Knockback — сила отброса, Stun — сколько
+-- секунд жертва лежит, Area = true — бьёт всех вокруг, а не одного.
+-- Gadget: Duration — сколько действует, Cooldown — перезарядка.
+Config.Items = {
+	{ Id = "Slipper", Kind = "Weapon", Name = "Slipper", NameRu = "Тапок", Face = "🩴", Price = 0,
+		Desc = "Slap thieves to make them drop memes", DescRu = "Выбивает украденных мемов",
+		Range = 9, Cooldown = 0.9, Knockback = 70, Stun = 0.6 },
+	{ Id = "Bat", Kind = "Weapon", Name = "Tung Tung Bat", NameRu = "Бита Tung Tung", Face = "🏏", Price = 25000,
+		Desc = "Huge knockback, slower swing", DescRu = "Отбрасывает дальше, бьёт медленнее",
+		Range = 10, Cooldown = 1.6, Knockback = 135, Stun = 1 },
+	{ Id = "Pan", Kind = "Weapon", Name = "Frying Pan", NameRu = "Сковородка", Face = "🍳", Price = 120000,
+		Desc = "Stuns the target for 2.5s", DescRu = "Оглушает цель на 2,5 сек",
+		Range = 9, Cooldown = 1.4, Knockback = 50, Stun = 2.5 },
+	{ Id = "BanHammer", Kind = "Weapon", Name = "Ban Hammer", NameRu = "Бан-молот", Face = "🔨", Price = 2500000,
+		Desc = "Hits everyone around you", DescRu = "Бьёт всех вокруг",
+		Range = 14, Cooldown = 2.4, Knockback = 150, Stun = 1.5, Area = true },
+	{ Id = "Energy", Kind = "Gadget", Name = "Energy Drink", NameRu = "Энергетик", Face = "🥤", Price = 8000,
+		Desc = "+12 speed for 6s", DescRu = "+12 к скорости на 6 сек",
+		Duration = 6, Cooldown = 25, Speed = 12 },
+	{ Id = "Banana", Kind = "Gadget", Name = "Banana Peel", NameRu = "Банановая кожура", Face = "🍌", Price = 50000,
+		Desc = "Drop a trap: enemies slip and drop memes", DescRu = "Ловушка: враги падают и роняют мемов",
+		Duration = 60, Cooldown = 12, Stun = 2, MaxActive = 3 },
+	{ Id = "InvisHat", Kind = "Gadget", Name = "Invisibility Hat", NameRu = "Шапка-невидимка", Face = "🎩", Price = 400000,
+		Desc = "Invisible for 8s (ends when you steal)", DescRu = "Невидимость на 8 сек (пропадает при краже)",
+		Duration = 8, Cooldown = 45 },
+}
+
+local itemById = {}
+for _, item in Config.Items do
+	itemById[item.Id] = item
+end
+
+function Config.GetItem(id: string)
+	return itemById[id]
+end
 
 -- ===== Функции-помощники (общие для сервера и клиента) =====
 
@@ -364,6 +434,8 @@ local STRINGS: { [string]: { string } } = {
 	LockExtended = { "Lock extended!", "Замок продлён!" },
 	SaveDisabled = { "Saving is unavailable (Studio: enable API Services in Game Settings → Security).", "Сохранение недоступно (Studio: включите API Services в Game Settings → Security)." },
 	NotConfigured = { "This item is not set up yet", "Этот товар ещё не настроен" },
+	ItemBought = { "Bought! Check your hotbar", "Куплено! Смотри в панели предметов" },
+	ItemOwned = { "You already own this", "Уже куплено" },
 	NewIndex = { "New in Index: {Meme}! +1% income", "Новое в Индексе: {Meme}! +1% дохода" },
 }
 
@@ -431,6 +503,9 @@ return Locale
         <token name="RunContext">0</token>
         <string name="Source"><![CDATA[-- Точка входа сервера. Порядок: сервисы -> карта -> игроки.
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
 
 local DataService = require(script.DataService)
 local MapBuilder = require(script.MapBuilder)
@@ -441,35 +516,36 @@ local EventService = require(script.EventService)
 local ShopService = require(script.ShopService)
 local RewardService = require(script.RewardService)
 local LeaderboardService = require(script.LeaderboardService)
+local ItemService = require(script.ItemService)
+local Remotes = require(script.Remotes)
+
+-- Сезон по дате (UTC): от него зависят ночные мемы, мутации, декор и цвет монстра
+local today = os.date("!*t")
+ReplicatedStorage:SetAttribute("Season", Config.SeasonFor(today.month, today.day))
 
 DataService.Start()
-local world = MapBuilder.Build()
+local world = MapBuilder.Build(ReplicatedStorage:GetAttribute("Season"))
 PlotService.Start(world.Plots)
 StealService.Start()
+ItemService.Start()
 ConveyorService.Start(MapBuilder.CarpetStart, MapBuilder.CarpetEnd)
 EventService.Start(MapBuilder.HALF_X, MapBuilder.HALF_Z)
 RewardService.Start()
 LeaderboardService.Start(world.Leaderboards)
 
 -- Связи между сервисами (без циклических require)
-StealService.OnMonsterSlap = EventService.HitMonster
+ItemService.OnMonsterHit = EventService.HitMonster
 ShopService.OnSummonGod = function()
 	ConveyorService.SummonGod()
 end
-ShopService.OnSlipperChanged = function(player)
-	for _, container in { player:FindFirstChildOfClass("Backpack"), player.Character } do
-		local old = container and container:FindFirstChild("Slipper")
-		if old then
-			old:Destroy()
-		end
-	end
-	StealService.GiveSlipper(player)
-end
+-- Купил «Золотой тапок» — перевыдаём предметы, чтобы тапок стал золотым
+ShopService.OnSlipperChanged = ItemService.GiveTools
 ShopService.Start()
 
 -- Каждый новый персонаж (данные уже загружены): тапок и перенос на свою базу
 local function setupCharacter(player: Player, character: Model)
 	task.spawn(StealService.OnCharacter, player, character)
+	ItemService.OnCharacter(player, character)
 	local plot = PlotService.GetPlot(player)
 	local root = character:WaitForChild("HumanoidRootPart", 10)
 	if plot and root and character.Parent then
@@ -493,6 +569,7 @@ local function onPlayerAdded(player: Player)
 	end
 	PlotService.LoadPlayer(player)
 	RewardService.OnLoaded(player)
+	ItemService.OnLoaded(player)
 	player:SetAttribute("DataLoaded", true)
 
 	-- Персонаж мог появиться раньше, чем загрузились данные.
@@ -500,6 +577,12 @@ local function onPlayerAdded(player: Player)
 		setupCharacter(player, player.Character)
 	end
 end
+
+Remotes.TutorialDone.OnServerEvent:Connect(function(player)
+	if DataService.IsLoaded(player) and DataService.Get(player, "TutorialDone") == 0 then
+		DataService.Set(player, "TutorialDone", 1)
+	end
+end)
 
 Players.PlayerAdded:Connect(onPlayerAdded)
 for _, player in Players:GetPlayers() do
@@ -512,6 +595,7 @@ Players.PlayerRemoving:Connect(function(player)
 	-- начать новую кражу с базы уходящего игрока (а его данные потом пропадут из памяти).
 	StealService.OnPlayerRemoving(player)
 	EventService.OnPlayerRemoving(player)
+	ItemService.OnPlayerRemoving(player)
 	PlotService.Release(player)
 	DataService.Release(player)
 end)
@@ -562,13 +646,14 @@ end
 
 local function rollCreature(): string
 	local night = ReplicatedStorage:GetAttribute("NightActive") == true
-	if night and random:NextNumber() < Config.Conveyor.EventChance then
-		local seasonal = {}
-		for _, creature in Config.Creatures do
-			if creature.Event then
-				table.insert(seasonal, creature)
-			end
+	local season = ReplicatedStorage:GetAttribute("Season")
+	local seasonal = {}
+	for _, creature in Config.Creatures do
+		if creature.Event and creature.Season == season then
+			table.insert(seasonal, creature)
 		end
+	end
+	if night and #seasonal > 0 and random:NextNumber() < Config.Conveyor.EventChance then
 		return weightedPick(seasonal, function(creature)
 			return creature.EventWeight or 1
 		end).Id
@@ -592,9 +677,10 @@ end
 
 local function rollMutation(): string
 	local night = ReplicatedStorage:GetAttribute("NightActive") == true
+	local season = ReplicatedStorage:GetAttribute("Season")
 	local pool = {}
 	for _, mutation in Config.Mutations do
-		if night or not mutation.Event then
+		if not mutation.Event or (night and mutation.Season == season) then
 			table.insert(pool, mutation)
 		end
 	end
@@ -750,13 +836,24 @@ local DEFAULT_NUMBERS: { [string]: number } = {
 	LastSeen = 0,
 	DailyStreak = 0,
 	LastDailyDay = 0,
+	TutorialDone = 0,
+	GiftDay = 0, -- день (os.time() // 86400), к которому относятся PlayedToday и GiftsClaimed
+	GiftsClaimed = 0,
+	PlayedToday = 0, -- секунд сыграно за день (для подарков за время)
 }
 
 -- Табличные поля:
 --   Memes    — массив { Id, Mut, Viral, Slot } (мемы на базе)
 --   Index    — { ["Id|Mut"] = true } (открытые записи Индекса)
 --   Receipts — массив PurchaseId обработанных покупок за Robux (защита от двойной выдачи)
-local TABLE_KEYS = { "Memes", "Index", "Receipts" }
+--   Items    — { [itemId] = true } купленные предметы (Config.Items)
+local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items" }
+
+-- Блокировка сессии: пока игрок на одном сервере, другой сервер не загрузит его данные
+-- (иначе при быстром переходе между серверами можно задублировать мемов).
+local LOCK_STALE_AFTER = 300 -- сек: блокировку упавшего сервера считаем протухшей
+local LOCK_RETRIES = 6
+local LOCK_RETRY_DELAY = 4
 
 -- Поля в таблице игроков: ключ данных -> подпись
 local LEADERSTATS: { { Key: string, Label: string } } = {
@@ -866,6 +963,18 @@ local function sanitize(saved: any): ({ [string]: any }, boolean)
 			end
 		end
 	end
+	data.Items = {}
+	if type(savedTable.Items) == "table" then
+		for key, value in savedTable.Items do
+			if type(key) == "string" and value == true and Config.GetItem(key) then
+				data.Items[key] = true
+			end
+		end
+	end
+	-- Старые сохранения (до туториала) — туториал не показываем
+	if not isNew and saved.TutorialDone == nil then
+		data.TutorialDone = 1
+	end
 	data.Receipts = {}
 	if type(savedTable.Receipts) == "table" then
 		for _, id in savedTable.Receipts do
@@ -882,15 +991,44 @@ function DataService.Load(player: Player)
 	local canSave = store ~= nil
 
 	if store then
-		local ok, result = withRetries(function()
-			return (store :: DataStore):GetAsync(keyFor(player))
-		end)
-		if ok then
-			saved = result
-		else
+		local loaded = false
+		for attempt = 1, LOCK_RETRIES do
+			local lockedElsewhere = false
+			local ok, result = withRetries(function()
+				return (store :: DataStore):UpdateAsync(keyFor(player), function(old)
+					lockedElsewhere = false
+					local session = type(old) == "table" and old.Session
+					if type(session) == "table" and session.JobId ~= game.JobId
+						and os.time() - (tonumber(session.Time) or 0) < LOCK_STALE_AFTER
+						and attempt < LOCK_RETRIES then
+						lockedElsewhere = true
+						return nil -- не трогаем: данные ещё держит другой сервер
+					end
+					local value = if type(old) == "table" then old else {}
+					value.Session = { JobId = game.JobId, Time = os.time() }
+					return value
+				end)
+			end)
+			if not ok then
+				warn("[DataService] Не удалось загрузить данные", player.Name, result)
+				break
+			end
+			if not lockedElsewhere then
+				saved = result
+				loaded = true
+				break
+			end
+			-- Прошлый сервер ещё сохраняет игрока — подождём
+			task.wait(LOCK_RETRY_DELAY)
+			if not player.Parent then
+				return
+			end
+		end
+		if not loaded then
 			-- Не сохраняем поверх, иначе пустые данные затрут настоящий прогресс.
 			canSave = false
-			warn("[DataService] Не удалось загрузить данные", player.Name, result)
+		elseif type(saved) == "table" and next(saved) and saved.Coins == nil then
+			saved = nil -- в хранилище только блокировка, данных ещё не было
 		end
 	end
 
@@ -970,10 +1108,12 @@ local function snapshot(data: { [string]: any }): { [string]: any }
 	end
 	copy.Index = table.clone(data.Index)
 	copy.Receipts = table.clone(data.Receipts)
+	copy.Items = table.clone(data.Items)
 	return copy
 end
 
-function DataService.Save(player: Player): boolean
+-- release = true снимает блокировку сессии (игрок уходит с сервера)
+function DataService.Save(player: Player, release: boolean?): boolean
 	local profile = profiles[player]
 	if not profile or not profile.CanSave or not store then
 		return false
@@ -981,9 +1121,25 @@ function DataService.Save(player: Player): boolean
 
 	profile.Data.LastSeen = os.time()
 	local copy = snapshot(profile.Data)
+	copy.Session = if release then nil else { JobId = game.JobId, Time = os.time() }
+	local lostLock = false
 	local ok, err = withRetries(function()
-		return (store :: DataStore):SetAsync(keyFor(player), copy, { player.UserId })
+		return (store :: DataStore):UpdateAsync(keyFor(player), function(old)
+			lostLock = false
+			local session = type(old) == "table" and old.Session
+			if type(session) == "table" and session.JobId ~= game.JobId then
+				-- Данные уже забрал другой сервер — не затираем их устаревшей копией
+				lostLock = true
+				return nil
+			end
+			return copy
+		end, { player.UserId })
 	end)
+	if lostLock then
+		warn("[DataService] Сессия игрока открыта на другом сервере, сохранение пропущено", player.Name)
+		profile.CanSave = false
+		return false
+	end
 	if not ok then
 		warn("[DataService] Не удалось сохранить", player.Name, err)
 	end
@@ -993,7 +1149,7 @@ end
 -- Вызывается из init.server после того, как другие сервисы отработали выход игрока
 -- (например, вернули украденного мема хозяину), чтобы сохранить итоговое состояние.
 function DataService.Release(player: Player)
-	DataService.Save(player)
+	DataService.Save(player, true)
 	profiles[player] = nil
 end
 
@@ -1003,7 +1159,7 @@ function DataService.Start()
 		for player in profiles do
 			pending += 1
 			task.spawn(function()
-				DataService.Save(player)
+				DataService.Save(player, true)
 				pending -= 1
 			end)
 		end
@@ -1116,6 +1272,11 @@ local function buildMonster(position: Vector3): Model
 	body.Name = "Body"
 	body.Size = Vector3.new(8, 8, 8)
 	body.Color = Color3.fromRGB(255, 220, 30)
+	for _, season in Config.Seasons do
+		if season.Id == ReplicatedStorage:GetAttribute("Season") then
+			body.Color = season.MonsterColor
+		end
+	end
 	body.Material = Enum.Material.SmoothPlastic
 	body.Anchored = true
 	body.CanCollide = false
@@ -1483,6 +1644,481 @@ return EventService
       </Item>
       <Item class="ModuleScript" referent="10">
         <Properties>
+          <string name="Name">ItemService</string>
+          <string name="Source"><![CDATA[-- Предметы из Config.Items: оружие (тапок, бита, сковородка, бан-молот) и гаджеты
+-- (энергетик, банановая кожура, шапка-невидимка). Покупка за монеты навсегда, выдача в рюкзак,
+-- вся логика ударов и перезарядок — на сервере.
+local CollectionService = game:GetService("CollectionService")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local DataService = require(script.Parent.DataService)
+local Remotes = require(script.Parent.Remotes)
+local StealService = require(script.Parent.StealService)
+
+local ItemService = {}
+
+-- Колбэк удара по монстру (выставляет init.server): (player, origin, range) -> boolean
+ItemService.OnMonsterHit = nil :: ((player: Player, origin: Vector3, range: number) -> boolean)?
+
+local cooldowns: { [Player]: { [string]: number } } = {} -- игрок -> предмет -> os.clock() конца перезарядки
+local bananas: { [Player]: { BasePart } } = {}
+local invisibleToken: { [Player]: number } = {}
+local bananaFolder: Folder
+
+local function now(): number
+	return workspace:GetServerTimeNow()
+end
+
+local function rootOf(player: Player): BasePart?
+	local character = player.Character
+	return character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+end
+
+local function aliveHumanoid(player: Player): Humanoid?
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if humanoid and humanoid.Health > 0 then
+		return humanoid
+	end
+	return nil
+end
+
+-- ===== Владение =====
+
+function ItemService.Owns(player: Player, id: string): boolean
+	if id == "Slipper" then
+		return true
+	end
+	return DataService.IsLoaded(player) and DataService.GetTable(player, "Items")[id] == true
+end
+
+local function syncItems(player: Player)
+	local owned = { "Slipper" }
+	for id in DataService.GetTable(player, "Items") do
+		table.insert(owned, id)
+	end
+	player:SetAttribute("ItemsJson", HttpService:JSONEncode(owned))
+end
+
+-- ===== Внешний вид (детали из примитивов) =====
+
+local function addPart(tool: Tool, handle: BasePart, props: { [string]: any }, offset: CFrame)
+	local p = Instance.new("Part")
+	p.CanCollide = false
+	p.Massless = true
+	p.TopSurface = Enum.SurfaceType.Smooth
+	p.BottomSurface = Enum.SurfaceType.Smooth
+	for key, value in props do
+		(p :: any)[key] = value
+	end
+	p.CFrame = handle.CFrame * offset
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = handle
+	weld.Part1 = p
+	weld.Parent = p
+	p.Parent = tool
+end
+
+local function buildTool(item: any, gold: boolean): Tool
+	local tool = Instance.new("Tool")
+	tool.Name = item.Id
+	tool.ToolTip = item.Face .. " " .. item.Name
+	tool.CanBeDropped = false
+	tool:SetAttribute("ItemId", item.Id)
+	tool:SetAttribute("CooldownEndsAt", 0)
+
+	local handle = Instance.new("Part")
+	handle.Name = "Handle"
+	handle.CanCollide = false
+	handle.Massless = true
+	handle.TopSurface = Enum.SurfaceType.Smooth
+	handle.BottomSurface = Enum.SurfaceType.Smooth
+	handle.Parent = tool
+
+	local id = item.Id
+	if id == "Slipper" then
+		handle.Size = Vector3.new(1.2, 2.6, 0.35)
+		handle.Color = if gold then Color3.fromRGB(255, 205, 50) else Color3.fromRGB(70, 90, 200)
+		handle.Material = if gold then Enum.Material.Foil else Enum.Material.Fabric
+		tool.Grip = CFrame.new(0, -0.9, 0) * CFrame.Angles(0, math.rad(90), 0)
+		addPart(tool, handle, { Size = Vector3.new(1.25, 0.35, 0.5), Color = Color3.fromRGB(240, 240, 240) }, CFrame.new(0, 0.6, -0.3))
+	elseif id == "Bat" then
+		handle.Size = Vector3.new(0.5, 4.5, 0.5)
+		handle.Color = Color3.fromRGB(170, 120, 70)
+		handle.Material = Enum.Material.Wood
+		tool.Grip = CFrame.new(0, -1.6, 0)
+		addPart(tool, handle, { Size = Vector3.new(0.9, 1.8, 0.9), Color = Color3.fromRGB(150, 100, 60), Material = Enum.Material.Wood }, CFrame.new(0, 1.6, 0))
+	elseif id == "Pan" then
+		handle.Size = Vector3.new(0.35, 2.2, 0.35)
+		handle.Color = Color3.fromRGB(40, 40, 45)
+		tool.Grip = CFrame.new(0, -0.8, 0)
+		addPart(tool, handle, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.3, 2.6, 2.6),
+			Color = Color3.fromRGB(30, 30, 35),
+			Material = Enum.Material.Metal,
+		}, CFrame.new(0, 2.2, 0) * CFrame.Angles(0, math.rad(90), 0))
+	elseif id == "BanHammer" then
+		handle.Size = Vector3.new(0.5, 4.5, 0.5)
+		handle.Color = Color3.fromRGB(60, 40, 30)
+		handle.Material = Enum.Material.Wood
+		tool.Grip = CFrame.new(0, -1.6, 0)
+		addPart(tool, handle, { Size = Vector3.new(3.2, 1.8, 1.8), Color = Color3.fromRGB(230, 40, 50), Material = Enum.Material.Neon }, CFrame.new(0, 2.4, 0))
+	elseif id == "Energy" then
+		handle.Shape = Enum.PartType.Cylinder
+		handle.Size = Vector3.new(1.4, 0.8, 0.8)
+		handle.Color = Color3.fromRGB(70, 220, 90)
+		handle.Material = Enum.Material.Metal
+		tool.Grip = CFrame.Angles(0, 0, math.rad(90))
+	elseif id == "Banana" then
+		handle.Size = Vector3.new(0.6, 1.8, 0.4)
+		handle.Color = Color3.fromRGB(255, 225, 60)
+		tool.Grip = CFrame.new(0, -0.4, 0)
+	elseif id == "InvisHat" then
+		handle.Shape = Enum.PartType.Cylinder
+		handle.Size = Vector3.new(1.4, 1.3, 1.3)
+		handle.Color = Color3.fromRGB(25, 25, 30)
+		tool.Grip = CFrame.Angles(0, 0, math.rad(90))
+		addPart(tool, handle, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.15, 2.2, 2.2),
+			Color = Color3.fromRGB(25, 25, 30),
+		}, CFrame.new(-0.65, 0, 0))
+		addPart(tool, handle, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.3, 1.35, 1.35),
+			Color = Color3.fromRGB(150, 60, 255),
+			Material = Enum.Material.Neon,
+		}, CFrame.new(-0.3, 0, 0))
+	end
+	return tool
+end
+
+-- ===== Перезарядка =====
+
+local function ready(player: Player, item: any, tool: Tool): boolean
+	local list = cooldowns[player]
+	if not list then
+		list = {}
+		cooldowns[player] = list
+	end
+	local t = os.clock()
+	if (list[item.Id] or 0) > t then
+		return false
+	end
+	list[item.Id] = t + item.Cooldown
+	tool:SetAttribute("CooldownEndsAt", now() + item.Cooldown)
+	return true
+end
+
+-- ===== Невидимость =====
+
+local function setInvisible(player: Player, invisible: boolean)
+	local character = player.Character
+	if not character then
+		return
+	end
+	if (character:GetAttribute("Invisible") == true) == invisible then
+		return
+	end
+	character:SetAttribute("Invisible", invisible)
+	for _, descendant in character:GetDescendants() do
+		if descendant:IsA("BasePart") or descendant:IsA("Decal") then
+			if invisible then
+				descendant:SetAttribute("OrigTransparency", descendant.Transparency)
+				descendant.Transparency = 1
+			else
+				local original = descendant:GetAttribute("OrigTransparency")
+				if original ~= nil then
+					descendant.Transparency = original
+					descendant:SetAttribute("OrigTransparency", nil)
+				end
+			end
+		end
+	end
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid.DisplayDistanceType = if invisible then Enum.HumanoidDisplayDistanceType.None else Enum.HumanoidDisplayDistanceType.Viewer
+	end
+	local root = rootOf(player)
+	if root then
+		Remotes.Fx:FireAllClients("Invisible", { Position = root.Position })
+	end
+end
+
+-- Снять невидимость (начал кражу или ударил)
+function ItemService.BreakInvisibility(player: Player)
+	invisibleToken[player] = nil
+	setInvisible(player, false)
+end
+
+-- ===== Оружие =====
+
+local function swing(tool: Tool)
+	local baseGrip = tool:GetAttribute("BaseGrip") or tool.Grip
+	tool:SetAttribute("BaseGrip", baseGrip)
+	tool.Grip = baseGrip * CFrame.Angles(math.rad(-80), 0, 0)
+	task.delay(0.15, function()
+		if tool.Parent then
+			tool.Grip = baseGrip
+		end
+	end)
+end
+
+local function attack(player: Player, item: any, tool: Tool)
+	local root = rootOf(player)
+	if not root or not aliveHumanoid(player) or not ready(player, item, tool) then
+		return
+	end
+	ItemService.BreakInvisibility(player)
+	swing(tool)
+
+	local gold = item.Id == "Slipper" and player:GetAttribute("Pass_GoldSlipper") == true
+	local range = if gold then Config.Slap.GoldRange else item.Range
+	local power = if gold then Config.Slap.GoldKnockback else item.Knockback
+	local look = root.CFrame.LookVector
+
+	local targets: { Player } = {}
+	local best: Player? = nil
+	local bestDistance = range
+	for _, other in Players:GetPlayers() do
+		if other == player or not aliveHumanoid(other) then
+			continue
+		end
+		local otherRoot = rootOf(other)
+		if not otherRoot then
+			continue
+		end
+		local offset = otherRoot.Position - root.Position
+		local distance = offset.Magnitude
+		if item.Area then
+			if distance <= range then
+				table.insert(targets, other)
+			end
+		elseif distance <= bestDistance and (distance < 3 or offset.Unit:Dot(look) > 0.2) then
+			best, bestDistance = other, distance
+		end
+	end
+	if best then
+		table.insert(targets, best)
+	end
+
+	for _, target in targets do
+		local targetRoot = rootOf(target) :: BasePart
+		StealService.Knock(target, root.Position, power, item.Stun)
+		Remotes.Fx:FireAllClients("Slap", { Position = targetRoot.Position })
+	end
+	if (#targets == 0 or item.Area) and ItemService.OnMonsterHit then
+		ItemService.OnMonsterHit(player, root.Position, range + 4)
+	end
+end
+
+-- ===== Гаджеты =====
+
+local function useEnergy(player: Player, item: any, tool: Tool)
+	local character = player.Character
+	local root = rootOf(player)
+	if not character or not root or not aliveHumanoid(player) or not ready(player, item, tool) then
+		return
+	end
+	character:SetAttribute("BoostUntil", now() + item.Duration)
+	character:SetAttribute("BoostSpeed", item.Speed)
+	StealService.UpdateSpeed(player)
+	Remotes.Fx:FireAllClients("Energy", { Position = root.Position })
+	task.delay(item.Duration + 0.05, function()
+		if player.Parent and player.Character == character then
+			StealService.UpdateSpeed(player)
+		end
+	end)
+end
+
+local function placeBanana(player: Player, item: any, tool: Tool)
+	local root = rootOf(player)
+	if not root or not aliveHumanoid(player) or not ready(player, item, tool) then
+		return
+	end
+	-- Кладём под ноги чуть позади: ловушка для того, кто бежит следом
+	local origin = root.Position - root.CFrame.LookVector * 3
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { player.Character :: Model, bananaFolder }
+	local hit = workspace:Raycast(origin, Vector3.new(0, -12, 0), params)
+	local groundY = if hit then hit.Position.Y else root.Position.Y - 3
+
+	local banana = Instance.new("Part")
+	banana.Name = "Banana"
+	banana.Size = Vector3.new(2, 0.3, 1.2)
+	banana.Color = Color3.fromRGB(255, 225, 60)
+	banana.Material = Enum.Material.SmoothPlastic
+	banana.Anchored = true
+	banana.CanCollide = false
+	banana.CFrame = CFrame.new(origin.X, groundY + 0.15, origin.Z) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
+	banana:SetAttribute("OwnerUserId", player.UserId)
+	CollectionService:AddTag(banana, "Banana")
+
+	local list = bananas[player] or {}
+	bananas[player] = list
+	table.insert(list, banana)
+	while #list > item.MaxActive do
+		local old = table.remove(list, 1)
+		if old then
+			old:Destroy()
+		end
+	end
+
+	local used = false
+	banana.Touched:Connect(function(other)
+		if used then
+			return
+		end
+		local victim = Players:GetPlayerFromCharacter(other.Parent)
+		if not victim or victim == player or not aliveHumanoid(victim) then
+			return
+		end
+		used = true
+		local position = banana.Position
+		banana:Destroy()
+		StealService.Knock(victim, position - Vector3.new(0, 1, 0), 25, item.Stun)
+		Remotes.Fx:FireAllClients("Banana", { Position = position })
+	end)
+	banana.Parent = bananaFolder
+
+	task.delay(item.Duration, function()
+		if banana.Parent then
+			banana:Destroy()
+		end
+		local current = bananas[player]
+		if current then
+			local index = table.find(current, banana)
+			if index then
+				table.remove(current, index)
+			end
+		end
+	end)
+end
+
+local function useInvisHat(player: Player, item: any, tool: Tool)
+	if not aliveHumanoid(player) or StealService.IsCarrying(player) or not ready(player, item, tool) then
+		return
+	end
+	local token = (invisibleToken[player] or 0) + 1
+	invisibleToken[player] = token
+	setInvisible(player, true)
+	task.delay(item.Duration, function()
+		if invisibleToken[player] == token then
+			invisibleToken[player] = nil
+			setInvisible(player, false)
+		end
+	end)
+end
+
+local USE = {
+	Energy = useEnergy,
+	Banana = placeBanana,
+	InvisHat = useInvisHat,
+}
+
+-- ===== Выдача =====
+
+function ItemService.GiveTools(player: Player)
+	local backpack = player:FindFirstChildOfClass("Backpack") or player:WaitForChild("Backpack", 5)
+	if not backpack then
+		return
+	end
+	for _, container in { backpack, player.Character } do
+		if container then
+			for _, child in container:GetChildren() do
+				if child:IsA("Tool") and child:GetAttribute("ItemId") then
+					child:Destroy()
+				end
+			end
+		end
+	end
+	local gold = player:GetAttribute("Pass_GoldSlipper") == true
+	for _, item in Config.Items do
+		if not ItemService.Owns(player, item.Id) then
+			continue
+		end
+		local tool = buildTool(item, gold)
+		-- Перезарядка переживает респавн
+		local endsAt = cooldowns[player] and cooldowns[player][item.Id]
+		if endsAt and endsAt > os.clock() then
+			tool:SetAttribute("CooldownEndsAt", now() + (endsAt - os.clock()))
+		end
+		tool.Activated:Connect(function()
+			if item.Kind == "Weapon" then
+				attack(player, item, tool)
+			else
+				local use = USE[item.Id]
+				if use then
+					use(player, item, tool)
+				end
+			end
+		end)
+		tool.Parent = backpack
+	end
+end
+
+function ItemService.Buy(player: Player, id: unknown): (boolean, string)
+	if type(id) ~= "string" or not DataService.IsLoaded(player) then
+		return false, "NotLoaded"
+	end
+	local item = Config.GetItem(id)
+	if not item then
+		return false, "NotLoaded"
+	end
+	if ItemService.Owns(player, id) then
+		return false, "ItemOwned"
+	end
+	if DataService.Get(player, "Coins") < item.Price then
+		Remotes.Notify:FireClient(player, "NotEnoughCash", { Price = item.Price }, "error")
+		return false, "NotEnoughCash"
+	end
+	DataService.Increment(player, "Coins", -item.Price)
+	DataService.GetTable(player, "Items")[id] = true
+	syncItems(player)
+	ItemService.GiveTools(player)
+	Remotes.Notify:FireClient(player, "ItemBought", { Item = id }, "success")
+	return true, "ItemBought"
+end
+
+function ItemService.OnLoaded(player: Player)
+	syncItems(player)
+end
+
+function ItemService.OnCharacter(player: Player, character: Model)
+	invisibleToken[player] = nil
+	character:SetAttribute("Invisible", false)
+	ItemService.GiveTools(player)
+end
+
+function ItemService.OnPlayerRemoving(player: Player)
+	for _, banana in bananas[player] or {} do
+		banana:Destroy()
+	end
+	bananas[player] = nil
+	cooldowns[player] = nil
+	invisibleToken[player] = nil
+end
+
+function ItemService.Start()
+	bananaFolder = Instance.new("Folder")
+	bananaFolder.Name = "Bananas"
+	bananaFolder.Parent = workspace
+
+	StealService.OnStealStarted = ItemService.BreakInvisibility
+	Remotes.BuyItem.OnServerInvoke = ItemService.Buy
+end
+
+return ItemService
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="11">
+        <Properties>
           <string name="Name">LeaderboardService</string>
           <string name="Source"><![CDATA[-- Глобальные таблицы лидеров на карте: «Богачи» (всего заработано) и «Воры» (успешные кражи).
 -- OrderedDataStore работает только в опубликованной игре (или в Studio с включёнными API Services).
@@ -1565,7 +2201,7 @@ return LeaderboardService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="11">
+      <Item class="ModuleScript" referent="12">
         <Properties>
           <string name="Name">MapBuilder</string>
           <string name="Source"><![CDATA[-- Строит карту кодом: земля, «красная дорожка» мемов, 8 баз игроков, декор Хэллоуина,
@@ -1606,17 +2242,17 @@ local function part(props: { [string]: any }): Part
 	return p
 end
 
-local function setupLighting()
-	Lighting.ClockTime = 17.2
+local function setupLighting(winter: boolean)
+	Lighting.ClockTime = if winter then 15.5 else 17.2
 	Lighting.Brightness = 2.2
-	Lighting.Ambient = Color3.fromRGB(90, 70, 100)
-	Lighting.OutdoorAmbient = Color3.fromRGB(150, 120, 140)
+	Lighting.Ambient = if winter then Color3.fromRGB(90, 100, 130) else Color3.fromRGB(90, 70, 100)
+	Lighting.OutdoorAmbient = if winter then Color3.fromRGB(150, 165, 200) else Color3.fromRGB(150, 120, 140)
 	Lighting.GlobalShadows = true
 	if not Lighting:FindFirstChildOfClass("Atmosphere") then
 		local atmosphere = Instance.new("Atmosphere")
 		atmosphere.Density = 0.3
-		atmosphere.Color = Color3.fromRGB(255, 190, 150)
-		atmosphere.Decay = Color3.fromRGB(120, 70, 110)
+		atmosphere.Color = if winter then Color3.fromRGB(200, 220, 255) else Color3.fromRGB(255, 190, 150)
+		atmosphere.Decay = if winter then Color3.fromRGB(110, 130, 170) else Color3.fromRGB(120, 70, 110)
 		atmosphere.Glare = 0.3
 		atmosphere.Haze = 1.2
 		atmosphere.Parent = Lighting
@@ -1653,6 +2289,98 @@ local function buildPumpkin(position: Vector3, size: number, parent: Instance)
 	light.Range = size * 3
 	light.Brightness = 1.2
 	light.Parent = pumpkin
+end
+
+local function buildSnowman(position: Vector3, size: number, parent: Instance)
+	local radii = { size, size * 0.75, size * 0.5 }
+	local y = position.Y
+	local head: Part? = nil
+	for _, radius in radii do
+		y += radius * 0.85
+		head = part({
+			Name = "Snowman",
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.one * radius * 2,
+			Color = Color3.fromRGB(245, 250, 255),
+			Material = Enum.Material.Snow,
+			CFrame = CFrame.new(position.X, y, position.Z),
+			CanCollide = false,
+			Parent = parent,
+		})
+		y += radius * 0.85
+	end
+	if head then
+		part({
+			Name = "Nose",
+			Size = Vector3.new(size * 0.15, size * 0.15, size * 0.6),
+			Color = Color3.fromRGB(255, 130, 30),
+			CFrame = head.CFrame * CFrame.new(0, 0, -size * 0.6),
+			CanCollide = false,
+			Parent = parent,
+		})
+	end
+end
+
+local function buildTree(position: Vector3, height: number, random: Random, parent: Instance)
+	part({
+		Name = "TreeTrunk",
+		Size = Vector3.new(1.5, height * 0.25, 1.5),
+		Color = Color3.fromRGB(90, 60, 40),
+		Material = Enum.Material.Wood,
+		CFrame = CFrame.new(position + Vector3.new(0, height * 0.125, 0)),
+		Parent = parent,
+	})
+	for layer = 0, 2 do
+		local width = height * (0.7 - layer * 0.18)
+		local cone = part({
+			Name = "TreeLayer",
+			Size = Vector3.new(width, height * 0.3, width),
+			Color = Color3.fromRGB(30, 110, 60),
+			Material = Enum.Material.Grass,
+			CFrame = CFrame.new(position + Vector3.new(0, height * (0.35 + layer * 0.22), 0)) * CFrame.Angles(0, math.rad(layer * 30), 0),
+			CanCollide = false,
+			Parent = parent,
+		})
+		local light = Instance.new("PointLight")
+		light.Color = Color3.fromHSV(random:NextNumber(), 0.6, 1)
+		light.Range = 8
+		light.Brightness = 0.8
+		light.Parent = cone
+	end
+	part({
+		Name = "TreeStar",
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.one * 1.4,
+		Color = Color3.fromRGB(255, 220, 60),
+		Material = Enum.Material.Neon,
+		CFrame = CFrame.new(position + Vector3.new(0, height * 0.95, 0)),
+		CanCollide = false,
+		Parent = parent,
+	})
+end
+
+-- Снегопад: большой невидимый «потолок» с частицами
+local function buildSnowfall(parent: Instance)
+	local sky = part({
+		Name = "Snowfall",
+		Size = Vector3.new(MapBuilder.HALF_X * 2, 1, MapBuilder.HALF_Z * 2),
+		CFrame = CFrame.new(0, 70, 0),
+		Transparency = 1,
+		CanCollide = false,
+		CanQuery = false,
+		CanTouch = false,
+		Parent = parent,
+	})
+	local snow = Instance.new("ParticleEmitter")
+	snow.Color = ColorSequence.new(Color3.new(1, 1, 1))
+	snow.LightEmission = 0.3
+	snow.Size = NumberSequence.new(0.35)
+	snow.Rate = 220
+	snow.Lifetime = NumberRange.new(9, 12)
+	snow.Speed = NumberRange.new(6, 9)
+	snow.SpreadAngle = Vector2.new(15, 15)
+	snow.EmissionDirection = Enum.NormalId.Bottom
+	snow.Parent = sky
 end
 
 local function buildLamp(position: Vector3, parent: Instance)
@@ -1928,8 +2656,10 @@ local function buildLeaderboard(name: string, title: string, cframe: CFrame, par
 end
 
 -- Строит мир. Возвращает { Plots = { Model }, Leaderboards = { Earned = Part, Stolen = Part } }.
-function MapBuilder.Build()
-	setupLighting()
+-- season: "Halloween" | "Winter" | "None" — от него зависит декор и освещение
+function MapBuilder.Build(season: string)
+	local winter = season == "Winter"
+	setupLighting(winter)
 
 	local map = Instance.new("Folder")
 	map.Name = "Map"
@@ -1941,8 +2671,8 @@ function MapBuilder.Build()
 		Name = "Ground",
 		Size = Vector3.new(halfX * 2 + 40, 2, halfZ * 2 + 40),
 		CFrame = CFrame.new(0, -0.5, 0),
-		Color = Color3.fromRGB(55, 70, 45),
-		Material = Enum.Material.Grass,
+		Color = if winter then Color3.fromRGB(235, 240, 250) else Color3.fromRGB(55, 70, 45),
+		Material = if winter then Enum.Material.Snow else Enum.Material.Grass,
 		Parent = map,
 	})
 
@@ -1969,20 +2699,34 @@ function MapBuilder.Build()
 	spawnLocation.Material = Enum.Material.Neon
 	spawnLocation.Parent = map
 
-	-- Декор: тыквы и фонари вдоль дорожки
+	-- Декор по сезону: тыквы (Хэллоуин) или снеговики и ёлки (Зима), фонари вдоль дорожки всегда
 	local decor = Instance.new("Folder")
 	decor.Name = "Decor"
 	decor.Parent = map
+	local function seasonal(position: Vector3, size: number)
+		if season == "Halloween" then
+			buildPumpkin(position, size, decor)
+		elseif winter then
+			if random:NextNumber() < 0.5 then
+				buildSnowman(position, size * 0.6, decor)
+			else
+				buildTree(position, size * 3, random, decor)
+			end
+		end
+	end
 	for x = -MapBuilder.CARPET_LENGTH / 2 + 10, MapBuilder.CARPET_LENGTH / 2, 30 do
 		for _, side in { -1, 1 } do
 			buildLamp(Vector3.new(x, 0.5, side * 14), decor)
-			buildPumpkin(Vector3.new(x + random:NextNumber(6, 14), 0.5, side * random:NextNumber(12, 18)), random:NextNumber(1.6, 3), decor)
+			seasonal(Vector3.new(x + random:NextNumber(6, 14), 0.5, side * random:NextNumber(12, 18)), random:NextNumber(1.6, 3))
 		end
 	end
 	for _ = 1, 30 do
 		local x = random:NextNumber(-halfX, halfX)
 		local z = random:NextNumber(halfZ - 25, halfZ) * (if random:NextNumber() < 0.5 then -1 else 1)
-		buildPumpkin(Vector3.new(x, 0.5, z), random:NextNumber(2, 5), decor)
+		seasonal(Vector3.new(x, 0.5, z), random:NextNumber(2, 5))
+	end
+	if winter then
+		buildSnowfall(decor)
 	end
 
 	local leaderboards = Instance.new("Folder")
@@ -2015,7 +2759,7 @@ return MapBuilder
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="12">
+      <Item class="ModuleScript" referent="13">
         <Properties>
           <string name="Name">MemeFactory</string>
           <string name="Source"><![CDATA[-- Собирает модель мема: из примитивов (тело + ножки + эмодзи-лицо) или из модели Creator Store
@@ -2299,7 +3043,7 @@ return MemeFactory
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="13">
+      <Item class="ModuleScript" referent="14">
         <Properties>
           <string name="Name">PlotService</string>
           <string name="Source"><![CDATA[-- Базы игроков: выдача базы, мемы в слотах, доход в секунду, замок, страж, Индекс, перерождения.
@@ -2959,7 +3703,7 @@ return PlotService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="14">
+      <Item class="ModuleScript" referent="15">
         <Properties>
           <string name="Name">Remotes</string>
           <string name="Source"><![CDATA[-- Создаёт ReplicatedStorage.Remotes. Клиент получает их через
@@ -2981,7 +3725,7 @@ local Remotes = {
 	-- сервер -> клиент: (key: string, args: { [string]: any }?, kind: "success" | "error" | "info"?)
 	-- key — ключ из Shared.Locale, клиент сам переводит текст на язык игрока.
 	Notify = make("RemoteEvent", "Notify") :: RemoteEvent,
-	-- сервер -> клиент: (velocity: Vector3) — отбросить своего персонажа (удар тапком)
+	-- сервер -> клиент: (velocity: Vector3, stun: number?) — отбросить своего персонажа и уронить на stun секунд
 	Knockback = make("RemoteEvent", "Knockback") :: RemoteEvent,
 	-- сервер -> все: (kind: string, data: { [string]: any }) — разовые эффекты, см. README
 	Fx = make("RemoteEvent", "Fx") :: RemoteEvent,
@@ -2993,6 +3737,10 @@ local Remotes = {
 	Rebirth = make("RemoteFunction", "Rebirth") :: RemoteFunction,
 	-- клиент -> сервер: () -> (ok: boolean, key: string)
 	UpgradeGuard = make("RemoteFunction", "UpgradeGuard") :: RemoteFunction,
+	-- клиент -> сервер: (itemId: string) -> (ok: boolean, key: string) — купить предмет за монеты
+	BuyItem = make("RemoteFunction", "BuyItem") :: RemoteFunction,
+	-- клиент -> сервер: () — туториал пройден или пропущен
+	TutorialDone = make("RemoteEvent", "TutorialDone") :: RemoteEvent,
 }
 
 folder.Parent = ReplicatedStorage
@@ -3001,10 +3749,11 @@ return Remotes
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="15">
+      <Item class="ModuleScript" referent="16">
         <Properties>
           <string name="Name">RewardService</string>
-          <string name="Source"><![CDATA[-- Награды за возвращение: оффлайн-доход, ежедневная награда со стриком, подарки за время в сессии.
+          <string name="Source"><![CDATA[-- Награды за возвращение: оффлайн-доход, ежедневная награда со стриком, подарки за время в игре.
+-- Время для подарков копится за день и сохраняется, поэтому перезаход не даёт получить их заново.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -3016,11 +3765,22 @@ local Remotes = require(script.Parent.Remotes)
 local RewardService = {}
 
 local SECONDS_PER_DAY = 86400
+local GIFT_TICK = 5
+
+-- Новый день — обнуляем время и подарки. SessionStart для клиента = «сейчас минус сыграно сегодня».
+local function syncPlaytime(player: Player)
+	local today = os.time() // SECONDS_PER_DAY
+	if DataService.Get(player, "GiftDay") ~= today then
+		DataService.Set(player, "GiftDay", today)
+		DataService.Set(player, "PlayedToday", 0)
+		DataService.Set(player, "GiftsClaimed", 0)
+	end
+	player:SetAttribute("SessionStart", workspace:GetServerTimeNow() - DataService.Get(player, "PlayedToday"))
+end
 
 -- Вызывается после PlotService.LoadPlayer, когда доход игрока уже известен
 function RewardService.OnLoaded(player: Player)
-	player:SetAttribute("SessionStart", workspace:GetServerTimeNow())
-	player:SetAttribute("GiftsClaimed", 0)
+	syncPlaytime(player)
 
 	local income = PlotService.IncomeOf(player)
 
@@ -3061,18 +3821,19 @@ function RewardService.Start()
 	-- Подарки за время в игре
 	task.spawn(function()
 		while true do
-			task.wait(5)
-			local t = workspace:GetServerTimeNow()
+			task.wait(GIFT_TICK)
 			for _, player in Players:GetPlayers() do
-				local start = player:GetAttribute("SessionStart")
-				if not start or not DataService.IsLoaded(player) then
+				if not player:GetAttribute("DataLoaded") or not DataService.IsLoaded(player) then
 					continue
 				end
-				local claimed = player:GetAttribute("GiftsClaimed") or 0
+				DataService.Increment(player, "PlayedToday", GIFT_TICK)
+				syncPlaytime(player)
+				local played = DataService.Get(player, "PlayedToday")
+				local claimed = DataService.Get(player, "GiftsClaimed")
 				local gift = Config.PlaytimeGifts[claimed + 1]
-				if gift and t - start >= gift.Minutes * 60 then
+				if gift and played >= gift.Minutes * 60 then
 					local coins = math.max(gift.MinCoins, math.floor(PlotService.IncomeOf(player) * gift.IncomeSeconds))
-					player:SetAttribute("GiftsClaimed", claimed + 1)
+					DataService.Set(player, "GiftsClaimed", claimed + 1)
 					PlotService.AddCoins(player, coins)
 					Remotes.Notify:FireClient(player, "Gift", { Coins = coins }, "success")
 				end
@@ -3085,7 +3846,7 @@ return RewardService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="16">
+      <Item class="ModuleScript" referent="17">
         <Properties>
           <string name="Name">ShopService</string>
           <string name="Source"><![CDATA[-- Покупки за Robux: геймпассы (проверка при входе и после покупки) и продукты (ProcessReceipt).
@@ -3242,12 +4003,12 @@ return ShopService
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="17">
+      <Item class="ModuleScript" referent="18">
         <Properties>
           <string name="Name">StealService</string>
           <string name="Source"><![CDATA[-- Кражи: удержание «Украсть», переноска мема над головой, доставка на свою базу,
--- возврат хозяину (удар тапком, смерть, таймер, выход). Тапок и страж-котёнок тоже здесь.
-local Players = game:GetService("Players")
+-- возврат хозяину (удар оружием, смерть, таймер, выход), отброс и скорость персонажа, страж-котёнок.
+-- Само оружие и гаджеты — в ItemService.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Config = require(ReplicatedStorage.Shared.Config)
@@ -3262,11 +4023,12 @@ type Carry = { Owner: Player, Slot: number, Model: Model, Id: string, EndsAt: nu
 
 local carries: { [Player]: Carry } = {} -- вор -> что несёт
 local holdStart: { [Player]: number } = {}
-local lastSlap: { [Player]: number } = {}
 local guardLastHit: { [Model]: number } = {}
 
--- Колбэк удара по Смайлику (выставляет init.server): (player, position) -> boolean (попал ли)
-StealService.OnMonsterSlap = nil :: ((player: Player, origin: Vector3, range: number) -> boolean)?
+local BASE_WALK_SPEED = 16
+
+-- Колбэк начала кражи (выставляет init.server): снять шапку-невидимку и т.п.
+StealService.OnStealStarted = nil :: ((thief: Player) -> ())?
 
 local function now(): number
 	return workspace:GetServerTimeNow()
@@ -3291,6 +4053,20 @@ function StealService.IsCarrying(player: Player): boolean
 	return carries[player] ~= nil
 end
 
+-- Скорость персонажа: с мемом медленнее, энергетик (атрибут BoostUntil на персонаже) быстрее
+function StealService.UpdateSpeed(player: Player)
+	local humanoid = humanoidOf(player)
+	if not humanoid then
+		return
+	end
+	local speed = if carries[player] then Config.Steal.CarryWalkSpeed else BASE_WALK_SPEED
+	local character = player.Character :: Model
+	if (character:GetAttribute("BoostUntil") or 0) > now() then
+		speed += character:GetAttribute("BoostSpeed") or 0
+	end
+	humanoid.WalkSpeed = speed
+end
+
 -- Перенос закончился неудачей: мем возвращается хозяину
 function StealService.Fail(thief: Player)
 	local carry = carries[thief]
@@ -3299,10 +4075,7 @@ function StealService.Fail(thief: Player)
 	end
 	carries[thief] = nil
 	setCarryAttributes(thief, "", 0)
-	local humanoid = humanoidOf(thief)
-	if humanoid then
-		humanoid.WalkSpeed = 16
-	end
+	StealService.UpdateSpeed(thief)
 
 	local owner = carry.Owner
 	if owner.Parent and PlotService.GetPlot(owner) and DataService.IsLoaded(owner) and PlotService.GetEntry(owner, carry.Slot) then
@@ -3335,10 +4108,7 @@ local function deliver(thief: Player)
 	end
 	carries[thief] = nil
 	setCarryAttributes(thief, "", 0)
-	local humanoid = humanoidOf(thief)
-	if humanoid then
-		humanoid.WalkSpeed = 16
-	end
+	StealService.UpdateSpeed(thief)
 
 	local position = carry.Model:GetPivot().Position
 	carry.Model:Destroy()
@@ -3413,7 +4183,10 @@ function StealService.TryStart(thief: Player, owner: Player, slot: number, promp
 	local endsAt = now() + Config.Steal.CarryTimeout
 	carries[thief] = { Owner = owner, Slot = slot, Model = model, Id = id, EndsAt = endsAt }
 	setCarryAttributes(thief, id, endsAt)
-	humanoid.WalkSpeed = Config.Steal.CarryWalkSpeed
+	StealService.UpdateSpeed(thief)
+	if StealService.OnStealStarted then
+		StealService.OnStealStarted(thief)
+	end
 
 	Remotes.Fx:FireAllClients("Stolen", { Position = root.Position })
 	Remotes.Notify:FireClient(thief, "StealStarted", { Meme = id }, "success")
@@ -3429,8 +4202,8 @@ function StealService.CancelFromOwner(owner: Player)
 	end
 end
 
--- Отбросить игрока и выбить у него мема
-function StealService.Knock(target: Player, from: Vector3, power: number)
+-- Отбросить игрока (stun — сколько секунд он лежит) и выбить у него мема
+function StealService.Knock(target: Player, from: Vector3, power: number, stun: number?)
 	local root = rootOf(target)
 	if not root then
 		return
@@ -3438,115 +4211,10 @@ function StealService.Knock(target: Player, from: Vector3, power: number)
 	local direction = root.Position - from
 	direction = Vector3.new(direction.X, 0, direction.Z)
 	direction = if direction.Magnitude > 0.01 then direction.Unit else Vector3.new(1, 0, 0)
-	Remotes.Knockback:FireClient(target, direction * power + Vector3.new(0, power * 0.45, 0))
+	Remotes.Knockback:FireClient(target, direction * power + Vector3.new(0, power * 0.45, 0), stun or 0.6)
 	if carries[target] then
 		StealService.Fail(target)
 	end
-end
-
--- ===== Тапок =====
-
-local slipperTemplate: Tool
-do
-	slipperTemplate = Instance.new("Tool")
-	slipperTemplate.Name = "Slipper"
-	slipperTemplate.ToolTip = "Slap! / Шлёп!"
-	slipperTemplate.CanBeDropped = false
-	slipperTemplate.Grip = CFrame.new(0, -0.9, 0) * CFrame.Angles(0, math.rad(90), 0)
-	local handle = Instance.new("Part")
-	handle.Name = "Handle"
-	handle.Size = Vector3.new(1.2, 2.6, 0.35)
-	handle.Color = Color3.fromRGB(70, 90, 200)
-	handle.Material = Enum.Material.Fabric
-	handle.CanCollide = false
-	handle.Massless = true
-	handle.Parent = slipperTemplate
-	local strap = Instance.new("Part")
-	strap.Name = "Strap"
-	strap.Size = Vector3.new(1.25, 0.35, 0.5)
-	strap.Color = Color3.fromRGB(240, 240, 240)
-	strap.CanCollide = false
-	strap.Massless = true
-	strap.CFrame = handle.CFrame * CFrame.new(0, 0.6, -0.3)
-	local weldConstraint = Instance.new("WeldConstraint")
-	weldConstraint.Part0 = handle
-	weldConstraint.Part1 = strap
-	weldConstraint.Parent = strap
-	strap.Parent = slipperTemplate
-end
-
-local function slap(player: Player, tool: Tool)
-	local t = os.clock()
-	if t - (lastSlap[player] or 0) < Config.Slap.Cooldown then
-		return
-	end
-	lastSlap[player] = t
-	local root = rootOf(player)
-	local humanoid = humanoidOf(player)
-	if not root or not humanoid or humanoid.Health <= 0 then
-		return
-	end
-
-	-- Взмах: быстро меняем хват туда и обратно
-	local baseGrip = slipperTemplate.Grip
-	tool.Grip = baseGrip * CFrame.Angles(math.rad(-80), 0, 0)
-	task.delay(0.15, function()
-		if tool.Parent then
-			tool.Grip = baseGrip
-		end
-	end)
-
-	local gold = player:GetAttribute("Pass_GoldSlipper") == true
-	local range = if gold then Config.Slap.GoldRange else Config.Slap.Range
-	local power = if gold then Config.Slap.GoldKnockback else Config.Slap.Knockback
-	local look = root.CFrame.LookVector
-
-	local best: Player? = nil
-	local bestDistance = range
-	for _, other in Players:GetPlayers() do
-		if other == player then
-			continue
-		end
-		local otherRoot = rootOf(other)
-		local otherHumanoid = humanoidOf(other)
-		if not otherRoot or not otherHumanoid or otherHumanoid.Health <= 0 then
-			continue
-		end
-		local offset = otherRoot.Position - root.Position
-		local distance = offset.Magnitude
-		if distance <= bestDistance and (distance < 3 or offset.Unit:Dot(look) > 0.2) then
-			best, bestDistance = other, distance
-		end
-	end
-
-	if best then
-		local targetRoot = rootOf(best) :: BasePart
-		StealService.Knock(best, root.Position, power)
-		Remotes.Fx:FireAllClients("Slap", { Position = targetRoot.Position })
-	elseif StealService.OnMonsterSlap then
-		StealService.OnMonsterSlap(player, root.Position, range + 4)
-	end
-end
-
-function StealService.GiveSlipper(player: Player)
-	local backpack = player:FindFirstChildOfClass("Backpack")
-	if not backpack or backpack:FindFirstChild("Slipper") then
-		return
-	end
-	local character = player.Character
-	if character and character:FindFirstChild("Slipper") then
-		return
-	end
-	local tool = slipperTemplate:Clone()
-	local handle = tool:FindFirstChild("Handle") :: BasePart
-	if player:GetAttribute("Pass_GoldSlipper") then
-		handle.Color = Color3.fromRGB(255, 205, 50)
-		handle.Material = Enum.Material.Foil
-	end
-	tool.Activated:Connect(function()
-		slap(player, tool)
-	end)
-	tool.Parent = backpack
 end
 
 -- ===== Персонажи =====
@@ -3559,14 +4227,12 @@ function StealService.OnCharacter(player: Player, character: Model)
 			StealService.Fail(player)
 		end)
 	end
-	StealService.GiveSlipper(player)
 end
 
 function StealService.OnPlayerRemoving(player: Player)
 	StealService.Fail(player)
 	StealService.CancelFromOwner(player)
 	holdStart[player] = nil
-	lastSlap[player] = nil
 end
 
 -- ===== Цикл: доставка, таймеры, страж =====
@@ -3653,15 +4319,15 @@ return StealService
       </Item>
     </Item>
   </Item>
-  <Item class="StarterPlayer" referent="18">
+  <Item class="StarterPlayer" referent="19">
     <Properties>
       <string name="Name">StarterPlayer</string>
     </Properties>
-    <Item class="StarterPlayerScripts" referent="19">
+    <Item class="StarterPlayerScripts" referent="20">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="LocalScript" referent="20">
+      <Item class="LocalScript" referent="21">
         <Properties>
           <string name="Name">Client</string>
           <string name="Source"><![CDATA[-- Точка входа клиента «Укради Мем»: создаёт экран, общий контекст UI и запускает модули.
@@ -3778,6 +4444,7 @@ local modules = {
 	"IndexWindow",
 	"RebirthWindow",
 	"GuardWindow",
+	"Items",
 	"Popups",
 	"Hud",
 	"Banners",
@@ -3786,6 +4453,8 @@ local modules = {
 	"Prompts",
 	"MemeBillboards",
 	"Effects",
+	"Status",
+	"Tutorial",
 }
 for _, name in modules do
 	local ok, err = pcall(function()
@@ -3797,11 +4466,12 @@ for _, name in modules do
 end
 ]]></string>
         </Properties>
-        <Item class="ModuleScript" referent="21">
+        <Item class="ModuleScript" referent="22">
           <Properties>
             <string name="Name">Banners</string>
-            <string name="Source"><![CDATA[-- Баннеры сверху по центру: «В ТРЕНДЕ», Ночь Смайлика (идёт / до следующей), Удача сервера.
--- Источник — атрибуты ReplicatedStorage (TrendingId, TrendEndsAt, NightActive, NightEndsAt, NextNightAt, LuckEndsAt).
+            <string name="Source"><![CDATA[-- Баннеры сверху по центру: «В ТРЕНДЕ», Ночь Смайлика (идёт / до следующей, с эмодзи сезона), Удача сервера.
+-- Источник — атрибуты ReplicatedStorage (TrendingId, TrendEndsAt, NightActive, NightEndsAt, NextNightAt,
+-- LuckEndsAt, Season).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -3815,6 +4485,7 @@ local create = UiKit.create
 
 local NIGHT_COLOR = Color3.fromRGB(255, 220, 40)
 local LUCK_COLOR = Color3.fromRGB(80, 230, 120)
+local SEASON_EMOJI = { Halloween = "🎃", Winter = "❄️" } -- по атрибуту Season в ReplicatedStorage
 
 local Banners = {}
 
@@ -3875,13 +4546,16 @@ function Banners.Start(ctx)
 			})
 		end
 
+		local seasonEmoji = SEASON_EMOJI[Util.str(ReplicatedStorage, "Season")]
+		local prefix = if seasonEmoji then seasonEmoji .. " " else ""
+
 		if Util.bool(ReplicatedStorage, "NightActive") then
 			night.Visible = true
 			night.TextSize = 22
 			night.Size = UDim2.fromOffset(0, 34)
 			night.TextColor3 = NIGHT_COLOR
 			night.BackgroundColor3 = Color3.fromRGB(40, 10, 30)
-			night.Text = Locale.T("BannerNight", { Time = Util.clock(Util.num(ReplicatedStorage, "NightEndsAt") - now) })
+			night.Text = prefix .. Locale.T("BannerNight", { Time = Util.clock(Util.num(ReplicatedStorage, "NightEndsAt") - now) })
 		else
 			local nextAt = Util.num(ReplicatedStorage, "NextNightAt")
 			night.Visible = nextAt > now
@@ -3889,7 +4563,7 @@ function Banners.Start(ctx)
 			night.Size = UDim2.fromOffset(0, 24)
 			night.TextColor3 = COLORS.Muted
 			night.BackgroundColor3 = COLORS.Panel
-			night.Text = Locale.T("BannerNextNight", { Time = Util.clock(nextAt - now) })
+			night.Text = prefix .. Locale.T("BannerNextNight", { Time = Util.clock(nextAt - now) })
 		end
 
 		local luckLeft = Util.num(ReplicatedStorage, "LuckEndsAt") - now
@@ -3911,7 +4585,7 @@ return Banners
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="22">
+        <Item class="ModuleScript" referent="23">
           <Properties>
             <string name="Name">Carry</string>
             <string name="Source"><![CDATA[-- Кража: пока игрок несёт мема (атрибут Carrying), показываем баннер с таймером
@@ -4083,11 +4757,12 @@ return Carry
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="23">
+        <Item class="ModuleScript" referent="24">
           <Properties>
             <string name="Name">Effects</string>
-            <string name="Source"><![CDATA[-- Клиентские эффекты: отбрасывание от тапка (Remotes.Knockback), разовые вспышки/конфетти
--- (Remotes.Fx), лёгкий красноватый оттенок Ночью Смайлика и табличка со здоровьем монстра.
+            <string name="Source"><![CDATA[-- Клиентские эффекты: отбрасывание с оглушением (Remotes.Knockback), разовые вспышки/конфетти
+-- (Remotes.Fx), оттенок Ночью Смайлика по сезону (Хэллоуин — красноватый, Зима — холодный синий)
+-- и табличка со здоровьем монстра.
 -- Всё создаётся локально, без звуков и текстур по ID.
 local Debris = game:GetService("Debris")
 local Lighting = game:GetService("Lighting")
@@ -4106,11 +4781,22 @@ local create = UiKit.create
 local player = Players.LocalPlayer
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 
-local KNOCKBACK_TIME = 0.6
+local KNOCKBACK_TIME = 0.6 -- оглушение по умолчанию (старый вызов без второго аргумента)
+local MAX_STUN = 4
+local DIZZY_STUN = 1.5 -- с такого оглушения над головой крутятся звёздочки
 local MAX_KNOCKBACK = 300 -- защита от странных значений: клиент не улетит за карту
 local MAX_PIECES = 250 -- не больше стольких частиц конфетти одновременно
 local VIRAL_COLOR = Color3.fromRGB(255, 80, 220)
 local MONSTER_COLOR = Color3.fromRGB(255, 220, 40)
+local BANANA_COLOR = Color3.fromRGB(255, 225, 50)
+local ENERGY_COLOR = Color3.fromRGB(80, 255, 120)
+
+-- Оттенок ночи по сезону (Season в ReplicatedStorage); без сезона — как на Хэллоуин
+local NIGHT_TINTS = {
+	Halloween = { TintColor = Color3.fromRGB(255, 222, 215), Saturation = -0.15, Contrast = 0.12, Brightness = -0.03 },
+	Winter = { TintColor = Color3.fromRGB(205, 225, 255), Saturation = -0.1, Contrast = 0.1, Brightness = -0.02 },
+}
+local NO_TINT = { TintColor = Color3.new(1, 1, 1), Saturation = 0, Contrast = 0, Brightness = 0 }
 
 local Effects = {}
 
@@ -4131,16 +4817,56 @@ local function shakeCamera(humanoid: Humanoid, duration: number, strength: numbe
 	end)
 end
 
+-- «💫» над своей головой на время оглушения (только у себя)
+local dizzyGui: BillboardGui? = nil
+local function showDizzy(character: Model, duration: number)
+	if dizzyGui then
+		dizzyGui:Destroy()
+	end
+	local head = character:FindFirstChild("Head")
+	if not head or not head:IsA("BasePart") then
+		return
+	end
+	local gui = create("BillboardGui", {
+		Name = "Dizzy",
+		Adornee = head,
+		Size = UDim2.fromOffset(60, 60),
+		StudsOffsetWorldSpace = Vector3.new(0, 2.2, 0),
+		AlwaysOnTop = true,
+		LightInfluence = 0,
+		ResetOnSpawn = false,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	local label = UiKit.text({
+		Text = "💫",
+		TextScaled = true,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromScale(1, 1),
+		Parent = gui,
+	})
+	TweenService:Create(label, TweenInfo.new(0.6, Enum.EasingStyle.Linear, Enum.EasingDirection.In, -1), { Rotation = 360 }):Play()
+	dizzyGui = gui
+	task.delay(duration, function()
+		if dizzyGui == gui then
+			dizzyGui = nil
+		end
+		gui:Destroy()
+	end)
+end
+
 local knockToken = 0
-local function onKnockback(velocity: any)
+local function onKnockback(velocity: any, stun: any)
 	if typeof(velocity) ~= "Vector3" or velocity ~= velocity then
 		return
 	end
+	local duration = if type(stun) == "number" and stun == stun then math.clamp(stun, 0, MAX_STUN) else KNOCKBACK_TIME
 	if velocity.Magnitude > MAX_KNOCKBACK then
 		velocity = velocity.Unit * MAX_KNOCKBACK
 	end
-	local _, root, humanoid = Util.character()
-	if not root or not humanoid or humanoid.Health <= 0 then
+	local character, root, humanoid = Util.character()
+	if not character or not root or not humanoid or humanoid.Health <= 0 then
 		return
 	end
 	knockToken += 1
@@ -4148,7 +4874,10 @@ local function onKnockback(velocity: any)
 	humanoid:ChangeState(Enum.HumanoidStateType.Physics)
 	root.AssemblyLinearVelocity = velocity
 	shakeCamera(humanoid, 0.35, 0.6)
-	task.delay(KNOCKBACK_TIME, function()
+	if duration >= DIZZY_STUN then
+		showDizzy(character, duration)
+	end
+	task.delay(duration, function()
 		-- Новый удар за это время продлевает полёт
 		if token == knockToken and humanoid.Parent and humanoid.Health > 0 then
 			humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
@@ -4210,6 +4939,35 @@ local function flash(position: Vector3, color: Color3, size: number, duration: n
 		Transparency = 1,
 	}):Play()
 	Debris:AddItem(ball, duration + 0.1)
+end
+
+-- Всплывающая надпись в мире (поднимается и тает)
+local function floatText(position: Vector3, text: string, color: Color3)
+	local anchor = piece(position, Vector3.one * 0.2, color)
+	anchor.Transparency = 1
+	local gui = create("BillboardGui", {
+		Size = UDim2.fromOffset(160, 50),
+		AlwaysOnTop = true,
+		LightInfluence = 0,
+		MaxDistance = 120,
+		Parent = anchor,
+	})
+	local label = UiKit.text({
+		Text = text,
+		TextScaled = true,
+		TextColor3 = color,
+		TextStrokeTransparency = 0,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		Size = UDim2.fromScale(1, 1),
+		Parent = gui,
+	})
+	local rise = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	TweenService:Create(anchor, rise, { CFrame = CFrame.new(position + Vector3.new(0, 4, 0)) }):Play()
+	TweenService:Create(label, TweenInfo.new(0.4, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, 0.6), {
+		TextTransparency = 1,
+		TextStrokeTransparency = 1,
+	}):Play()
+	Debris:AddItem(anchor, 1.1)
 end
 
 -- Белая вспышка экрана и крупный текст при своём перерождении
@@ -4285,6 +5043,16 @@ local function onFx(kind: any, data: any)
 	elseif kind == "MonsterHit" and hasPosition then
 		flash(position, MONSTER_COLOR, 4, 0.2)
 		confetti(position, { MONSTER_COLOR, Color3.new(1, 1, 1) }, 8, 4)
+	elseif kind == "Invisible" and hasPosition then
+		flash(position, Color3.fromRGB(170, 170, 180), 8, 0.5)
+		confetti(position, { Color3.fromRGB(150, 150, 160), Color3.fromRGB(210, 210, 220), Color3.new(1, 1, 1) }, 18, 5)
+	elseif kind == "Banana" and hasPosition then
+		flash(position, BANANA_COLOR, 6, 0.3)
+		confetti(position, { BANANA_COLOR, Color3.fromRGB(255, 240, 150), Color3.fromRGB(120, 90, 30) }, 16, 6)
+		floatText(position + Vector3.new(0, 3, 0), Locale.T("FxSlip"), BANANA_COLOR)
+	elseif kind == "Energy" and hasPosition then
+		flash(position, ENERGY_COLOR, 5, 0.25)
+		confetti(position, { ENERGY_COLOR, Color3.fromRGB(200, 255, 120), Color3.new(1, 1, 1) }, 20, 9)
 	elseif kind == "Rebirth" then
 		if data.UserId == player.UserId then
 			rebirthScreen()
@@ -4299,7 +5067,7 @@ local function onFx(kind: any, data: any)
 	end
 end
 
--- ===== Ночь Смайлика: лёгкий тёплый/красный оттенок поверх освещения сервера =====
+-- ===== Ночь Смайлика: лёгкий оттенок по сезону поверх освещения сервера =====
 local function startNightTint()
 	local tint = create("ColorCorrectionEffect", {
 		Name = "SmileyNightLocal",
@@ -4309,14 +5077,11 @@ local function startNightTint()
 	local fade = TweenInfo.new(2.5, Enum.EasingStyle.Sine)
 	local function render()
 		local active = Util.bool(ReplicatedStorage, "NightActive")
-		TweenService:Create(tint, fade, {
-			TintColor = if active then Color3.fromRGB(255, 222, 215) else Color3.new(1, 1, 1),
-			Saturation = if active then -0.15 else 0,
-			Contrast = if active then 0.12 else 0,
-			Brightness = if active then -0.03 else 0,
-		}):Play()
+		local goal = if active then NIGHT_TINTS[Util.str(ReplicatedStorage, "Season")] or NIGHT_TINTS.Halloween else NO_TINT
+		TweenService:Create(tint, fade, goal):Play()
 	end
 	ReplicatedStorage:GetAttributeChangedSignal("NightActive"):Connect(render)
+	ReplicatedStorage:GetAttributeChangedSignal("Season"):Connect(render)
 	render()
 end
 
@@ -4423,7 +5188,7 @@ return Effects
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="24">
+        <Item class="ModuleScript" referent="25">
           <Properties>
             <string name="Name">GuardWindow</string>
             <string name="Source"><![CDATA[-- Окно стража базы (Котёнок с мечом): текущий уровень, что даст следующий, цена.
@@ -4523,11 +5288,11 @@ return GuardWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="25">
+        <Item class="ModuleScript" referent="26">
           <Properties>
             <string name="Name">Hud</string>
             <string name="Source"><![CDATA[-- HUD: деньги/доход/слоты слева сверху, таймер подарка за игру и боковые кнопки
--- (Магазин, Индекс, Перерождение, Замок базы, Страж). Всё рисуется из атрибутов игрока.
+-- (Магазин, Предметы, Индекс, Перерождение, Замок базы, Страж). Всё рисуется из атрибутов игрока.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -4713,15 +5478,19 @@ function Hud.Start(ctx)
 	ctx.Scale(side)
 
 	local shop = sideButton(side, 1, "🛒", Locale.T("BtnShop"))
-	local index = sideButton(side, 2, "📖", Locale.T("BtnIndex"))
-	local rebirth, rebirthCaption = sideButton(side, 3, "♻️", Locale.T("BtnRebirth"))
-	local lock, lockCaption = sideButton(side, 4, "🔒", Locale.T("BtnLock"))
-	local guard, guardCaption = sideButton(side, 5, "🐱⚔️", Locale.T("BtnGuard"))
+	local items = sideButton(side, 2, "🗡️", Locale.T("BtnItems"))
+	local index = sideButton(side, 3, "📖", Locale.T("BtnIndex"))
+	local rebirth, rebirthCaption = sideButton(side, 4, "♻️", Locale.T("BtnRebirth"))
+	local lock, lockCaption = sideButton(side, 5, "🔒", Locale.T("BtnLock"))
+	local guard, guardCaption = sideButton(side, 6, "🐱⚔️", Locale.T("BtnGuard"))
 	local lockIcon = lock:FindFirstChild("Icon") :: TextLabel
 
 	shop.BackgroundColor3 = COLORS.Green
 	shop.Activated:Connect(function()
 		ctx.Open("Shop")
+	end)
+	items.Activated:Connect(function()
+		ctx.Open("Items")
 	end)
 	index.Activated:Connect(function()
 		ctx.Open("Index")
@@ -4790,7 +5559,7 @@ return Hud
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="26">
+        <Item class="ModuleScript" referent="27">
           <Properties>
             <string name="Name">IndexWindow</string>
             <string name="Source"><![CDATA[-- Окно Индекса: сетка всех мемов из Config.Creatures. Открытые — цветные, закрытые — «???».
@@ -4812,6 +5581,7 @@ local player = Players.LocalPlayer
 local UNKNOWN_BG = Color3.fromRGB(14, 15, 22)
 local CELL_HEIGHT = 132
 local GAP = 8
+local SEASON_TAGS = { Halloween = "IndexSeasonHalloween", Winter = "IndexSeasonWinter" }
 
 local IndexWindow = {}
 
@@ -4988,7 +5758,8 @@ function IndexWindow.Start(ctx)
 			if #dots > 0 then
 				cell.Extra.Text = table.concat(dots, " ")
 			elseif creature.Event then
-				cell.Extra.Text = Locale.T("IndexEvent")
+				-- Сезонные: «Ночь Хэллоуина» / «Зимняя ночь», без сезона — просто «Только ночью»
+				cell.Extra.Text = Locale.T(SEASON_TAGS[creature.Season or ""] or "IndexEvent")
 			else
 				cell.Extra.Text = ""
 			end
@@ -5011,7 +5782,221 @@ return IndexWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="27">
+        <Item class="ModuleScript" referent="28">
+          <Properties>
+            <string name="Name">Items</string>
+            <string name="Source"><![CDATA[-- Окно предметов: оружие и гаджеты из Config.Items, покупка за монеты навсегда.
+-- Купленные — атрибут игрока ItemsJson (JSON-массив Id). Покупку проверяет и выдаёт сервер
+-- (Remotes.BuyItem), клиент только просит и показывает ответ.
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Format = require(Shared:WaitForChild("Format"))
+local Locale = require(Shared:WaitForChild("Locale"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local COLORS = UiKit.Colors
+local create = UiKit.create
+local player = Players.LocalPlayer
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+
+local ROW_HEIGHT = 86
+
+local Items = {}
+
+-- Множество купленных Id; нет атрибута или битый JSON -> только Тапок (он есть всегда)
+local function ownedSet(): { [string]: boolean }
+	local set = { Slipper = true }
+	local raw = Util.str(player, "ItemsJson")
+	if raw == "" then
+		return set
+	end
+	local ok, list = pcall(HttpService.JSONDecode, HttpService, raw)
+	if ok and type(list) == "table" then
+		for _, id in list do
+			if type(id) == "string" then
+				set[id] = true
+			end
+		end
+	end
+	return set
+end
+
+local function statsText(item): string
+	if item.Kind == "Weapon" then
+		local text = Locale.T("ItemStatsWeapon", { Range = item.Range, Cooldown = item.Cooldown, Stun = item.Stun or 0 })
+		if item.Area then
+			text ..= " · " .. Locale.T("ItemArea")
+		end
+		return text
+	end
+	return Locale.T("ItemStatsGadget", { Duration = item.Duration or 0, Cooldown = item.Cooldown or 0 })
+end
+
+function Items.Start(ctx)
+	local window, body = UiKit.window(ctx.Gui, Locale.T("ItemsTitle"), Vector2.new(580, 480))
+	window.Name = "ItemsWindow"
+	ctx.Register("Items", window)
+
+	local list = create("ScrollingFrame", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 6,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+		Parent = body,
+	}, {
+		create("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }),
+		create("UIPadding", { PaddingRight = UDim.new(0, 10) }),
+	})
+
+	local order = 0
+	local function nextOrder(): number
+		order += 1
+		return order
+	end
+
+	local function section(key: string)
+		UiKit.text({
+			Text = Locale.T(key),
+			TextSize = 18,
+			TextColor3 = COLORS.Gold,
+			Size = UDim2.new(1, 0, 0, 28),
+			LayoutOrder = nextOrder(),
+			Parent = list,
+		})
+	end
+
+	-- Строки создаются один раз, render() только перекрашивает кнопки
+	local rows = {}
+	local busy = false
+
+	local function row(item)
+		local frame = create("Frame", {
+			Name = item.Id,
+			Size = UDim2.new(1, 0, 0, ROW_HEIGHT),
+			BackgroundColor3 = COLORS.PanelLight,
+			LayoutOrder = nextOrder(),
+			Parent = list,
+		}, { UiKit.corner(10) })
+		UiKit.text({
+			Text = item.Face,
+			TextScaled = true,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			Position = UDim2.fromOffset(6, 13),
+			Size = UDim2.fromOffset(60, 60),
+			Parent = frame,
+		})
+		local name = UiKit.text({
+			Text = Locale.Name(item),
+			TextScaled = true,
+			Position = UDim2.fromOffset(72, 4),
+			Size = UDim2.new(1, -200, 0, 26),
+			Parent = frame,
+		})
+		create("UITextSizeConstraint", { MaxTextSize = 18, MinTextSize = 10, Parent = name })
+		local desc = UiKit.text({
+			Text = if Locale.IsRussian and item.DescRu then item.DescRu else item.Desc or "",
+			TextScaled = true,
+			TextWrapped = true,
+			Font = Enum.Font.Gotham,
+			TextColor3 = COLORS.Text,
+			Position = UDim2.fromOffset(72, 30),
+			Size = UDim2.new(1, -200, 0, 32),
+			Parent = frame,
+		})
+		create("UITextSizeConstraint", { MaxTextSize = 14, MinTextSize = 9, Parent = desc })
+		local stats = UiKit.text({
+			Text = statsText(item),
+			TextScaled = true,
+			TextColor3 = COLORS.Muted,
+			Position = UDim2.fromOffset(72, 62),
+			Size = UDim2.new(1, -200, 0, 18),
+			Parent = frame,
+		})
+		create("UITextSizeConstraint", { MaxTextSize = 13, MinTextSize = 8, Parent = stats })
+		local buy = UiKit.button({
+			Text = "",
+			TextSize = 18,
+			AnchorPoint = Vector2.new(1, 0.5),
+			Position = UDim2.new(1, -8, 0.5, 0),
+			Size = UDim2.fromOffset(116, 46),
+			BackgroundColor3 = COLORS.Green,
+			Parent = frame,
+		})
+
+		buy.Activated:Connect(function()
+			if busy or ownedSet()[item.Id] then
+				return
+			end
+			busy = true
+			local ok, success, key = pcall(function()
+				return Remotes:WaitForChild("BuyItem"):InvokeServer(item.Id)
+			end)
+			busy = false
+			if ok and type(key) == "string" then
+				ctx.Toast(Locale.T(key, { Price = item.Price }), if success then "success" else "error")
+			end
+		end)
+
+		rows[item.Id] = { Item = item, Button = buy }
+	end
+
+	local function render()
+		local owned = ownedSet()
+		local coins = Util.num(player, "Coins")
+		for _, entry in rows do
+			local item, buy = entry.Item, entry.Button
+			if owned[item.Id] then
+				buy.Text = Locale.T("ShopOwned")
+				buy.TextColor3 = COLORS.Muted
+				buy.BackgroundColor3 = COLORS.Panel
+				buy.AutoButtonColor = false
+			else
+				local affordable = coins >= item.Price
+				buy.Text = if item.Price > 0 then "$" .. Format.Number(item.Price) else Locale.T("ItemFree")
+				-- Не хватает денег — цена красным, кнопка тусклая (решает всё равно сервер)
+				buy.TextColor3 = if affordable then COLORS.Text else COLORS.Red
+				buy.BackgroundColor3 = if affordable then COLORS.Green else COLORS.Panel
+				buy.AutoButtonColor = true
+			end
+		end
+	end
+
+	local groups = {
+		{ Kind = "Weapon", Title = "ItemsWeapons" },
+		{ Kind = "Gadget", Title = "ItemsGadgets" },
+	}
+	for _, group in groups do
+		section(group.Title)
+		for _, item in Config.Items do
+			if item.Kind == group.Kind then
+				row(item)
+			end
+		end
+	end
+
+	player:GetAttributeChangedSignal("ItemsJson"):Connect(render)
+	player:GetAttributeChangedSignal("Coins"):Connect(function()
+		if window.Visible then
+			render()
+		end
+	end)
+	window:GetPropertyChangedSignal("Visible"):Connect(render)
+	render()
+end
+
+return Items
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="29">
           <Properties>
             <string name="Name">MemeBillboards</string>
             <string name="Source"><![CDATA[-- Таблички над мемами (тег "Meme"): мутация, ВИРУСНЫЙ, имя, редкость, доход/сек, цена на дорожке.
@@ -5215,7 +6200,7 @@ return MemeBillboards
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="28">
+        <Item class="ModuleScript" referent="30">
           <Properties>
             <string name="Name">PlotSigns</string>
             <string name="Source"><![CDATA[-- Таблички баз: SurfaceGui на Sign каждой базы (Face = Front) — имя хозяина или «Свободно»,
@@ -5329,7 +6314,7 @@ return PlotSigns
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="29">
+        <Item class="ModuleScript" referent="31">
           <Properties>
             <string name="Name">Popups</string>
             <string name="Source"><![CDATA[-- Всплывающие окна от сервера (Remotes.Popup): оффлайн-доход и ежедневная награда.
@@ -5428,7 +6413,7 @@ return Popups
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="30">
+        <Item class="ModuleScript" referent="32">
           <Properties>
             <string name="Name">Prompts</string>
             <string name="Source"><![CDATA[-- ProximityPrompt мемов и замков баз: перевод ActionText/ObjectText и локальное выключение лишних
@@ -5699,7 +6684,7 @@ return Prompts
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="31">
+        <Item class="ModuleScript" referent="33">
           <Properties>
             <string name="Name">RebirthWindow</string>
             <string name="Source"><![CDATA[-- Окно перерождения: цена, прогресс денег до цены, что даёт, кнопка.
@@ -5841,7 +6826,7 @@ return RebirthWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="32">
+        <Item class="ModuleScript" referent="34">
           <Properties>
             <string name="Name">Shop</string>
             <string name="Source"><![CDATA[-- Окно магазина: геймпассы (навсегда) и продукты за Robux (бусты, деньги).
@@ -6007,7 +6992,239 @@ return Shop
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="33">
+        <Item class="ModuleScript" referent="35">
+          <Properties>
+            <string name="Name">Status</string>
+            <string name="Source"><![CDATA[-- Состояние своего персонажа над панелью предметов (снизу по центру):
+-- перезарядка экипированного предмета (Tool.CooldownEndsAt), невидимость (Invisible) и энергетик (BoostUntil).
+-- Пока своя невидимость включена, игрок видит себя полупрозрачным (LocalTransparencyModifier) —
+-- остальные не видят его вовсе (это делает сервер).
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Locale = require(Shared:WaitForChild("Locale"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local COLORS = UiKit.Colors
+local create = UiKit.create
+local player = Players.LocalPlayer
+
+local SELF_GHOST = 0.6 -- насколько прозрачным игрок видит себя в невидимости
+local HIDDEN = 0.99 -- деталь считается спрятанной сервером, если прозрачнее этого
+local HOTBAR_GAP = 78 -- отступ от низа экрана: над стандартной панелью предметов Roblox
+local INVIS_COLOR = Color3.fromRGB(190, 200, 230)
+local BOOST_COLOR = Color3.fromRGB(110, 255, 140)
+
+local Status = {}
+
+-- Небольшая плашка с текстом и обводкой
+local function chip(parent: Instance, order: number, stroke: Color3): TextLabel
+	local label = UiKit.text({
+		Text = "",
+		TextSize = 16,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		TextStrokeTransparency = 0.5,
+		AutomaticSize = Enum.AutomaticSize.X,
+		Size = UDim2.fromOffset(0, 28),
+		BackgroundColor3 = COLORS.Panel,
+		BackgroundTransparency = 0.15,
+		LayoutOrder = order,
+		Visible = false,
+		Parent = parent,
+	})
+	UiKit.corner(8).Parent = label
+	create("UIPadding", { PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10), Parent = label })
+	create("UIStroke", { Color = stroke, Thickness = 2, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Parent = label })
+	return label
+end
+
+-- ===== Своя полупрозрачность в невидимости =====
+-- Сервер прячет детали (Transparency = 1) для всех. Чтобы игрок видел себя, локально
+-- возвращаем исходную прозрачность и добавляем LocalTransparencyModifier.
+-- Исходную прозрачность запоминаем, пока невидимость выключена.
+local original: { [Instance]: number } = {}
+local touched: { [Instance]: boolean } = {}
+
+local function isVisual(inst: Instance): boolean
+	if inst:IsA("BasePart") then
+		return inst.Name ~= "HumanoidRootPart"
+	end
+	return inst:IsA("Decal")
+end
+
+local function remember(inst: Instance)
+	if isVisual(inst) and original[inst] == nil then
+		original[inst] = (inst :: any).Transparency
+	end
+end
+
+local function applyGhost(character: Model)
+	for _, inst in character:GetDescendants() do
+		if isVisual(inst) then
+			local target = inst :: any
+			local base = original[inst]
+			if base and base < HIDDEN and target.Transparency >= HIDDEN then
+				target.Transparency = base
+			end
+			target.LocalTransparencyModifier = math.max(target.LocalTransparencyModifier, SELF_GHOST)
+			touched[inst] = true
+		end
+	end
+end
+
+local function clearGhost()
+	-- Transparency не трогаем: сервер сам вернёт исходную (ту же, что мы поставили локально)
+	for inst in touched do
+		if inst.Parent then
+			(inst :: any).LocalTransparencyModifier = 0
+		end
+	end
+	table.clear(touched)
+end
+
+local function trackCharacter(character: Model)
+	table.clear(original)
+	table.clear(touched)
+	for _, inst in character:GetDescendants() do
+		remember(inst)
+	end
+	character.DescendantAdded:Connect(function(inst)
+		if not Util.bool(character, "Invisible") then
+			remember(inst)
+		end
+	end)
+end
+
+function Status.Start(ctx)
+	local holder = create("Frame", {
+		Name = "Status",
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.new(0.5, 0, 1, -HOTBAR_GAP),
+		Size = UDim2.fromOffset(0, 0),
+		AutomaticSize = Enum.AutomaticSize.XY,
+		BackgroundTransparency = 1,
+		Parent = ctx.Gui,
+	}, {
+		create("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+			VerticalAlignment = Enum.VerticalAlignment.Bottom,
+			Padding = UDim.new(0, 6),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+	ctx.Scale(holder)
+
+	-- Перезарядка: имя предмета + полоса + секунды
+	local cooldown = create("Frame", {
+		Name = "Cooldown",
+		Size = UDim2.fromOffset(170, 44),
+		BackgroundColor3 = COLORS.Panel,
+		BackgroundTransparency = 0.15,
+		LayoutOrder = 1,
+		Visible = false,
+		Parent = holder,
+	}, {
+		UiKit.corner(8),
+		create("UIStroke", { Color = COLORS.Gold, Thickness = 2, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }),
+	})
+	local itemName = UiKit.text({
+		TextScaled = true,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		Position = UDim2.fromOffset(6, 2),
+		Size = UDim2.new(1, -12, 0, 18),
+		Parent = cooldown,
+	})
+	create("UITextSizeConstraint", { MaxTextSize = 14, Parent = itemName })
+	local bar = create("Frame", {
+		Position = UDim2.fromOffset(8, 22),
+		Size = UDim2.new(1, -16, 0, 16),
+		BackgroundColor3 = COLORS.PanelLight,
+		Parent = cooldown,
+	}, { UiKit.corner(5) })
+	local fill = create("Frame", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = COLORS.Gold,
+		Parent = bar,
+	}, { UiKit.corner(5) })
+	local seconds = UiKit.text({
+		TextSize = 13,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		TextStrokeTransparency = 0.3,
+		Size = UDim2.fromScale(1, 1),
+		ZIndex = 2,
+		Parent = bar,
+	})
+
+	local invisible = chip(holder, 2, INVIS_COLOR)
+	invisible.TextColor3 = INVIS_COLOR
+	local boost = chip(holder, 3, BOOST_COLOR)
+	boost.TextColor3 = BOOST_COLOR
+
+	if player.Character then
+		trackCharacter(player.Character)
+	end
+	player.CharacterAdded:Connect(trackCharacter)
+
+	local wasInvisible = false
+	local invisibleSince = 0
+
+	local function render()
+		local now = Util.now()
+		local character = player.Character
+
+		-- Экипированный предмет на перезарядке
+		local tool = character and character:FindFirstChildOfClass("Tool")
+		local left = if tool then Util.num(tool, "CooldownEndsAt") - now else 0
+		cooldown.Visible = left > 0
+		if tool and left > 0 then
+			local itemId = Util.str(tool, "ItemId")
+			local item = Config.GetItem(if itemId ~= "" then itemId else tool.Name)
+			local total = if item and item.Cooldown and item.Cooldown > 0 then item.Cooldown else left
+			itemName.Text = if item then item.Face .. " " .. Locale.Name(item) else tool.Name
+			fill.Size = UDim2.fromScale(math.clamp(left / total, 0, 1), 1)
+			seconds.Text = Locale.T("StatusCooldown", { Seconds = string.format("%.1f", left) })
+		end
+
+		-- Невидимость: длительность — из Config.Items (сервер даёт только флаг)
+		local isInvisible = character ~= nil and Util.bool(character, "Invisible")
+		if isInvisible and not wasInvisible then
+			invisibleSince = now
+		end
+		if isInvisible and character then
+			applyGhost(character)
+			local hat = Config.GetItem("InvisHat")
+			local duration = if hat and hat.Duration then hat.Duration else 0
+			invisible.Text = Locale.T("StatusInvisible", { Time = Util.clock(math.ceil(duration - (now - invisibleSince))) })
+		elseif wasInvisible then
+			clearGhost()
+		end
+		invisible.Visible = isInvisible
+		wasInvisible = isInvisible
+
+		local boostLeft = if character then Util.num(character, "BoostUntil") - now else 0
+		boost.Visible = boostLeft > 0
+		if boostLeft > 0 then
+			boost.Text = Locale.T("StatusBoost", { Time = Util.clock(math.ceil(boostLeft)) })
+		end
+	end
+
+	task.spawn(function()
+		while true do
+			render()
+			task.wait(0.1)
+		end
+	end)
+end
+
+return Status
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="36">
           <Properties>
             <string name="Name">Strings</string>
             <string name="Source"><![CDATA[--!strict
@@ -6102,14 +7319,319 @@ Locale.Add({
 
 	-- эффекты
 	FxRebirth = { "REBIRTH!", "ПЕРЕРОЖДЕНИЕ!" },
+	FxSlip = { "SLIP!", "БАЦ!" },
 	MonsterName = { "😃 Smiley", "😃 Smiley" },
+
+	-- предметы (ответы BuyItem + окно)
+	ItemBought = { "Bought! Check your hotbar", "Куплено! Смотри в панели предметов" },
+	ItemOwned = { "You already own this item", "Этот предмет уже есть" },
+	BtnItems = { "Items", "Предметы" },
+	ItemsTitle = { "🗡️ Items", "🗡️ Предметы" },
+	ItemsWeapons = { "Weapons", "Оружие" },
+	ItemsGadgets = { "Gadgets", "Гаджеты" },
+	ItemStatsWeapon = { "📏 {Range} · ⏱ {Cooldown}s · 💫 {Stun}s", "📏 {Range} · ⏱ {Cooldown} сек · 💫 {Stun} сек" },
+	ItemStatsGadget = { "⌛ {Duration}s · ⏱ {Cooldown}s", "⌛ {Duration} сек · ⏱ {Cooldown} сек" },
+	ItemArea = { "💥 area", "💥 по площади" },
+	ItemFree = { "Free", "Бесплатно" },
+
+	-- состояние персонажа (над панелью предметов)
+	StatusCooldown = { "⏳ {Seconds}s", "⏳ {Seconds} сек" },
+	StatusInvisible = { "🎩 Invisible {Time}", "🎩 Невидимка {Time}" },
+	StatusBoost = { "🥤 Boost {Time}", "🥤 Ускорение {Time}" },
+
+	-- туториал
+	TutorialStep = { "Tutorial {Step}/{Total}", "Обучение {Step}/{Total}" },
+	TutorialBuy = { "Walk to the red carpet and buy a meme (press E)", "Подойди к красной дорожке и купи мема (нажми E)" },
+	TutorialIncome = { "Nice! Memes earn cash every second. Buy more and watch your Cash grow", "Отлично! Мемы приносят деньги каждую секунду. Покупай ещё и смотри, как растут деньги" },
+	TutorialSteal = { "Steal: go to another player's base and HOLD E on their meme, then run home", "Кража: иди на чужую базу, ЗАЖМИ E на меме и беги домой" },
+	TutorialProtect = { "Protect: press 🔒 Lock when thieves come. Hit them with your Slipper!", "Защита: жми 🔒 Замок, когда идут воры. Бей их тапком!" },
+	TutorialSkip = { "Skip", "Пропустить" },
+	TutorialFinished = { "Tutorial complete! Go get rich! 🚀", "Обучение пройдено! Вперёд к богатству! 🚀" },
+
+	-- сезоны
+	IndexSeasonHalloween = { "Halloween night", "Ночь Хэллоуина" },
+	IndexSeasonWinter = { "Winter night", "Зимняя ночь" },
 })
 
 return Locale
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="34">
+        <Item class="ModuleScript" referent="37">
+          <Properties>
+            <string name="Name">Tutorial</string>
+            <string name="Source"><![CDATA[-- Обучение новичка (атрибут игрока TutorialDone == 0): карточка с шагом внизу по центру и
+-- локальный луч от персонажа к цели. Шаги: купить мема -> доход -> украсть -> защитить базу.
+-- Прогресс читается из атрибутов (SlotsUsed, Stolen, LockedUntil базы). В конце или по «Пропустить»
+-- клиент сообщает серверу Remotes.TutorialDone — награды/сохранение решает сервер.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Locale = require(Shared:WaitForChild("Locale"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local COLORS = UiKit.Colors
+local create = UiKit.create
+local player = Players.LocalPlayer
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+
+local TOTAL_STEPS = 4
+local INCOME_STEP_TIME = 7
+local STEAL_SKIP_HINT = 90 -- через столько секунд кнопка «Пропустить» на шаге кражи становится заметной
+local PROTECT_STEP_TIME = 15
+local CARD_BOTTOM = 128 -- над панелью состояния и стандартной панелью предметов
+local BEAM_COLOR = Color3.fromRGB(255, 220, 60)
+local POLL = 0.2
+
+local Tutorial = {}
+
+-- Ближайший пол чужой занятой базы (или nil)
+local function nearestOtherFloor(from: Vector3): BasePart?
+	local folder = workspace:FindFirstChild("Plots")
+	if not folder then
+		return nil
+	end
+	local best: BasePart? = nil
+	local bestDistance = math.huge
+	for _, plot in folder:GetChildren() do
+		local owner = Util.num(plot, "OwnerUserId")
+		local floor = plot:FindFirstChild("Floor")
+		if owner ~= 0 and owner ~= player.UserId and floor and floor:IsA("BasePart") then
+			local distance = (floor.Position - from).Magnitude
+			if distance < bestDistance then
+				best, bestDistance = floor, distance
+			end
+		end
+	end
+	return best
+end
+
+local function run(ctx)
+	-- Ждём загрузки данных: до неё TutorialDone ещё не известен
+	while not Util.bool(player, "DataLoaded") do
+		player:GetAttributeChangedSignal("DataLoaded"):Wait()
+	end
+	if player:GetAttribute("TutorialDone") == nil then
+		task.wait(3) -- атрибут мог прийти чуть позже DataLoaded
+	end
+	if player:GetAttribute("TutorialDone") ~= 0 then
+		return
+	end
+
+	-- ===== Карточка шага =====
+	local card = create("Frame", {
+		Name = "Tutorial",
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.new(0.5, 0, 1, -CARD_BOTTOM),
+		Size = UDim2.fromOffset(440, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BackgroundColor3 = COLORS.Panel,
+		BackgroundTransparency = 0.1,
+		Parent = ctx.Gui,
+	}, {
+		UiKit.corner(12),
+		UiKit.padding(10),
+		create("UIStroke", { Color = COLORS.Gold, Thickness = 2, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }),
+	})
+	ctx.Scale(card)
+
+	local header = UiKit.text({
+		Text = "",
+		TextSize = 14,
+		TextColor3 = COLORS.Gold,
+		Size = UDim2.new(1, -110, 0, 18),
+		Parent = card,
+	})
+	local message = UiKit.text({
+		Text = "",
+		TextSize = 18,
+		TextWrapped = true,
+		Position = UDim2.fromOffset(0, 22),
+		Size = UDim2.new(1, -110, 0, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		Parent = card,
+	})
+	local pop = create("UIScale", { Parent = message })
+	local skip = UiKit.button({
+		Text = Locale.T("TutorialSkip"),
+		TextSize = 15,
+		TextColor3 = COLORS.Muted,
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.fromScale(1, 0),
+		Size = UDim2.fromOffset(100, 34),
+		BackgroundColor3 = COLORS.PanelLight,
+		Parent = card,
+	})
+	local skipStroke = create("UIStroke", {
+		Color = COLORS.Gold,
+		Thickness = 2,
+		Enabled = false,
+		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+		Parent = skip,
+	})
+
+	-- ===== Луч к цели (виден только этому игроку) =====
+	local beam: Beam? = nil
+	local fromAttachment: Attachment? = nil
+	local toAttachment = create("Attachment", { Name = "TutorialTarget", Parent = workspace.Terrain })
+
+	local function clearBeam()
+		if beam then
+			beam:Destroy()
+		end
+		if fromAttachment then
+			fromAttachment:Destroy()
+		end
+		beam, fromAttachment = nil, nil
+	end
+
+	local function pointBeam(target: Vector3?)
+		local _, root = Util.character()
+		if not target or not root then
+			clearBeam()
+			return
+		end
+		toAttachment.WorldPosition = target
+		if beam and fromAttachment and fromAttachment.Parent == root then
+			return
+		end
+		clearBeam()
+		local a0 = create("Attachment", { Name = "TutorialFrom", Parent = root })
+		beam = create("Beam", {
+			Name = "TutorialBeam",
+			Attachment0 = a0,
+			Attachment1 = toAttachment,
+			Color = ColorSequence.new(BEAM_COLOR),
+			Transparency = NumberSequence.new(0.2, 0.5),
+			Width0 = 0.8,
+			Width1 = 0.8,
+			CurveSize0 = 6,
+			CurveSize1 = -6,
+			Segments = 20,
+			FaceCamera = true,
+			LightEmission = 1,
+			Parent = root,
+		})
+		fromAttachment = a0
+	end
+
+	-- ===== Завершение =====
+	local finished = false
+	local function finish(completed: boolean)
+		if finished then
+			return
+		end
+		finished = true
+		clearBeam()
+		toAttachment:Destroy()
+		card:Destroy()
+		Remotes:WaitForChild("TutorialDone"):FireServer()
+		if completed then
+			ctx.Toast(Locale.T("TutorialFinished"), "success")
+		end
+	end
+	skip.Activated:Connect(function()
+		finish(false)
+	end)
+	player.CharacterRemoving:Connect(clearBeam)
+
+	local function emphasizeSkip(on: boolean)
+		skip.BackgroundColor3 = if on then COLORS.Gold else COLORS.PanelLight
+		skip.TextColor3 = if on then COLORS.Panel else COLORS.Muted
+		skipStroke.Enabled = on
+	end
+
+	local function setStep(step: number, key: string)
+		header.Text = Locale.T("TutorialStep", { Step = step, Total = TOTAL_STEPS })
+		message.Text = Locale.T(key)
+		emphasizeSkip(false)
+		pop.Scale = 1.15
+		TweenService:Create(pop, TweenInfo.new(0.3, Enum.EasingStyle.Back), { Scale = 1 }):Play()
+	end
+
+	-- Опрос условия шага; target() — куда вести луч (nil — без луча). Пока игрок несёт мема,
+	-- карточку прячем: по центру уже баннер кражи.
+	local function waitStep(done: () -> boolean, target: (() -> Vector3?)?, timeout: number?)
+		local started = os.clock()
+		while not finished do
+			if done() or (timeout and os.clock() - started >= timeout) then
+				return
+			end
+			card.Visible = Util.str(player, "Carrying") == ""
+			pointBeam(if target then target() else nil)
+			task.wait(POLL)
+		end
+	end
+
+	-- Ковёр ищем в фоне (при StreamingEnabled может подгрузиться позже)
+	local carpet: BasePart? = nil
+	task.spawn(function()
+		local map = workspace:WaitForChild("Map", 60)
+		local found = map and map:WaitForChild("Carpet", 60)
+		if found and found:IsA("BasePart") then
+			carpet = found
+		end
+	end)
+
+	-- Шаг 1: купить мема на дорожке
+	setStep(1, "TutorialBuy")
+	local slots = Util.num(player, "SlotsUsed")
+	waitStep(function()
+		local now = Util.num(player, "SlotsUsed")
+		if now < slots then
+			slots = now -- продал мема — считаем от нового значения
+		end
+		return now > slots
+	end, function()
+		return if carpet then carpet.Position + Vector3.new(0, carpet.Size.Y / 2 + 2, 0) else nil
+	end)
+
+	-- Шаг 2: доход
+	if not finished then
+		setStep(2, "TutorialIncome")
+		waitStep(function()
+			return false
+		end, nil, INCOME_STEP_TIME)
+	end
+
+	-- Шаг 3: украсть и донести домой
+	if not finished then
+		setStep(3, "TutorialSteal")
+		local stolen = Util.num(player, "Stolen")
+		local started = os.clock()
+		waitStep(function()
+			return Util.num(player, "Stolen") > stolen
+		end, function()
+			local _, root = Util.character()
+			local floor = if root then nearestOtherFloor(root.Position) else nil
+			emphasizeSkip(floor == nil or os.clock() - started >= STEAL_SKIP_HINT)
+			return if floor then floor.Position + Vector3.new(0, floor.Size.Y / 2 + 3, 0) else nil
+		end)
+	end
+
+	-- Шаг 4: защита базы
+	if not finished then
+		setStep(4, "TutorialProtect")
+		waitStep(function()
+			return Util.num(Util.myPlot(), "LockedUntil") > Util.now()
+		end, nil, PROTECT_STEP_TIME)
+	end
+
+	finish(true)
+end
+
+function Tutorial.Start(ctx)
+	task.spawn(run, ctx)
+end
+
+return Tutorial
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="38">
           <Properties>
             <string name="Name">UiKit</string>
             <string name="Source"><![CDATA[-- Небольшой набор для построения UI кодом (Studio под рукой нет, поэтому весь интерфейс — в скриптах).
@@ -6280,7 +7802,7 @@ return UiKit
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="35">
+        <Item class="ModuleScript" referent="39">
           <Properties>
             <string name="Name">Util</string>
             <string name="Source"><![CDATA[--!strict
