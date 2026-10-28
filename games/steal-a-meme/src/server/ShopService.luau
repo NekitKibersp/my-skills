@@ -13,7 +13,10 @@ local ShopService = {}
 
 -- Колбэки из init.server
 ShopService.OnSummonGod = nil :: (() -> ())?
-ShopService.OnSlipperChanged = nil :: ((player: Player) -> ())?
+-- Изменились геймпассы, от которых зависят предметы (золотой тапок, конфетти-пушка)
+ShopService.OnToolsChanged = nil :: ((player: Player) -> ())?
+-- Запустить Мем-дождь на сервере (продукт MemeRain): (player) -> boolean
+ShopService.OnMemeRain = nil :: ((player: Player) -> boolean)?
 
 local function passKeyById(id: number): string?
 	for key, pass in Config.GamePasses do
@@ -33,8 +36,8 @@ local function applyPass(player: Player, key: string)
 		PlotService.UpdateSlotsInfo(player)
 	elseif key == "VIP" then
 		PlotService.RefreshIncome(player)
-	elseif key == "GoldSlipper" and ShopService.OnSlipperChanged then
-		ShopService.OnSlipperChanged(player)
+	elseif (key == "GoldSlipper" or key == "ConfettiCannon") and ShopService.OnToolsChanged then
+		ShopService.OnToolsChanged(player)
 	end
 end
 
@@ -55,6 +58,41 @@ end
 
 local function incomeCoins(player: Player, product: any): number
 	return math.max(product.MinCoins or 0, math.floor(PlotService.IncomeOf(player) * (product.IncomeSeconds or 0)))
+end
+
+-- Мистери-бокс: случайный мем редкости из Config.MysteryBox. Нет места — монеты за полцены мема.
+local function openMysteryBox(player: Player): boolean
+	local box = Config.MysteryBox
+	local total = 0
+	for _, weight in box.Weights do
+		total += weight
+	end
+	local roll = math.random() * total
+	local rarity = box.Rarities[#box.Rarities]
+	for i, weight in box.Weights do
+		roll -= weight
+		if roll <= 0 then
+			rarity = box.Rarities[i]
+			break
+		end
+	end
+	local pool = {}
+	for _, creature in Config.Creatures do
+		if creature.Rarity == rarity and not creature.Event then
+			table.insert(pool, creature.Id)
+		end
+	end
+	if #pool == 0 then
+		return false
+	end
+	local id = pool[math.random(1, #pool)]
+	if not PlotService.AddMeme(player, id, "None", false) then
+		local coins = math.floor(Config.PriceOf(id, "None") * 0.5)
+		PlotService.AddCoins(player, coins)
+		Remotes.Notify:FireClient(player, "CashBought", { Coins = coins }, "success")
+	end
+	Remotes.Fx:FireAllClients("MysteryBox", { UserId = player.UserId, Meme = id })
+	return true
 end
 
 -- Выдача продукта. Возвращает true, если выдано.
@@ -83,6 +121,10 @@ local function grantProduct(player: Player, key: string): boolean
 			return true
 		end
 		return false
+	elseif key == "MysteryBox" then
+		return openMysteryBox(player)
+	elseif key == "MemeRain" then
+		return ShopService.OnMemeRain ~= nil and ShopService.OnMemeRain(player)
 	end
 	return false
 end

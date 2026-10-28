@@ -9,6 +9,7 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local DataService = require(script.Parent.DataService)
 local MemeFactory = require(script.Parent.MemeFactory)
 local Remotes = require(script.Parent.Remotes)
+local Hooks = require(script.Parent.Hooks)
 
 local PlotService = {}
 
@@ -168,6 +169,7 @@ function PlotService.IncomeOf(player: Player): number
 		total *= Config.VipIncomeMult
 	end
 	total *= 1 + (player:GetAttribute("IndexCount") or 0) * Config.IndexBonusPerEntry
+	total *= ReplicatedStorage:GetAttribute("EventIncomeMult") or 1 -- «Двойные деньги» админ-ивента
 	return total
 end
 
@@ -407,6 +409,7 @@ function PlotService.Merge(player: Player, slot: number)
 	PlotService.RefreshIncome(player)
 	Remotes.Fx:FireAllClients("Merged", { Position = position })
 	Remotes.Notify:FireClient(player, "Merged", { Meme = entry.Id, Mult = Config.Viral.Mult }, "success")
+	Hooks.Fire(player, "Merge", 1)
 end
 
 -- ===== Замок =====
@@ -434,6 +437,7 @@ function PlotService.Lock(player: Player, duration: number?, ignoreCooldown: boo
 	plot:SetAttribute("LockedUntil", lockedUntil)
 	plot:SetAttribute("LockCooldownUntil", lockedUntil + Config.Plot.LockCooldown)
 	Remotes.Notify:FireClient(player, "Locked", { Seconds = math.floor(lockedUntil - t) }, "success")
+	Hooks.Fire(player, "Lock", 1)
 	return true
 end
 
@@ -628,6 +632,7 @@ function PlotService.Start(builtPlots: { Model })
 					player:SetAttribute("Income", income)
 					if income > 0 then
 						PlotService.AddCoins(player, income)
+						Hooks.Fire(player, "Earn", income)
 					end
 				end
 			end

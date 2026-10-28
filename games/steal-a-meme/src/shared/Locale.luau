@@ -60,6 +60,7 @@ local STRINGS: { [string]: { string } } = {
 	NotConfigured = { "This item is not set up yet", "Этот товар ещё не настроен" },
 	ItemBought = { "Bought! Check your hotbar", "Куплено! Смотри в панели предметов" },
 	ItemOwned = { "You already own this", "Уже куплено" },
+	PassOnly = { "This item is sold for Robux only", "Этот предмет продаётся только за Robux" },
 	NewIndex = { "New in Index: {Meme}! +1% income", "Новое в Индексе: {Meme}! +1% дохода" },
 }
 

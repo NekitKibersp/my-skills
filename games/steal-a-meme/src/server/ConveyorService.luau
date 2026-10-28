@@ -8,6 +8,7 @@ local DataService = require(script.Parent.DataService)
 local MemeFactory = require(script.Parent.MemeFactory)
 local PlotService = require(script.Parent.PlotService)
 local Remotes = require(script.Parent.Remotes)
+local Hooks = require(script.Parent.Hooks)
 
 local ConveyorService = {}
 
@@ -53,9 +54,10 @@ local function rollCreature(): string
 		end).Id
 	end
 
-	local lucky = isLucky()
+	-- Удача: покупка «Удача сервера» и множитель админ-ивента складываются
+	local luck = (if isLucky() then Config.Conveyor.LuckMult else 1) * (ReplicatedStorage:GetAttribute("EventLuckMult") or 1)
 	local rarity = weightedPick(Config.Rarities, function(r)
-		return r.Weight * (if lucky and LUCKY_RARITIES[r.Id] then Config.Conveyor.LuckMult else 1)
+		return r.Weight * (if LUCKY_RARITIES[r.Id] then luck else 1)
 	end)
 	local pool = {}
 	for _, creature in Config.Creatures do
@@ -78,7 +80,12 @@ local function rollMutation(): string
 			table.insert(pool, mutation)
 		end
 	end
+	-- Шторм мутаций (админ-ивент): с этим шансом мутация гарантирована
+	local forceMutation = random:NextNumber() < (ReplicatedStorage:GetAttribute("EventMutationChance") or 0)
 	return weightedPick(pool, function(m)
+		if forceMutation and m.Id == "None" then
+			return 0
+		end
 		return m.Weight
 	end).Id
 end
@@ -123,6 +130,7 @@ local function tryBuy(player: Player, model: Model)
 	PlotService.AddMeme(player, id, mutationId, false, from)
 	Remotes.Fx:FireAllClients("Bought", { Position = from.Position, Rarity = Config.GetCreature(id).Rarity })
 	Remotes.Notify:FireClient(player, "Bought", { Meme = id }, "success")
+	Hooks.Fire(player, "Buy", 1)
 end
 
 function ConveyorService.Spawn(forcedId: string?, forcedMutation: string?): Model?
@@ -130,7 +138,8 @@ function ConveyorService.Spawn(forcedId: string?, forcedMutation: string?): Mode
 	for _ in walking do
 		count += 1
 	end
-	if count >= Config.Conveyor.MaxOnCarpet and not forcedId then
+	local cap = Config.Conveyor.MaxOnCarpet * math.min(ReplicatedStorage:GetAttribute("EventSpawnMult") or 1, 2)
+	if count >= cap and not forcedId then
 		return nil
 	end
 
@@ -153,6 +162,19 @@ function ConveyorService.Spawn(forcedId: string?, forcedMutation: string?): Mode
 end
 
 -- Призыв Мем-Бога (покупка за Robux): случайный мем редкости God на дорожке
+-- Случайный мем нужной редкости на дорожку (Секретный дроп админ-ивента и т.п.)
+function ConveyorService.SpawnRarity(rarityId: string)
+	local pool = {}
+	for _, creature in Config.Creatures do
+		if creature.Rarity == rarityId and not creature.Event then
+			table.insert(pool, creature.Id)
+		end
+	end
+	if #pool > 0 then
+		ConveyorService.Spawn(pool[random:NextInteger(1, #pool)])
+	end
+end
+
 function ConveyorService.SummonGod()
 	local gods = {}
 	for _, creature in Config.Creatures do
@@ -194,7 +216,8 @@ function ConveyorService.Start(startPosition: Vector3, endPosition: Vector3)
 	task.spawn(function()
 		while true do
 			ConveyorService.Spawn()
-			task.wait(Config.Conveyor.SpawnInterval)
+			-- Мем-дождь (админ-ивент) ускоряет появление
+			task.wait(Config.Conveyor.SpawnInterval / math.max(ReplicatedStorage:GetAttribute("EventSpawnMult") or 1, 0.1))
 		end
 	end)
 end

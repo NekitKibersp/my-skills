@@ -8,6 +8,7 @@ local DataService = require(script.Parent.DataService)
 local MemeFactory = require(script.Parent.MemeFactory)
 local PlotService = require(script.Parent.PlotService)
 local Remotes = require(script.Parent.Remotes)
+local Hooks = require(script.Parent.Hooks)
 
 local StealService = {}
 
@@ -112,6 +113,7 @@ local function deliver(thief: Player)
 	PlotService.RemoveEntry(owner, carry.Slot)
 	PlotService.AddMeme(thief, entry.Id, entry.Mut, entry.Viral)
 	DataService.Increment(thief, "Stolen", 1)
+	Hooks.Fire(thief, "Steal", 1)
 	-- Дублей не бывает: при выходе хозяина все кражи его мемов отменяются до сохранения.
 	Remotes.Fx:FireAllClients("Delivered", { Position = position, UserId = thief.UserId })
 	Remotes.Notify:FireClient(thief, "Delivered", { Meme = entry.Id }, "success")
@@ -209,8 +211,13 @@ function StealService.Knock(target: Player, from: Vector3, power: number, stun: 
 	direction = Vector3.new(direction.X, 0, direction.Z)
 	direction = if direction.Magnitude > 0.01 then direction.Unit else Vector3.new(1, 0, 0)
 	Remotes.Knockback:FireClient(target, direction * power + Vector3.new(0, power * 0.45, 0), stun or 0.6)
-	if carries[target] then
+	local carry = carries[target]
+	if carry then
 		StealService.Fail(target)
+		-- Хозяин отбил своего мема (сам, стражем, турелью или ловушкой) — засчитываем защиту
+		if carry.Owner.Parent then
+			Hooks.Fire(carry.Owner, "Defend", 1)
+		end
 	end
 end
 

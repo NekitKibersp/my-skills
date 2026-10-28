@@ -10,6 +10,7 @@ local DataService = require(script.Parent.DataService)
 local MemeFactory = require(script.Parent.MemeFactory)
 local PlotService = require(script.Parent.PlotService)
 local Remotes = require(script.Parent.Remotes)
+local Hooks = require(script.Parent.Hooks)
 
 local EventService = {}
 
@@ -217,6 +218,7 @@ function EventService.HitMonster(player: Player, origin: Vector3, range: number)
 	end
 	state.Hp -= 1
 	state.Damage[player] = (state.Damage[player] or 0) + 1
+	Hooks.Fire(player, "MonsterHit", 1)
 	state.Model:SetAttribute("Hp", state.Hp)
 	Remotes.Fx:FireAllClients("MonsterHit", { Position = position })
 	if state.Hp <= 0 then

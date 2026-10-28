@@ -10,6 +10,7 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local DataService = require(script.Parent.DataService)
 local Remotes = require(script.Parent.Remotes)
 local StealService = require(script.Parent.StealService)
+local Hooks = require(script.Parent.Hooks)
 
 local ItemService = {}
 
@@ -45,15 +46,29 @@ function ItemService.Owns(player: Player, id: string): boolean
 	if id == "Slipper" then
 		return true
 	end
+	local item = Config.GetItem(id)
+	if item and item.Pass then
+		return player:GetAttribute("Pass_" .. item.Pass) == true
+	end
 	return DataService.IsLoaded(player) and DataService.GetTable(player, "Items")[id] == true
 end
 
 local function syncItems(player: Player)
-	local owned = { "Slipper" }
-	for id in DataService.GetTable(player, "Items") do
-		table.insert(owned, id)
+	local owned = {}
+	for _, item in Config.Items do
+		if ItemService.Owns(player, item.Id) then
+			table.insert(owned, item.Id)
+		end
 	end
 	player:SetAttribute("ItemsJson", HttpService:JSONEncode(owned))
+end
+
+-- Изменились геймпассы (куплен предмет за Robux, золотой тапок) — обновить список и рюкзак
+function ItemService.RefreshPasses(player: Player)
+	if DataService.IsLoaded(player) then
+		syncItems(player)
+		ItemService.GiveTools(player)
+	end
 end
 
 -- ===== Внешний вид (детали из примитивов) =====
@@ -130,6 +145,32 @@ local function buildTool(item: any, gold: boolean): Tool
 		handle.Size = Vector3.new(0.6, 1.8, 0.4)
 		handle.Color = Color3.fromRGB(255, 225, 60)
 		tool.Grip = CFrame.new(0, -0.4, 0)
+	elseif id == "RubberChicken" then
+		handle.Size = Vector3.new(0.6, 2.8, 0.6)
+		handle.Color = Color3.fromRGB(255, 230, 90)
+		tool.Grip = CFrame.new(0, -1, 0)
+		addPart(tool, handle, { Size = Vector3.new(0.5, 0.4, 0.7), Color = Color3.fromRGB(255, 140, 40) }, CFrame.new(0, 1.5, -0.4))
+		addPart(tool, handle, { Size = Vector3.new(0.4, 0.5, 0.2), Color = Color3.fromRGB(230, 40, 40) }, CFrame.new(0, 1.7, 0))
+	elseif id == "Snowball" or id == "ConfettiCannon" then
+		local confetti = id == "ConfettiCannon"
+		handle.Size = Vector3.new(0.8, 1.2, 0.8)
+		handle.Color = if confetti then Color3.fromRGB(255, 90, 200) else Color3.fromRGB(120, 180, 230)
+		tool.Grip = CFrame.new(0, -0.3, 0.6)
+		addPart(tool, handle, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(3, 1, 1),
+			Color = if confetti then Color3.fromRGB(255, 220, 60) else Color3.fromRGB(230, 245, 255),
+			Material = if confetti then Enum.Material.Neon else Enum.Material.SmoothPlastic,
+		}, CFrame.new(0, 0.5, -1.4) * CFrame.Angles(0, math.rad(90), 0))
+	elseif id == "RocketBoots" then
+		handle.Size = Vector3.new(1, 1, 1.6)
+		handle.Color = Color3.fromRGB(200, 40, 40)
+		addPart(tool, handle, { Size = Vector3.new(0.6, 0.6, 0.4), Color = Color3.fromRGB(255, 170, 40), Material = Enum.Material.Neon }, CFrame.new(0, 0, 0.9))
+	elseif id == "FreezeBomb" then
+		handle.Shape = Enum.PartType.Ball
+		handle.Size = Vector3.one * 1.3
+		handle.Color = Color3.fromRGB(140, 220, 255)
+		handle.Material = Enum.Material.Ice
 	elseif id == "InvisHat" then
 		handle.Shape = Enum.PartType.Cylinder
 		handle.Size = Vector3.new(1.4, 1.3, 1.3)
@@ -279,6 +320,9 @@ local function attack(player: Player, item: any, tool: Tool)
 		StealService.Knock(target, root.Position, power, item.Stun)
 		Remotes.Fx:FireAllClients("Slap", { Position = targetRoot.Position })
 	end
+	if #targets > 0 then
+		Hooks.Fire(player, "Slap", #targets)
+	end
 	if (#targets == 0 or item.Area) and ItemService.OnMonsterHit then
 		ItemService.OnMonsterHit(player, root.Position, range + 4)
 	end
@@ -388,10 +432,97 @@ local function useInvisHat(player: Player, item: any, tool: Tool)
 	end)
 end
 
+-- Дальний бой: первый враг в узком конусе перед персонажем, если его не закрывает стена
+local function shoot(player: Player, item: any, tool: Tool)
+	local root = rootOf(player)
+	if not root or not aliveHumanoid(player) or not ready(player, item, tool) then
+		return
+	end
+	ItemService.BreakInvisibility(player)
+	local look = root.CFrame.LookVector
+	local origin = root.Position + Vector3.new(0, 1.5, 0)
+
+	local best: Player? = nil
+	local bestDistance = item.Range
+	for _, other in Players:GetPlayers() do
+		if other == player or not aliveHumanoid(other) then
+			continue
+		end
+		local otherRoot = rootOf(other)
+		if not otherRoot then
+			continue
+		end
+		local offset = otherRoot.Position - root.Position
+		local distance = offset.Magnitude
+		if distance <= bestDistance and distance > 0.1 and offset.Unit:Dot(look) > 0.93 then
+			best, bestDistance = other, distance
+		end
+	end
+
+	local hitPosition = origin + look * item.Range
+	if best then
+		local targetRoot = rootOf(best) :: BasePart
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		local ignore: { Instance } = { player.Character :: Model, best.Character :: Model, bananaFolder }
+		local carpet = workspace:FindFirstChild("CarpetMemes")
+		if carpet then
+			table.insert(ignore, carpet)
+		end
+		params.FilterDescendantsInstances = ignore
+		local blocked = workspace:Raycast(origin, targetRoot.Position - origin, params)
+		if blocked and blocked.Instance.CanCollide then
+			hitPosition = blocked.Position
+		else
+			hitPosition = targetRoot.Position
+			StealService.Knock(best, root.Position, item.Knockback, item.Stun)
+			Hooks.Fire(player, "Slap", 1)
+		end
+	end
+	Remotes.Fx:FireAllClients("Shot", { From = origin, To = hitPosition, Item = item.Id })
+	if not best and ItemService.OnMonsterHit then
+		-- По монстру дальнобой бьёт, если тот стоит в пределах дальности перед игроком
+		ItemService.OnMonsterHit(player, root.Position + look * math.min(item.Range, 30), 18)
+	end
+end
+
+local function useRocket(player: Player, item: any, tool: Tool)
+	local root = rootOf(player)
+	if not root or not aliveHumanoid(player) or not ready(player, item, tool) then
+		return
+	end
+	local look = root.CFrame.LookVector
+	-- Толчок делает клиент владельца (персонажем управляет он), stun = 0 — без падения
+	Remotes.Knockback:FireClient(player, Vector3.new(look.X, 0, look.Z) * item.Forward + Vector3.new(0, item.Jump, 0), 0)
+	Remotes.Fx:FireAllClients("Rocket", { Position = root.Position })
+end
+
+local function useFreeze(player: Player, item: any, tool: Tool)
+	local root = rootOf(player)
+	if not root or not aliveHumanoid(player) or not ready(player, item, tool) then
+		return
+	end
+	ItemService.BreakInvisibility(player)
+	local hits = 0
+	for _, other in Players:GetPlayers() do
+		local otherRoot = rootOf(other)
+		if other ~= player and otherRoot and aliveHumanoid(other) and (otherRoot.Position - root.Position).Magnitude <= item.Range then
+			StealService.Knock(other, root.Position, 8, item.Stun)
+			hits += 1
+		end
+	end
+	if hits > 0 then
+		Hooks.Fire(player, "Slap", hits)
+	end
+	Remotes.Fx:FireAllClients("Freeze", { Position = root.Position, Radius = item.Range })
+end
+
 local USE = {
 	Energy = useEnergy,
 	Banana = placeBanana,
 	InvisHat = useInvisHat,
+	RocketBoots = useRocket,
+	FreezeBomb = useFreeze,
 }
 
 -- ===== Выдача =====
@@ -422,7 +553,9 @@ function ItemService.GiveTools(player: Player)
 			tool:SetAttribute("CooldownEndsAt", now() + (endsAt - os.clock()))
 		end
 		tool.Activated:Connect(function()
-			if item.Kind == "Weapon" then
+			if item.Kind == "Weapon" and item.Ranged then
+				shoot(player, item, tool)
+			elseif item.Kind == "Weapon" then
 				attack(player, item, tool)
 			else
 				local use = USE[item.Id]
@@ -445,6 +578,9 @@ function ItemService.Buy(player: Player, id: unknown): (boolean, string)
 	end
 	if ItemService.Owns(player, id) then
 		return false, "ItemOwned"
+	end
+	if item.Pass then
+		return false, "PassOnly" -- такие предметы продаются только за Robux (геймпасс)
 	end
 	if DataService.Get(player, "Coins") < item.Price then
 		Remotes.Notify:FireClient(player, "NotEnoughCash", { Price = item.Price }, "error")
