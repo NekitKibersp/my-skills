@@ -41,9 +41,10 @@ local DEFAULT_NUMBERS: { [string]: number } = {
 --   BattlePass — { Season, Xp, Free = { [level] = true }, Premium = { [level] = true } } (BattlePassService)
 --   Skins    — { Owned = { [skinId] = true }, Base = id, Slipper = id } (SkinService)
 --   Codes    — { [CODE] = true } введённые коды (SocialService)
-local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items", "Quests", "BattlePass", "Skins", "Codes" }
+--   Zones    — { Tower1 = day, Tower2 = day, Tower3 = day, Cave = day } UTC-дни забранных призов зон (ZoneService)
+local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items", "Quests", "BattlePass", "Skins", "Codes", "Zones" }
 -- Таблицы, которые хранятся как есть (проверяют их сами сервисы)
-local FREEFORM_TABLES = { "Quests", "BattlePass", "Skins", "Codes" }
+local FREEFORM_TABLES = { "Quests", "BattlePass", "Skins", "Codes", "Zones" }
 
 -- Блокировка сессии: пока игрок на одном сервере, другой сервер не загрузит его данные
 -- (иначе при быстром переходе между серверами можно задублировать мемов).

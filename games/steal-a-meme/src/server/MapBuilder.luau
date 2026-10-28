@@ -1,9 +1,11 @@
 -- Строит карту кодом: земля, «красная дорожка» мемов, 8 баз игроков, сезонный декор,
--- точка появления и стены-границы. В режиме редактирования Studio мир пустой — он появляется по Play.
+-- точка появления и стены-границы. Зоны (башня, площадь, парк, пещера, хаб телепортов) строит ZoneBuilder.
+-- В режиме редактирования Studio мир пустой — он появляется по Play.
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Config = require(ReplicatedStorage.Shared.Config)
+local ZoneBuilder = require(script.Parent.ZoneBuilder)
 
 local MapBuilder = {}
 
@@ -12,8 +14,8 @@ MapBuilder.CARPET_WIDTH = 16
 MapBuilder.CarpetStart = Vector3.new(-MapBuilder.CARPET_LENGTH / 2, 1, 0)
 MapBuilder.CarpetEnd = Vector3.new(MapBuilder.CARPET_LENGTH / 2, 1, 0)
 MapBuilder.PLOT_SIZE = Vector3.new(80, 1, 72)
-MapBuilder.HALF_X = 230 -- граница карты по X
-MapBuilder.HALF_Z = 130
+MapBuilder.HALF_X = 420 -- граница карты по X (дорожка и базы — в центре, зоны — по краям)
+MapBuilder.HALF_Z = 160
 
 local PLOT_X = { -135, -45, 45, 135 }
 local PLOT_Z = 64
@@ -169,7 +171,7 @@ local function buildSnowfall(parent: Instance)
 	snow.Color = ColorSequence.new(Color3.new(1, 1, 1))
 	snow.LightEmission = 0.3
 	snow.Size = NumberSequence.new(0.35)
-	snow.Rate = 90 -- частиц на всю карту; больше — тяжело для телефонов
+	snow.Rate = 150 -- частиц на всю (большую) карту; больше — тяжело для телефонов
 	snow.Lifetime = NumberRange.new(9, 12)
 	snow.Speed = NumberRange.new(6, 9)
 	snow.SpreadAngle = Vector2.new(15, 15)
@@ -449,7 +451,7 @@ local function buildLeaderboard(name: string, title: string, cframe: CFrame, par
 	return board
 end
 
--- Строит мир. Возвращает { Plots = { Model }, Leaderboards = { Earned = Part, Stolen = Part } }.
+-- Строит мир. Возвращает { Plots = { Model }, Leaderboards = { Earned = Part, Stolen = Part }, Zones = (см. ZoneBuilder.Build) }.
 -- season: "Halloween" | "Winter" | "None" — от него зависит декор и освещение
 function MapBuilder.Build(season: string)
 	local winter = season == "Winter"
@@ -514,10 +516,13 @@ function MapBuilder.Build(season: string)
 			seasonal(Vector3.new(x + random:NextNumber(6, 14), 0.5, side * random:NextNumber(12, 18)), random:NextNumber(1.6, 3))
 		end
 	end
-	for _ = 1, 30 do
+	for _ = 1, 40 do
 		local x = random:NextNumber(-halfX, halfX)
 		local z = random:NextNumber(halfZ - 25, halfZ) * (if random:NextNumber() < 0.5 then -1 else 1)
-		seasonal(Vector3.new(x, 0.5, z), random:NextNumber(2, 5))
+		local position = Vector3.new(x, 0.5, z)
+		if ZoneBuilder.IsFree(position) then
+			seasonal(position, random:NextNumber(2, 5))
+		end
 	end
 	if winter then
 		buildSnowfall(decor)
@@ -529,6 +534,8 @@ function MapBuilder.Build(season: string)
 	local boardX = MapBuilder.CarpetEnd.X + 50
 	local earned = buildLeaderboard("TopEarned", "💰 Richest / Богачи", CFrame.lookAt(Vector3.new(boardX, 15, -22), Vector3.new(0, 15, -22)), leaderboards)
 	local stolen = buildLeaderboard("TopStolen", "🦹 Top Thieves / Воры", CFrame.lookAt(Vector3.new(boardX, 15, 22), Vector3.new(0, 15, 22)), leaderboards)
+
+	local zones = ZoneBuilder.Build(map, season, spawnLocation.Position)
 
 	map.Parent = workspace
 
@@ -546,7 +553,7 @@ function MapBuilder.Build(season: string)
 	end
 	plotsFolder.Parent = workspace
 
-	return { Plots = plots, Leaderboards = { Earned = earned, Stolen = stolen } }
+	return { Plots = plots, Leaderboards = { Earned = earned, Stolen = stolen }, Zones = zones }
 end
 
 return MapBuilder

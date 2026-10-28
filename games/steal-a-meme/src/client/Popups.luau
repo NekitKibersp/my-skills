@@ -142,6 +142,11 @@ function Popups.Start(ctx)
 			local level = if type(data.Level) == "number" then data.Level else 0
 			local header = if data.Track == "Premium" then Locale.T("PopupPassPremium") else nil
 			table.insert(queue, { Title = Locale.T("PopupPassTitle", { Level = level }), Text = rewardText(data, header) })
+		elseif kind == "Zone" then
+			-- Приз Башни мемов (Tier) или секретной пещеры
+			local tier = if type(data.Tier) == "number" then data.Tier else 0
+			local titleText = if data.Zone == "Cave" then Locale.T("PopupCaveTitle") else Locale.T("PopupTowerTitle", { Tier = tier })
+			table.insert(queue, { Title = titleText, Text = rewardText(data) })
 		elseif kind == "Offline" then
 			local seconds = if type(data.Seconds) == "number" then data.Seconds else 0
 			table.insert(queue, {

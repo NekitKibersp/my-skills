@@ -21,6 +21,7 @@ ItemService.OnMonsterHit = nil :: ((player: Player, origin: Vector3, range: numb
 local cooldowns: { [Player]: { [string]: number } } = {} -- игрок -> предмет -> os.clock() конца перезарядки
 local bananas: { [Player]: { BasePart } } = {}
 local invisibleToken: { [Player]: number } = {}
+local safeNotified: { [Player]: number } = {} -- когда последний раз сказали «здесь не дерутся»
 local bananaFolder: Folder
 
 local function now(): number
@@ -39,6 +40,26 @@ local function aliveHumanoid(player: Player): Humanoid?
 		return humanoid
 	end
 	return nil
+end
+
+-- Безопасная зона (Торговая площадь): атрибут персонажа ставит ZoneService.
+-- Игроков в ней нельзя бить, и сами они не бьют.
+local function inSafeZone(player: Player): boolean
+	local character = player.Character
+	return character ~= nil and character:GetAttribute("InSafeZone") == true
+end
+
+-- true, если игрок в безопасной зоне (и ему сказано, что драться тут нельзя)
+local function blockedBySafeZone(player: Player): boolean
+	if not inSafeZone(player) then
+		return false
+	end
+	local t = os.clock()
+	if t - (safeNotified[player] or -math.huge) > 2 then
+		safeNotified[player] = t
+		Remotes.Notify:FireClient(player, "SafeZoneNoAttack", nil, "error")
+	end
+	return true
 end
 
 -- ===== Владение =====
@@ -299,7 +320,7 @@ end
 
 local function attack(player: Player, item: any, tool: Tool)
 	local root = rootOf(player)
-	if not root or not aliveHumanoid(player) or not ready(player, item, tool) then
+	if not root or not aliveHumanoid(player) or blockedBySafeZone(player) or not ready(player, item, tool) then
 		return
 	end
 	ItemService.BreakInvisibility(player)
@@ -314,7 +335,7 @@ local function attack(player: Player, item: any, tool: Tool)
 	local best: Player? = nil
 	local bestDistance = range
 	for _, other in Players:GetPlayers() do
-		if other == player or not aliveHumanoid(other) then
+		if other == player or not aliveHumanoid(other) or inSafeZone(other) then
 			continue
 		end
 		local otherRoot = rootOf(other)
@@ -369,7 +390,7 @@ end
 
 local function placeBanana(player: Player, item: any, tool: Tool)
 	local root = rootOf(player)
-	if not root or not aliveHumanoid(player) or not ready(player, item, tool) then
+	if not root or not aliveHumanoid(player) or blockedBySafeZone(player) or not ready(player, item, tool) then
 		return
 	end
 	-- Кладём под ноги чуть позади: ловушка для того, кто бежит следом
@@ -407,7 +428,7 @@ local function placeBanana(player: Player, item: any, tool: Tool)
 			return
 		end
 		local victim = Players:GetPlayerFromCharacter(other.Parent)
-		if not victim or victim == player or not aliveHumanoid(victim) then
+		if not victim or victim == player or not aliveHumanoid(victim) or inSafeZone(victim) then
 			return
 		end
 		used = true
@@ -455,7 +476,7 @@ end
 -- Дальний бой: первый враг в узком конусе перед персонажем, если его не закрывает стена
 local function shoot(player: Player, item: any, tool: Tool)
 	local root = rootOf(player)
-	if not root or not aliveHumanoid(player) or not ready(player, item, tool) then
+	if not root or not aliveHumanoid(player) or blockedBySafeZone(player) or not ready(player, item, tool) then
 		return
 	end
 	ItemService.BreakInvisibility(player)
@@ -465,7 +486,7 @@ local function shoot(player: Player, item: any, tool: Tool)
 	local best: Player? = nil
 	local bestDistance = item.Range
 	for _, other in Players:GetPlayers() do
-		if other == player or not aliveHumanoid(other) then
+		if other == player or not aliveHumanoid(other) or inSafeZone(other) then
 			continue
 		end
 		local otherRoot = rootOf(other)
@@ -523,14 +544,14 @@ end
 
 local function useFreeze(player: Player, item: any, tool: Tool)
 	local root = rootOf(player)
-	if not root or not aliveHumanoid(player) or not ready(player, item, tool) then
+	if not root or not aliveHumanoid(player) or blockedBySafeZone(player) or not ready(player, item, tool) then
 		return
 	end
 	ItemService.BreakInvisibility(player)
 	local hits = 0
 	for _, other in Players:GetPlayers() do
 		local otherRoot = rootOf(other)
-		if other ~= player and otherRoot and aliveHumanoid(other) and (otherRoot.Position - root.Position).Magnitude <= item.Range then
+		if other ~= player and otherRoot and aliveHumanoid(other) and not inSafeZone(other) and (otherRoot.Position - root.Position).Magnitude <= item.Range then
 			StealService.Knock(other, root.Position, 8, item.Stun)
 			hits += 1
 		end
@@ -637,6 +658,7 @@ function ItemService.OnPlayerRemoving(player: Player)
 	bananas[player] = nil
 	cooldowns[player] = nil
 	invisibleToken[player] = nil
+	safeNotified[player] = nil
 end
 
 function ItemService.Start()

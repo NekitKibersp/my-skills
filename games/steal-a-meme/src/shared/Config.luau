@@ -505,6 +505,53 @@ Config.Skins = {
 	{ Id = "SlipperRainbow", Kind = "Slipper", Name = "Rainbow", NameRu = "Радужный", Price = 0, Source = "Pass", Color = Color3.fromRGB(255, 80, 200), Material = "Neon", Rainbow = true },
 }
 
+-- ===== Зоны большой карты (ZoneBuilder строит, ZoneService ведёт логику) =====
+-- Координаты зон — в ZoneBuilder.luau; здесь только баланс и тайминги.
+-- Награды (Rewards) — в формате Grant.Give (как у кодов). Призы — раз в UTC-день на игрока.
+Config.Zones = {
+	-- Телепорт-площадки (хаб у спавна и возвраты в зонах)
+	Teleport = {
+		Cooldown = 3, -- сек между телепортами одного игрока
+		PadRange = 12, -- studs: игрок должен стоять рядом с площадкой
+	},
+	-- Башня мемов (обби): 3 яруса по 10 прыжков
+	Tower = {
+		MinTierSeconds = 8, -- быстрее ярус честно не пройти: защита от телепорта к призу
+		VanishShown = 2.6, -- сек: исчезающая платформа видна
+		VanishHidden = 1.4, -- сек: исчезающей платформы нет
+		SpinSpeed = 1.7, -- рад/сек: вращающиеся лава-перекладины
+		Prizes = {
+			-- [ярус] = варианты { Weight, Rewards = { награды Grant.Give } }
+			{ { Weight = 1, Rewards = { { Kind = "Coins", IncomeSeconds = 300, MinCoins = 1500 } } } },
+			{ { Weight = 1, Rewards = { { Kind = "Coins", IncomeSeconds = 900, MinCoins = 6000 }, { Kind = "Spins", Amount = 1 } } } },
+			{
+				{ Weight = 45, Rewards = { { Kind = "Meme", Rarity = "Epic" } } },
+				{ Weight = 20, Rewards = { { Kind = "Meme", Rarity = "Legendary" } } },
+				{ Weight = 35, Rewards = { { Kind = "Spins", Amount = 2 }, { Kind = "Coins", IncomeSeconds = 1800, MinCoins = 15000 } } },
+			},
+		},
+	},
+	-- Конфетный парк: сезонные пикапы и батуты
+	Park = {
+		MaxPickups = 25, -- одновременно на земле
+		SpawnEvery = 2, -- сек: новый пикап (если меньше MaxPickups)
+		PickupLifetime = 120, -- сек: несобранный пикап исчезает
+		IncomeSeconds = 5, -- монет за пикап = max(MinCoins, доход/сек × IncomeSeconds)
+		MinCoins = 25,
+		Xp = 2, -- XP Мем-пропуска за пикап
+		MinInterval = 0.3, -- сек между пикапами одного игрока
+		WindowSeconds = 600, -- окно лимита
+		WindowMax = 120, -- пикапов за окно (защита от фарма)
+		TrampolinePower = 115, -- вертикальная скорость прыжка с батута
+		TrampolineCooldown = 0.8,
+	},
+	-- Секретная пещера: сундук раз в день
+	Cave = {
+		Reward = { Kind = "Meme", Rarity = "Legendary" }, -- база полна — Grant.Give даст монеты
+		PromptDistance = 12,
+	},
+}
+
 -- ===== Функции-помощники (общие для сервера и клиента) =====
 
 local creatureById = {}

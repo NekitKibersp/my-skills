@@ -156,3 +156,35 @@ Remotes:
 
 Скины: база — сервер перекрашивает Floor/Wall своей базы; тапок — цвет/материал Handle (`ItemService`).
 Приглашение друзей и «Добавить в избранное» — только клиент (`SocialService:PromptGameInvite`, `AvatarEditorService:PromptSetFavorite`).
+
+## Дополнения v5 (большая карта и зоны)
+Карта выросла: `MapBuilder.HALF_X = 420`, `HALF_Z = 160` (дорожка и базы на прежних местах). Зоны строит
+`ZoneBuilder` (вызывается из `MapBuilder.Build`), логику ведёт `ZoneService`; баланс — `Config.Zones`.
+Новых RemoteEvent/RemoteFunction нет.
+
+| Где | Атрибут | Тип | Смысл |
+|---|---|---|---|
+| персонаж | `InSafeZone` | bool | корень персонажа на Торговой площади: его нельзя бить/стрелять/морозить/ронять бананом, и сам он не атакует; вор с мемом, вошедший на площадь, роняет мема (`StealService.Fail`) |
+| персонаж | `ServerMovedAt` | number | серверный перенос (телепорт-площадки, лава башни, выталкивание с закрытой базы) — анти-чит переноски сбрасывает опорную точку |
+| персонаж | `MoveGraceUntil` | number | теперь ставят и батуты парка (повышенный допуск скорости на 3 с) |
+
+Мир (`workspace.Map`, модели зон — `ModelStreamingMode = Atomic`, клиент их не ждёт):
+- `TeleportHub` у спавна и площадки в зонах: `TeleportPad` (Part), атрибут `Target` = `"Tower"` / `"Plaza"` / `"Park"` /
+  `"Base"` / `"Carpet"` / `"TowerDown"`. Касание → сервер проверяет дистанцию, кулдаун 3 с, что игрок не несёт мема, и переносит.
+- `MemeTower` (x≈320): `StartPad`, `Landing`, `Summit` с атрибутом `Checkpoint` (1..4); `PrizePad` / `SummitChest` с атрибутом
+  `PrizeTier` (1..3); детали `Lava` (касание → на последний чекпоинт, мем при этом возвращается хозяину);
+  `VanishPlatform` (сервер мигает CanCollide/Transparency); вращающиеся лава-перекладины.
+- `EastCliffs` + `Cave` — скалы по восточному краю и секретная пещера с `SecretChest` (`ProximityPrompt` `ChestPrompt`). В UI не отмечается.
+- `TradePlaza` (x≈-300, z≈-60) — столы `TradeTable` с `ProximityPrompt` `TradePrompt`: клиент по `PromptTriggered` открывает окно выбора игрока (`TradePick`).
+- `CandyPark` (x≈-300, z≈+75) — `Trampoline` (касание → `Knockback` вверх, stun 0); пикапы — `workspace.Map.Pickups`.
+- `ZoneSigns` (Persistent) — большие таблички с названиями зон.
+
+Промпты зон сервер создаёт с английским `ActionText`, клиент переводит при `PromptShown` (`ZoneTradePrompt`, `ZoneChestPrompt`).
+
+| Remote | Новое |
+|---|---|
+| `Fx` | `"Pickup"` {Position, Coins, UserId} — **только собравшему** (`FireClient`): всплывающее «+$X» |
+| `Popup` | `"Zone"` {Zone = "Tower" \| "Cave", Tier?, Coins?, Meme?, Spins?} — приз яруса башни / сундука пещеры |
+| `Notify` | ключи из `src/shared/Strings/Zones.luau`: ZoneTpCarrying, TowerLava, TowerCheckpoint {Tier}, TowerPrizeTaken, SafeZoneDrop {Meme}, SafeZoneNoAttack, ParkLimit, SecretFound {Meme}, SecretFoundCoins {Coins}, SecretEmpty |
+
+Данные: таблица `Zones` = `{ Tower1, Tower2, Tower3, Cave }` — UTC-день (`os.time() // 86400`) последнего забранного приза.

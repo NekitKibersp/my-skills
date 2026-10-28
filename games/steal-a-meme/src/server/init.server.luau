@@ -26,6 +26,7 @@ local BattlePassService = require(script.BattlePassService)
 local SpinService = require(script.SpinService)
 local SkinService = require(script.SkinService)
 local WeeklyService = require(script.WeeklyService)
+local ZoneService = require(script.ZoneService)
 local Remotes = require(script.Remotes)
 
 -- Сезон по дате (UTC): от него зависят ночные мемы, мутации, декор и цвет монстра
@@ -54,6 +55,7 @@ SpinService.Start()
 SkinService.Start()
 WeeklyService.Start()
 LeaderboardService.Start(world.Leaderboards)
+ZoneService.Start(world.Zones)
 
 -- Связи между сервисами (без циклических require)
 ItemService.OnMonsterHit = EventService.HitMonster
@@ -109,6 +111,7 @@ local function onPlayerAdded(player: Player)
 	ItemService.OnLoaded(player)
 	QuestService.OnLoaded(player)
 	DefenseService.OnLoaded(player)
+	ZoneService.OnLoaded(player)
 	player:SetAttribute("DataLoaded", true)
 
 	-- Персонаж мог появиться раньше, чем загрузились данные.
@@ -141,6 +144,7 @@ Players.PlayerRemoving:Connect(function(player)
 	SocialService.OnPlayerRemoving(player)
 	AnalyticsService.OnPlayerRemoving(player)
 	SkinService.OnPlayerRemoving(player)
+	ZoneService.OnPlayerRemoving(player)
 	PlotService.Release(player)
 	DataService.Release(player)
 end)

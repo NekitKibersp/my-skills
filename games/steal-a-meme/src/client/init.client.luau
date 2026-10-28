@@ -131,6 +131,7 @@ local modules = {
 	"MemeBillboards",
 	"Effects",
 	"FxExtra",
+	"Zones",
 	"Status",
 	"Tutorial",
 }

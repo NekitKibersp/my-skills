@@ -1,5 +1,6 @@
 -- Состояние своего персонажа над панелью предметов (снизу по центру):
--- перезарядка экипированного предмета (Tool.CooldownEndsAt), невидимость (Invisible) и энергетик (BoostUntil).
+-- перезарядка экипированного предмета (Tool.CooldownEndsAt), невидимость (Invisible), энергетик (BoostUntil)
+-- и безопасная зона Торговой площади (InSafeZone).
 -- Пока своя невидимость включена, игрок видит себя полупрозрачным (LocalTransparencyModifier) —
 -- остальные не видят его вовсе (это делает сервер).
 local Players = game:GetService("Players")
@@ -20,6 +21,7 @@ local HIDDEN = 0.99 -- деталь считается спрятанной се
 local HOTBAR_GAP = 78 -- отступ от низа экрана: над стандартной панелью предметов Roblox
 local INVIS_COLOR = Color3.fromRGB(190, 200, 230)
 local BOOST_COLOR = Color3.fromRGB(110, 255, 140)
+local SAFE_COLOR = Color3.fromRGB(90, 255, 200)
 
 local Status = {}
 
@@ -166,6 +168,9 @@ function Status.Start(ctx)
 	invisible.TextColor3 = INVIS_COLOR
 	local boost = chip(holder, 3, BOOST_COLOR)
 	boost.TextColor3 = BOOST_COLOR
+	local safe = chip(holder, 4, SAFE_COLOR)
+	safe.TextColor3 = SAFE_COLOR
+	safe.Text = Locale.T("ZoneSafeChip")
 
 	if player.Character then
 		trackCharacter(player.Character)
@@ -213,6 +218,8 @@ function Status.Start(ctx)
 		if boostLeft > 0 then
 			boost.Text = Locale.T("StatusBoost", { Time = Util.clock(math.ceil(boostLeft)) })
 		end
+
+		safe.Visible = character ~= nil and Util.bool(character, "InSafeZone")
 	end
 
 	task.spawn(function()
