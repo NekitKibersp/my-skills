@@ -12,13 +12,25 @@ local Hooks = require(script.Parent.Hooks)
 
 local StealService = {}
 
-type Carry = { Owner: Player, Slot: number, Model: Model, Id: string, EndsAt: number }
+type Carry = {
+	Owner: Player,
+	Slot: number,
+	Model: Model,
+	Id: string,
+	EndsAt: number,
+	-- Анти-чит: последняя проверенная позиция вора и число нарушений скорости
+	LastPos: Vector3?,
+	LastTime: number?,
+	Strikes: number?,
+}
 
 local carries: { [Player]: Carry } = {} -- вор -> что несёт
 local holdStart: { [Player]: number } = {}
 local guardLastHit: { [Model]: number } = {}
 
 local BASE_WALK_SPEED = 16
+
+local checkMovement: (thief: Player, carry: Carry, root: BasePart, t: number) -> boolean
 
 -- Колбэк начала кражи (выставляет init.server): снять шапку-невидимку и т.п.
 StealService.OnStealStarted = nil :: ((thief: Player) -> ())?
@@ -192,6 +204,36 @@ function StealService.TryStart(thief: Player, owner: Player, slot: number, promp
 	Remotes.Notify:FireClient(owner, "BeingStolen", { Meme = id, Player = thief.DisplayName }, "error")
 end
 
+-- Анти-чит переноски: вор не может двигаться быстрее своей скорости (телепорт домой с мемом).
+-- Возвращает false, если перенос сорван. Отброс и ракетные ботинки ставят персонажу
+-- атрибут MoveGraceUntil — в это время скорость не проверяем.
+function checkMovement(thief: Player, carry: Carry, root: BasePart, t: number): boolean
+	local position = root.Position
+	local lastPos, lastTime = carry.LastPos, carry.LastTime
+	carry.LastPos, carry.LastTime = position, t
+	if not lastPos or not lastTime then
+		return true
+	end
+	local character = thief.Character
+	if character and (character:GetAttribute("MoveGraceUntil") or 0) > t then
+		return true
+	end
+	local humanoid = humanoidOf(thief)
+	local speed = math.max(if humanoid then humanoid.WalkSpeed else BASE_WALK_SPEED, BASE_WALK_SPEED)
+	local flat = Vector3.new(position.X - lastPos.X, 0, position.Z - lastPos.Z).Magnitude
+	local allowed = speed * (t - lastTime) * Config.AntiCheat.CarrySpeedSlack + Config.AntiCheat.CarryExtraStuds
+	if flat <= allowed then
+		return true
+	end
+	carry.Strikes = (carry.Strikes or 0) + 1
+	warn(string.format("[AntiCheat] %s двигается слишком быстро с мемом: %.1f studs (можно %.1f)", thief.Name, flat, allowed))
+	if carry.Strikes >= Config.AntiCheat.MaxStrikes then
+		StealService.Fail(thief)
+		return false
+	end
+	return true
+end
+
 -- Отменить все кражи мемов этого хозяина (хозяин выходит из игры)
 function StealService.CancelFromOwner(owner: Player)
 	for thief, carry in carries do
@@ -210,6 +252,10 @@ function StealService.Knock(target: Player, from: Vector3, power: number, stun: 
 	local direction = root.Position - from
 	direction = Vector3.new(direction.X, 0, direction.Z)
 	direction = if direction.Magnitude > 0.01 then direction.Unit else Vector3.new(1, 0, 0)
+	local character = target.Character
+	if character then
+		character:SetAttribute("MoveGraceUntil", now() + 1.5 + (stun or 0.6))
+	end
 	Remotes.Knockback:FireClient(target, direction * power + Vector3.new(0, power * 0.45, 0), stun or 0.6)
 	local carry = carries[target]
 	if carry then
@@ -299,6 +345,9 @@ function StealService.Start()
 			end
 			local plot = PlotService.GetPlot(thief)
 			local root = rootOf(thief)
+			if root and not checkMovement(thief, carry, root, t) then
+				continue
+			end
 			if plot and root and PlotService.InPlot(plot, root.Position) then
 				deliver(thief)
 			end

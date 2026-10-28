@@ -54,6 +54,12 @@ local function rollCreature(): string
 		end).Id
 	end
 
+	-- Лимитированный мем недели (WeeklyService) — редкий гость на дорожке
+	local weekly = ReplicatedStorage:GetAttribute("WeeklyMeme")
+	if type(weekly) == "string" and Config.GetCreature(weekly) and random:NextNumber() < Config.Weekly.Chance then
+		return weekly
+	end
+
 	-- Удача: покупка «Удача сервера» и множитель админ-ивента складываются
 	local luck = (if isLucky() then Config.Conveyor.LuckMult else 1) * (ReplicatedStorage:GetAttribute("EventLuckMult") or 1)
 	local rarity = weightedPick(Config.Rarities, function(r)
@@ -61,7 +67,7 @@ local function rollCreature(): string
 	end)
 	local pool = {}
 	for _, creature in Config.Creatures do
-		if creature.Rarity == rarity.Id and not creature.Event then
+		if creature.Rarity == rarity.Id and not creature.Event and not creature.Limited and not creature.Exclusive then
 			table.insert(pool, creature)
 		end
 	end

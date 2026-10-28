@@ -90,7 +90,7 @@ local function addPart(tool: Tool, handle: BasePart, props: { [string]: any }, o
 	p.Parent = tool
 end
 
-local function buildTool(item: any, gold: boolean): Tool
+local function buildTool(item: any, gold: boolean, skin: any?): Tool
 	local tool = Instance.new("Tool")
 	tool.Name = item.Id
 	tool.ToolTip = item.Face .. " " .. item.Name
@@ -111,6 +111,25 @@ local function buildTool(item: any, gold: boolean): Tool
 		handle.Size = Vector3.new(1.2, 2.6, 0.35)
 		handle.Color = if gold then Color3.fromRGB(255, 205, 50) else Color3.fromRGB(70, 90, 200)
 		handle.Material = if gold then Enum.Material.Foil else Enum.Material.Fabric
+		-- Скин тапка (SkinService) поверх золотого/обычного
+		if skin and skin.Color then
+			handle.Color = skin.Color
+			handle.Material = (Enum.Material :: any)[skin.Material or "SmoothPlastic"]
+			if skin.Rainbow then
+				local sparkles = Instance.new("ParticleEmitter")
+				sparkles.Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 60, 60)),
+					ColorSequenceKeypoint.new(0.5, Color3.fromRGB(60, 255, 120)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(80, 120, 255)),
+				})
+				sparkles.LightEmission = 1
+				sparkles.Size = NumberSequence.new(0.25, 0)
+				sparkles.Rate = 12
+				sparkles.Lifetime = NumberRange.new(0.5, 0.8)
+				sparkles.Speed = NumberRange.new(1, 2)
+				sparkles.Parent = handle
+			end
+		end
 		tool.Grip = CFrame.new(0, -0.9, 0) * CFrame.Angles(0, math.rad(90), 0)
 		addPart(tool, handle, { Size = Vector3.new(1.25, 0.35, 0.5), Color = Color3.fromRGB(240, 240, 240) }, CFrame.new(0, 0.6, -0.3))
 	elseif id == "Bat" then
@@ -492,7 +511,9 @@ local function useRocket(player: Player, item: any, tool: Tool)
 		return
 	end
 	local look = root.CFrame.LookVector
-	-- Толчок делает клиент владельца (персонажем управляет он), stun = 0 — без падения
+	-- Толчок делает клиент владельца (персонажем управляет он), stun = 0 — без падения.
+	-- MoveGraceUntil: анти-чит переноски не считает этот рывок телепортом.
+	(player.Character :: Model):SetAttribute("MoveGraceUntil", now() + 3)
 	Remotes.Knockback:FireClient(player, Vector3.new(look.X, 0, look.Z) * item.Forward + Vector3.new(0, item.Jump, 0), 0)
 	Remotes.Fx:FireAllClients("Rocket", { Position = root.Position })
 end
@@ -542,11 +563,12 @@ function ItemService.GiveTools(player: Player)
 		end
 	end
 	local gold = player:GetAttribute("Pass_GoldSlipper") == true
+	local slipperSkin = Config.GetSkin(player:GetAttribute("SlipperSkin") or "")
 	for _, item in Config.Items do
 		if not ItemService.Owns(player, item.Id) then
 			continue
 		end
-		local tool = buildTool(item, gold)
+		local tool = buildTool(item, gold, if item.Id == "Slipper" then slipperSkin else nil)
 		-- Перезарядка переживает респавн
 		local endsAt = cooldowns[player] and cooldowns[player][item.Id]
 		if endsAt and endsAt > os.clock() then
