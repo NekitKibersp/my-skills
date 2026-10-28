@@ -41,6 +41,11 @@ local function setCarryAttributes(player: Player, id: string, endsAt: number)
 	player:SetAttribute("CarryEndsAt", endsAt)
 end
 
+-- Все текущие переноски: вор -> { Owner, Slot, Model, Id, EndsAt } (только для чтения)
+function StealService.GetCarries(): { [Player]: Carry }
+	return carries
+end
+
 function StealService.IsCarrying(player: Player): boolean
 	return carries[player] ~= nil
 end
@@ -141,7 +146,7 @@ function StealService.TryStart(thief: Player, owner: Player, slot: number, promp
 		Remotes.Notify:FireClient(thief, "BaseLocked", nil, "error")
 		return
 	end
-	if PlotService.IsAway(owner, slot) or not PlotService.GetEntry(owner, slot) then
+	if PlotService.IsBusy(owner, slot) or not PlotService.GetEntry(owner, slot) then
 		return
 	end
 	if not PlotService.FreeSlot(thief) then

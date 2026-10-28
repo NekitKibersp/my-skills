@@ -104,6 +104,20 @@ function Locale.T(key: string, args: { [string]: any }?): string
 	return text
 end
 
+-- Строки фич из src/shared/Strings/*.luau (каждый модуль возвращает таблицу { Key = { en, ru } })
+do
+	local folder = script.Parent:FindFirstChild("Strings")
+	if folder then
+		for _, module in folder:GetChildren() do
+			if module:IsA("ModuleScript") then
+				for key, value in require(module) :: any do
+					STRINGS[key] = value
+				end
+			end
+		end
+	end
+end
+
 -- Добавить свои строки (используется клиентским UI)
 function Locale.Add(strings: { [string]: { string } })
 	for key, value in strings do

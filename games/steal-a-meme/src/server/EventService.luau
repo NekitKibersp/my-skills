@@ -255,7 +255,7 @@ local function pickTarget(): (Player?, number?)
 			local ok, entries = pcall(PlotService.GetEntries, player)
 			if ok then
 				for _, entry in entries do
-					if PlotService.GetModel(player, entry.Slot) then
+					if PlotService.GetModel(player, entry.Slot) and not PlotService.IsBusy(player, entry.Slot) then
 						table.insert(candidates, { player, entry.Slot })
 					end
 				end

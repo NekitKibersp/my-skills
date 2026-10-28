@@ -21,6 +21,16 @@ local away: { [Player]: { [number]: boolean } } = {} -- слоты, чьих м�
 
 -- Колбэки, которые выставляет init.server (чтобы не было циклических require)
 PlotService.OnStealPrompt = nil :: ((thief: Player, owner: Player, slot: number, prompt: ProximityPrompt) -> ())?
+-- Мем выставлен в обмен — его нельзя продать, слить, украсть (выставляет TradeService)
+PlotService.IsTradeLocked = nil :: ((player: Player, slot: number) -> boolean)?
+
+-- Мем сейчас недоступен для действий: его несут или он в обмене
+function PlotService.IsBusy(player: Player, slot: number): boolean
+	if PlotService.IsAway(player, slot) then
+		return true
+	end
+	return PlotService.IsTradeLocked ~= nil and PlotService.IsTradeLocked(player, slot)
+end
 
 local function now(): number
 	return workspace:GetServerTimeNow()
@@ -351,7 +361,7 @@ function PlotService.RemoveEntry(player: Player, slot: number): Entry?
 end
 
 function PlotService.Sell(player: Player, slot: number)
-	if PlotService.IsAway(player, slot) then
+	if PlotService.IsBusy(player, slot) then
 		return
 	end
 	local entry = PlotService.GetEntry(player, slot)
@@ -366,12 +376,12 @@ end
 
 function PlotService.Merge(player: Player, slot: number)
 	local entry = PlotService.GetEntry(player, slot)
-	if not entry or entry.Viral or PlotService.IsAway(player, slot) then
+	if not entry or entry.Viral or PlotService.IsBusy(player, slot) then
 		return
 	end
 	local same = {}
 	for _, other in PlotService.GetEntries(player) do
-		if other.Id == entry.Id and other.Mut == entry.Mut and not other.Viral and not PlotService.IsAway(player, other.Slot) then
+		if other.Id == entry.Id and other.Mut == entry.Mut and not other.Viral and not PlotService.IsBusy(player, other.Slot) then
 			table.insert(same, other.Slot)
 		end
 	end

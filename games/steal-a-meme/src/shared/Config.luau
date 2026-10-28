@@ -27,27 +27,43 @@ Config.Rarities = {
 Config.Creatures = {
 	{ Id = "ClapCat", Name = "Black Cat Clapping", Face = "👏🐈‍⬛", Rarity = "Common", Price = 25, Income = 1, Color = Color3.fromRGB(30, 30, 35), Shape = "Ball", Size = 1, ModelId = 0 },
 	{ Id = "Pups", Name = "Sleepy Baby", Face = "😴", Rarity = "Common", Price = 60, Income = 2, Color = Color3.fromRGB(255, 205, 180), Shape = "Ball", Size = 0.9, ModelId = 0 },
+	{ Id = "Doge", Name = "Doge", Face = "🐕", Rarity = "Common", Price = 90, Income = 3, Color = Color3.fromRGB(225, 180, 110), Shape = "Ball", Size = 0.95, ModelId = 0 },
 	{ Id = "Kolobok", Name = "Kolobok", Face = "😏", Rarity = "Common", Price = 130, Income = 4, Color = Color3.fromRGB(240, 190, 60), Shape = "Ball", Size = 0.8, ModelId = 0 },
+	{ Id = "Lirili", Name = "Lirili Larila", Face = "🌵🐘", Rarity = "Common", Price = 180, Income = 5, Color = Color3.fromRGB(110, 170, 90), Shape = "Cylinder", Size = 1, ModelId = 0 },
 	{ Id = "Brdysh", Name = "Brdysh", Face = "🐟🐶", Rarity = "Common", Price = 250, Income = 7, Color = Color3.fromRGB(120, 170, 190), Shape = "Cylinder", Size = 1, ModelId = 0 },
+	{ Id = "Bobritto", Name = "Bobritto Bandito", Face = "🦫🎩", Rarity = "Common", Price = 350, Income = 9, Color = Color3.fromRGB(130, 90, 60), Shape = "Ball", Size = 1, ModelId = 0 },
 
 	{ Id = "SixSeven", Name = "Six Seven", Face = "6️⃣7️⃣", Rarity = "Rare", Price = 500, Income = 12, Color = Color3.fromRGB(80, 200, 255), Shape = "Block", Size = 1.1, ModelId = 0 },
+	{ Id = "Chimpanzini", Name = "Chimpanzini Bananini", Face = "🐒🍌", Rarity = "Rare", Price = 800, Income = 18, Color = Color3.fromRGB(240, 220, 80), Shape = "Cylinder", Size = 1.1, ModelId = 0 },
 	{ Id = "Cheremsha", Name = "Cheremsha", Face = "🦁🐰", Rarity = "Rare", Price = 1300, Income = 26, Color = Color3.fromRGB(230, 170, 90), Shape = "Ball", Size = 1.15, ModelId = 0 },
+	{ Id = "SadHamster", Name = "Sad Hamster", Face = "🐹🎻", Rarity = "Rare", Price = 1800, Income = 34, Color = Color3.fromRGB(230, 190, 140), Shape = "Ball", Size = 0.95, ModelId = 0 },
 	{ Id = "Semga", Name = "Semga", Face = "🐟😐", Rarity = "Rare", Price = 2500, Income = 45, Color = Color3.fromRGB(250, 130, 110), Shape = "Cylinder", Size = 1.2, ModelId = 0 },
+	{ Id = "TrippiTroppi", Name = "Trippi Troppi", Face = "🦐🐱", Rarity = "Rare", Price = 3500, Income = 60, Color = Color3.fromRGB(255, 150, 120), Shape = "Ball", Size = 1.15, ModelId = 0 },
 
 	{ Id = "Tralalero", Name = "Tralalero Tralala", Face = "🦈👟", Rarity = "Epic", Price = 5000, Income = 80, Color = Color3.fromRGB(90, 140, 220), Shape = "Cylinder", Size = 1.25, ModelId = 0 },
+	{ Id = "Patapim", Name = "Brr Brr Patapim", Face = "🌳🐒", Rarity = "Epic", Price = 8000, Income = 120, Color = Color3.fromRGB(90, 140, 70), Shape = "Cylinder", Size = 1.3, ModelId = 0 },
 	{ Id = "TungSahur", Name = "Tung Tung Tung Sahur", Face = "🪵🏏", Rarity = "Epic", Price = 13000, Income = 175, Color = Color3.fromRGB(170, 120, 70), Shape = "Cylinder", Size = 1.35, ModelId = 0 },
 	{ Id = "SwordKitten", Name = "Kitten with a Sword", Face = "🐱⚔️", Rarity = "Epic", Price = 22000, Income = 280, Color = Color3.fromRGB(190, 190, 205), Shape = "Ball", Size = 1, ModelId = 0 },
+	{ Id = "Cappuccino", Name = "Cappuccino Assassino", Face = "☕🗡️", Rarity = "Epic", Price = 30000, Income = 370, Color = Color3.fromRGB(120, 80, 50), Shape = "Cylinder", Size = 1.2, ModelId = 0 },
+	{ Id = "TimCheese", Name = "Tim Cheese", Face = "🐭🧀", Rarity = "Epic", Price = 38000, Income = 450, Color = Color3.fromRGB(255, 210, 80), Shape = "Ball", Size = 1.1, ModelId = 0 },
 
 	{ Id = "BossCapybara", Name = "Boss Capybara", Face = "😎", Rarity = "Legendary", Price = 50000, Income = 550, Color = Color3.fromRGB(160, 110, 70), Shape = "Block", Size = 1.4, ModelId = 0 },
+	{ Id = "ChillGuy", Name = "Chill Guy", Face = "🐶😌", Rarity = "Legendary", Price = 70000, Income = 730, Color = Color3.fromRGB(200, 170, 140), Shape = "Block", Size = 1.4, ModelId = 0 },
 	{ Id = "Bombardiro", Name = "Bombardiro Crocodilo", Face = "🐊✈️", Rarity = "Legendary", Price = 90000, Income = 900, Color = Color3.fromRGB(70, 130, 60), Shape = "Cylinder", Size = 1.5, ModelId = 0 },
 	{ Id = "Ballerina", Name = "Ballerina Cappuccina", Face = "☕🩰", Rarity = "Legendary", Price = 150000, Income = 1400, Color = Color3.fromRGB(255, 170, 210), Shape = "Cylinder", Size = 1.3, ModelId = 0 },
+	{ Id = "FrigoCamelo", Name = "Frigo Camelo", Face = "🐫🧊", Rarity = "Legendary", Price = 220000, Income = 1950, Color = Color3.fromRGB(210, 230, 240), Shape = "Block", Size = 1.5, ModelId = 0 },
 
 	{ Id = "Verity", Name = "Verity", Face = "🙂", Rarity = "Mythic", Price = 400000, Income = 3500, Color = Color3.fromRGB(255, 220, 30), Shape = "Block", Size = 1.6, ModelId = 0 },
+	{ Id = "Odin", Name = "Odin Din Din Dun", Face = "🗿🔔", Rarity = "Mythic", Price = 650000, Income = 5300, Color = Color3.fromRGB(120, 120, 130), Shape = "Block", Size = 1.7, ModelId = 0 },
 	{ Id = "DjCat", Name = "DJ Cat", Face = "😼🎧", Rarity = "Mythic", Price = 1200000, Income = 9000, Color = Color3.fromRGB(120, 60, 200), Shape = "Ball", Size = 1.7, ModelId = 0 },
+	{ Id = "VaccaSaturno", Name = "La Vacca Saturno Saturnita", Face = "🐄🪐", Rarity = "Mythic", Price = 2000000, Income = 14000, Color = Color3.fromRGB(240, 240, 240), Shape = "Ball", Size = 1.8, ModelId = 0 },
 
 	{ Id = "MegaSixSeven", Name = "MEGA 67", Face = "6️⃣7️⃣🔥", Rarity = "God", Price = 6700000, Income = 40000, Color = Color3.fromRGB(255, 80, 200), Shape = "Block", Size = 2.1, ModelId = 0 },
+	{ Id = "Tralaleritos", Name = "Los Tralaleritos", Face = "🦈🦈🦈", Rarity = "God", Price = 12000000, Income = 65000, Color = Color3.fromRGB(90, 140, 230), Shape = "Cylinder", Size = 2.2, ModelId = 0 },
+	{ Id = "Gigachad", Name = "Gigachad", Face = "🗿💪", Rarity = "God", Price = 20000000, Income = 100000, Color = Color3.fromRGB(90, 90, 100), Shape = "Block", Size = 2.3, ModelId = 0 },
 
 	{ Id = "GreatCheremsha", Name = "The Great Cheremsha", Face = "🦁🐰👑", Rarity = "Secret", Price = 30000000, Income = 150000, Color = Color3.fromRGB(15, 15, 15), Shape = "Ball", Size = 2.4, ModelId = 0 },
+	{ Id = "StrawberryElephant", Name = "Strawberry Elephant", Face = "🍓🐘", Rarity = "Secret", Price = 67000000, Income = 300000, Color = Color3.fromRGB(255, 80, 110), Shape = "Ball", Size = 2.5, ModelId = 0 },
 
 	{ Id = "PumpkinCat", Name = "Pumpkin Cat", Face = "🎃🐈‍⬛", Rarity = "Halloween", Price = 2500, Income = 60, Color = Color3.fromRGB(255, 120, 20), Shape = "Ball", Size = 1.1, Event = true, Season = "Halloween", EventWeight = 60, ModelId = 0 },
 	{ Id = "SkeletonClap", Name = "Clapping Skeleton", Face = "💀👏", Rarity = "Halloween", Price = 25000, Income = 400, Color = Color3.fromRGB(235, 235, 225), Shape = "Block", Size = 1.3, Event = true, Season = "Halloween", EventWeight = 28, ModelId = 0 },
@@ -181,6 +197,8 @@ Config.GamePasses = {
 	FastSteal = { Id = 0, Robux = 149, Name = "Fast Steal", NameRu = "Быстрая кража" },
 	GoldSlipper = { Id = 0, Robux = 99, Name = "Golden Slipper", NameRu = "Золотой тапок" },
 	OfflinePlus = { Id = 0, Robux = 199, Name = "Offline+ (100%, 12h)", NameRu = "Оффлайн+ (100%, 12ч)" },
+	EmotePack = { Id = 0, Robux = 199, Name = "Meme Emote Pack", NameRu = "Пак мем-эмоций" },
+	ConfettiCannon = { Id = 0, Robux = 349, Name = "Confetti Cannon", NameRu = "Конфетти-пушка" },
 }
 Config.VipIncomeMult = 2
 
@@ -191,6 +209,13 @@ Config.Products = {
 	CashMedium = { Id = 0, Robux = 99, Name = "Cash Pack M", NameRu = "Пачка денег M", IncomeSeconds = 1500, MinCoins = 6000 },
 	CashLarge = { Id = 0, Robux = 299, Name = "Cash Pack L", NameRu = "Пачка денег L", IncomeSeconds = 6000, MinCoins = 30000 },
 	LockExtend = { Id = 0, Robux = 19, Name = "Lock +60s", NameRu = "Замок +60 сек" },
+	MysteryBox = { Id = 0, Robux = 79, Name = "Mystery Meme Box", NameRu = "Мистери-бокс мемов" },
+	MemeRain = { Id = 0, Robux = 299, Name = "Start Meme Rain (whole server)", NameRu = "Запустить Мем-дождь (весь сервер)" },
+}
+-- Мистери-бокс: редкость случайного мема
+Config.MysteryBox = {
+	Rarities = { "Legendary", "Mythic", "God" },
+	Weights = { 75, 22, 3 },
 }
 Config.ServerLuckDuration = 15 * 60
 
@@ -219,7 +244,9 @@ function Config.SeasonFor(month: number, day: number): string
 	return "None"
 end
 
--- Предметы: оружие (бьёт игроков и монстра) и гаджеты. Покупаются за монеты навсегда.
+-- Предметы: оружие (бьёт игроков и монстра) и гаджеты. Покупаются за монеты навсегда;
+-- предмет с Pass = "Key" не продаётся за монеты — он есть у владельцев геймпасса Config.GamePasses[Key].
+-- Ranged = true — дальний бой: попадает в первого врага в конусе перед персонажем.
 -- Weapon: Range — дальность, Cooldown — перезарядка, Knockback — сила отброса, Stun — сколько
 -- секунд жертва лежит, Area = true — бьёт всех вокруг, а не одного.
 -- Gadget: Duration — сколько действует, Cooldown — перезарядка.
@@ -245,8 +272,22 @@ Config.Items = {
 	{ Id = "InvisHat", Kind = "Gadget", Name = "Invisibility Hat", NameRu = "Шапка-невидимка", Face = "🎩", Price = 400000,
 		Desc = "Invisible for 8s (ends when you steal)", DescRu = "Невидимость на 8 сек (пропадает при краже)",
 		Duration = 8, Cooldown = 45 },
+	{ Id = "RubberChicken", Kind = "Weapon", Name = "Rubber Chicken", NameRu = "Резиновая курица", Face = "🐔", Price = 8000,
+		Desc = "Super fast, weak hits", DescRu = "Очень быстрые слабые удары",
+		Range = 8, Cooldown = 0.45, Knockback = 45, Stun = 0.4 },
+	{ Id = "Snowball", Kind = "Weapon", Name = "Snowball Launcher", NameRu = "Снежкомёт", Face = "☃️", Price = 600000,
+		Desc = "Ranged: hits the first enemy in front of you", DescRu = "Дальний бой: попадает в первого врага впереди",
+		Ranged = true, Range = 45, Cooldown = 2, Knockback = 60, Stun = 1.2 },
+	{ Id = "ConfettiCannon", Kind = "Weapon", Name = "Confetti Cannon", NameRu = "Конфетти-пушка", Face = "🎉", Price = 0, Pass = "ConfettiCannon",
+		Desc = "Ranged blast with huge knockback", DescRu = "Дальний залп с огромным отбросом",
+		Ranged = true, Range = 55, Cooldown = 1.5, Knockback = 140, Stun = 1.5 },
+	{ Id = "RocketBoots", Kind = "Gadget", Name = "Rocket Boots", NameRu = "Ракетные ботинки", Face = "🚀", Price = 90000,
+		Desc = "Super jump forward", DescRu = "Суперпрыжок вперёд",
+		Cooldown = 10, Jump = 110, Forward = 45 },
+	{ Id = "FreezeBomb", Kind = "Gadget", Name = "Freeze Bomb", NameRu = "Ледяная бомба", Face = "🧊", Price = 300000,
+		Desc = "Freezes enemies around you for 2s, they drop memes", DescRu = "Замораживает врагов рядом на 2 сек, они роняют мемов",
+		Cooldown = 30, Range = 14, Stun = 2 },
 }
-
 local itemById = {}
 for _, item in Config.Items do
 	itemById[item.Id] = item
@@ -255,6 +296,104 @@ end
 function Config.GetItem(id: string)
 	return itemById[id]
 end
+
+-- ===== Ежедневная награда: календарь на 7 дней (стрик сбрасывается, если пропустить день) =====
+-- Kind: "Coins" (IncomeSeconds секунд дохода, минимум MinCoins), "Meme" (случайный мем редкости Rarity),
+-- "Item" (предмет ItemId; если уже есть — монеты Fallback).
+Config.DailyCalendar = {
+	{ Kind = "Coins", IncomeSeconds = 120, MinCoins = 300 },
+	{ Kind = "Coins", IncomeSeconds = 300, MinCoins = 800 },
+	{ Kind = "Meme", Rarity = "Rare" },
+	{ Kind = "Coins", IncomeSeconds = 600, MinCoins = 2500 },
+	{ Kind = "Meme", Rarity = "Epic" },
+	{ Kind = "Item", ItemId = "Energy", Fallback = { IncomeSeconds = 900, MinCoins = 6000 } },
+	{ Kind = "Meme", Rarity = "Legendary" },
+}
+
+-- ===== Ежедневные квесты: PerDay случайных из пула, сброс в полночь UTC =====
+-- Stat — событие, которое двигает прогресс (см. Hooks на сервере):
+--   Buy, Steal, Slap, MonsterHit, Merge, Lock, Earn (сумма денег), Play (секунды), Defend (выбил вора со своим мемом)
+Config.Quests = {
+	PerDay = 3,
+	Pool = {
+		{ Id = "Buy5", Stat = "Buy", Goal = 5, IncomeSeconds = 120, MinCoins = 300, Desc = "Buy {Goal} memes", DescRu = "Купи {Goal} мемов" },
+		{ Id = "Buy15", Stat = "Buy", Goal = 15, IncomeSeconds = 400, MinCoins = 1500, Desc = "Buy {Goal} memes", DescRu = "Купи {Goal} мемов" },
+		{ Id = "Steal1", Stat = "Steal", Goal = 1, IncomeSeconds = 180, MinCoins = 500, Desc = "Steal a meme", DescRu = "Укради мема" },
+		{ Id = "Steal3", Stat = "Steal", Goal = 3, IncomeSeconds = 600, MinCoins = 2000, Desc = "Steal {Goal} memes", DescRu = "Укради {Goal} мемов" },
+		{ Id = "Slap10", Stat = "Slap", Goal = 10, IncomeSeconds = 150, MinCoins = 400, Desc = "Hit players {Goal} times", DescRu = "Ударь игроков {Goal} раз" },
+		{ Id = "Monster15", Stat = "MonsterHit", Goal = 15, IncomeSeconds = 300, MinCoins = 1000, Desc = "Hit the Smiley {Goal} times", DescRu = "Ударь Smiley {Goal} раз" },
+		{ Id = "Merge1", Stat = "Merge", Goal = 1, IncomeSeconds = 400, MinCoins = 1500, Desc = "Make a VIRAL meme", DescRu = "Сделай ВИРУСНОГО мема" },
+		{ Id = "Lock3", Stat = "Lock", Goal = 3, IncomeSeconds = 100, MinCoins = 300, Desc = "Lock your base {Goal} times", DescRu = "Закрой базу {Goal} раза" },
+		{ Id = "Earn", Stat = "Earn", Goal = 0, GoalIncomeSeconds = 900, IncomeSeconds = 300, MinCoins = 800, Desc = "Earn {Goal} cash", DescRu = "Заработай {Goal}" },
+		{ Id = "Play15", Stat = "Play", Goal = 900, IncomeSeconds = 200, MinCoins = 600, Desc = "Play for 15 minutes", DescRu = "Поиграй 15 минут" },
+		{ Id = "Defend2", Stat = "Defend", Goal = 2, IncomeSeconds = 400, MinCoins = 1200, Desc = "Knock {Goal} thieves off your memes", DescRu = "Отбей своих мемов у воров {Goal} раза" },
+	},
+	-- Бонус за выполнение всех квестов дня
+	AllDoneIncomeSeconds = 900,
+	AllDoneMinCoins = 5000,
+}
+
+-- ===== Админ-ивенты по выходным =====
+-- Идут на всех серверах одновременно по расписанию (UTC). Days — дни недели os.date wday (1 = вс, 7 = сб).
+-- Admins — UserId, которые могут запускать ивенты командой в чате "/event <Id>" (создатель игры может всегда).
+Config.AdminEvents = {
+	Days = { 7, 1 },
+	Hours = { 12, 15, 18, 21 },
+	Duration = 10 * 60,
+	Admins = {} :: { number },
+	Types = {
+		{ Id = "MemeRain", Name = "MEME RAIN", NameRu = "МЕМ-ДОЖДЬ", Face = "🌧️", SpawnMult = 4, LuckMult = 2,
+			Desc = "Memes everywhere! x4 spawn, x2 luck", DescRu = "Мемы повсюду! ×4 появление, ×2 удача" },
+		{ Id = "LuckyHour", Name = "LUCKY HOUR", NameRu = "ЧАС УДАЧИ", Face = "🍀", LuckMult = 4,
+			Desc = "x4 chance of rare memes", DescRu = "×4 шанс редких мемов" },
+		{ Id = "DoubleCash", Name = "DOUBLE CASH", NameRu = "ДВОЙНЫЕ ДЕНЬГИ", Face = "💸", IncomeMult = 2,
+			Desc = "All memes earn x2", DescRu = "Все мемы приносят ×2" },
+		{ Id = "MutationStorm", Name = "MUTATION STORM", NameRu = "ШТОРМ МУТАЦИЙ", Face = "🧬", MutationChance = 1,
+			Desc = "Every meme is mutated", DescRu = "Каждый мем с мутацией" },
+		{ Id = "SecretDrop", Name = "SECRET DROP", NameRu = "СЕКРЕТНЫЙ ДРОП", Face = "🤫", LuckMult = 2, SecretDrops = 3,
+			Desc = "Secret memes on the carpet!", DescRu = "Секретные мемы на дорожке!" },
+	},
+	MemeRainDuration = 3 * 60, -- длительность Мем-дождя за Robux
+}
+
+-- ===== Защита базы (покупается за монеты, уровни навсегда) =====
+-- Turret: стреляет в воров, которые несут мемов с этой базы, и в чужаков на базе.
+-- LaserGate: лазер на входе — вор с твоим мемом, проходя через вход, падает и роняет мема.
+Config.Defense = {
+	Turret = {
+		{ Price = 20000, Range = 30, Cooldown = 6, Stun = 1.2 },
+		{ Price = 150000, Range = 36, Cooldown = 4.5, Stun = 1.5 },
+		{ Price = 1200000, Range = 42, Cooldown = 3, Stun = 2 },
+	},
+	LaserGate = {
+		{ Price = 60000, Cooldown = 20, Stun = 1 },
+		{ Price = 400000, Cooldown = 14, Stun = 1.5 },
+		{ Price = 3000000, Cooldown = 8, Stun = 2 },
+	},
+}
+
+-- ===== Эмоции =====
+-- Proc — процедурная анимация (клиент двигает руки/тело), Pass — нужен геймпасс.
+Config.Emotes = {
+	{ Id = "Wave", Name = "Wave", NameRu = "Привет", Face = "👋", Proc = "Wave" },
+	{ Id = "Clap", Name = "Clap", NameRu = "Хлопать", Face = "👏", Proc = "Clap" },
+	{ Id = "SixSeven", Name = "Six Seven", NameRu = "Six Seven", Face = "6️⃣7️⃣", Proc = "SixSeven" },
+	{ Id = "Spin", Name = "Spin", NameRu = "Крутиться", Face = "🌀", Proc = "Spin" },
+	{ Id = "Gigachad", Name = "Gigachad", NameRu = "Gigachad", Face = "🗿", Proc = "Flex", Pass = "EmotePack" },
+	{ Id = "Floss", Name = "Floss", NameRu = "Флосс", Face = "🕺", Proc = "Floss", Pass = "EmotePack" },
+	{ Id = "Dab", Name = "Dab", NameRu = "Дэб", Face = "😎", Proc = "Dab", Pass = "EmotePack" },
+	{ Id = "Cry", Name = "Cry", NameRu = "Плакать", Face = "😭", Proc = "Cry", Pass = "EmotePack" },
+}
+Config.EmoteDuration = 3
+Config.EmoteCooldown = 4
+
+-- ===== Обмен мемами =====
+Config.Trade = {
+	MaxMemes = 6, -- мемов с каждой стороны
+	RequestTimeout = 20, -- сек на ответ на запрос
+	ConfirmDelay = 3, -- отсчёт после того, как оба нажали «Готово»
+	RequestCooldown = 5,
+}
 
 -- ===== Функции-помощники (общие для сервера и клиента) =====
 
@@ -320,6 +459,33 @@ end
 
 function Config.IncomeMult(rebirths: number): number
 	return 1 + rebirths * Config.Rebirth.IncomeBonus
+end
+
+local emoteById = {}
+for _, emote in Config.Emotes do
+	emoteById[emote.Id] = emote
+end
+
+function Config.GetEmote(id: string)
+	return emoteById[id]
+end
+
+function Config.GetQuest(id: string)
+	for _, quest in Config.Quests.Pool do
+		if quest.Id == id then
+			return quest
+		end
+	end
+	return nil
+end
+
+function Config.GetAdminEvent(id: string)
+	for _, event in Config.AdminEvents.Types do
+		if event.Id == id then
+			return event
+		end
+	end
+	return nil
 end
 
 return Config

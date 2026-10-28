@@ -26,6 +26,8 @@ local DEFAULT_NUMBERS: { [string]: number } = {
 	GiftDay = 0, -- день (os.time() // 86400), к которому относятся PlayedToday и GiftsClaimed
 	GiftsClaimed = 0,
 	PlayedToday = 0, -- секунд сыграно за день (для подарков за время)
+	TurretLevel = 0, -- уровень турели на базе (Config.Defense.Turret)
+	LaserLevel = 0, -- уровень лазерных ворот (Config.Defense.LaserGate)
 }
 
 -- Табличные поля:
@@ -33,7 +35,8 @@ local DEFAULT_NUMBERS: { [string]: number } = {
 --   Index    — { ["Id|Mut"] = true } (открытые записи Индекса)
 --   Receipts — массив PurchaseId обработанных покупок за Robux (защита от двойной выдачи)
 --   Items    — { [itemId] = true } купленные предметы (Config.Items)
-local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items" }
+--   Quests   — { Day, List = { { Id, Goal, Progress, Claimed } }, AllClaimed } ежедневные квесты (проверяет QuestService)
+local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items", "Quests" }
 
 -- Блокировка сессии: пока игрок на одном сервере, другой сервер не загрузит его данные
 -- (иначе при быстром переходе между серверами можно задублировать мемов).
@@ -157,6 +160,7 @@ local function sanitize(saved: any): ({ [string]: any }, boolean)
 			end
 		end
 	end
+	data.Quests = if type(savedTable.Quests) == "table" then savedTable.Quests else {}
 	-- Старые сохранения (до туториала) — туториал не показываем
 	if not isNew and saved.TutorialDone == nil then
 		data.TutorialDone = 1
@@ -299,6 +303,17 @@ function DataService.AddReceipt(player: Player, purchaseId: string)
 	end
 end
 
+local function deepCopy(value: any): any
+	if type(value) ~= "table" then
+		return value
+	end
+	local result = {}
+	for key, inner in value do
+		result[key] = deepCopy(inner)
+	end
+	return result
+end
+
 local function snapshot(data: { [string]: any }): { [string]: any }
 	local copy = table.clone(data)
 	copy.Memes = {}
@@ -308,6 +323,7 @@ local function snapshot(data: { [string]: any }): { [string]: any }
 	copy.Index = table.clone(data.Index)
 	copy.Receipts = table.clone(data.Receipts)
 	copy.Items = table.clone(data.Items)
+	copy.Quests = deepCopy(data.Quests)
 	return copy
 end
 

@@ -33,6 +33,22 @@ local Remotes = {
 	BuyItem = make("RemoteFunction", "BuyItem") :: RemoteFunction,
 	-- клиент -> сервер: () — туториал пройден или пропущен
 	TutorialDone = make("RemoteEvent", "TutorialDone") :: RemoteEvent,
+	-- клиент -> сервер: () -> (ok, key) — забрать ежедневную награду
+	ClaimDaily = make("RemoteFunction", "ClaimDaily") :: RemoteFunction,
+	-- клиент -> сервер: (index: number | "All") -> (ok, key) — забрать награду квеста / бонус за все
+	ClaimQuest = make("RemoteFunction", "ClaimQuest") :: RemoteFunction,
+	-- клиент -> сервер: (kind: "Turret" | "LaserGate") -> (ok, key) — купить/улучшить защиту базы
+	UpgradeDefense = make("RemoteFunction", "UpgradeDefense") :: RemoteFunction,
+	-- клиент -> сервер: (emoteId: string) — сыграть эмоцию (все увидят через Fx "Emote")
+	Emote = make("RemoteEvent", "Emote") :: RemoteEvent,
+	-- Обмен (см. CONTRACT.md):
+	TradeRequest = make("RemoteEvent", "TradeRequest") :: RemoteEvent, -- C→S (targetUserId)
+	TradeIncoming = make("RemoteEvent", "TradeIncoming") :: RemoteEvent, -- S→C (fromUserId, fromName)
+	TradeRespond = make("RemoteEvent", "TradeRespond") :: RemoteEvent, -- C→S (fromUserId, accept: boolean)
+	TradeSetOffer = make("RemoteEvent", "TradeSetOffer") :: RemoteEvent, -- C→S (slots: { number })
+	TradeReady = make("RemoteEvent", "TradeReady") :: RemoteEvent, -- C→S (ready: boolean)
+	TradeCancel = make("RemoteEvent", "TradeCancel") :: RemoteEvent, -- C→S ()
+	TradeState = make("RemoteEvent", "TradeState") :: RemoteEvent, -- S→C (state | nil)
 }
 
 folder.Parent = ReplicatedStorage

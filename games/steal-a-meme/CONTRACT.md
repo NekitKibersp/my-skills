@@ -92,3 +92,42 @@ Remotes:
 
 Новые `Fx`: `"Invisible"` {Position} (облачко), `"Banana"` {Position} (поскользнулся), `"Energy"` {Position}.
 Банановые кожуры — `workspace.Bananas` (детали, тег `"Banana"`, атрибут `OwnerUserId`).
+
+## Дополнения v3 (квесты, календарь наград, админ-ивенты, обмен, защита базы, эмоции, новые предметы)
+Строки фич: каждый модуль кладёт свои тексты в `src/shared/Strings/<Фича>.luau` (возвращает `{ Key = { "en", "ru" } }`),
+`Locale` подгружает их сам. Имена мемов не переводятся.
+
+| Где | Атрибут | Тип | Смысл |
+|---|---|---|---|
+| игрок | `DailyReady` | bool | можно забрать ежедневную награду |
+| игрок | `DailyDay` | number | какой день календаря (1..7) будет выдан при следующем заборе |
+| игрок | `DailyStreak` | number | (было) последний забранный день |
+| игрок | `QuestsJson` | string | JSON `{ List = { { Id, Goal, Progress, Claimed } }, AllClaimed = bool, ResetAt = serverTime }` |
+| игрок | `TurretLevel` / `LaserLevel` | number | уровни защиты базы (0 — нет) |
+| ReplicatedStorage | `AdminEvent` | string | Id идущего ивента (`Config.AdminEvents.Types`) или "" |
+| ReplicatedStorage | `AdminEventEndsAt` | number | конец ивента |
+| ReplicatedStorage | `NextAdminEventAt` | number | начало следующего ивента по расписанию (0 — не скоро/неизвестно) |
+| ReplicatedStorage | `EventIncomeMult` / `EventLuckMult` / `EventSpawnMult` | number | множители текущего ивента (по умолчанию 1) |
+| ReplicatedStorage | `EventMutationChance` | number | 0..1, шанс принудительной мутации у мема на дорожке |
+
+Мир: у базы появляются `Turret` (Model) и `LaserGate` (Part, при срабатывании мигает).
+
+Remotes (созданы в `Remotes.luau`):
+| Имя | Направление | Аргументы |
+|---|---|---|
+| `ClaimDaily` | C→S RF | `() -> (ok, key)` |
+| `ClaimQuest` | C→S RF | `(index: number \| "All") -> (ok, key)` |
+| `UpgradeDefense` | C→S RF | `(kind: "Turret" \| "LaserGate") -> (ok, key)` |
+| `Emote` | C→S | `(emoteId)` → сервер рассылает `Fx("Emote", { UserId, Emote })`, клиент каждого игрока анимирует персонажа процедурно (`Config.Emotes[*].Proc`) и показывает эмодзи над головой |
+| `TradeRequest` | C→S | `(targetUserId)` |
+| `TradeIncoming` | S→C | `(fromUserId, fromName)` — показать «X хочет обменяться» с кнопками |
+| `TradeRespond` | C→S | `(fromUserId, accept)` |
+| `TradeSetOffer` | C→S | `(slots: { number })` — номера своих слотов, до `Config.Trade.MaxMemes` |
+| `TradeReady` | C→S | `(ready: boolean)` |
+| `TradeCancel` | C→S | `()` |
+| `TradeState` | S→C | `(state \| nil)`; nil — обмен закрыт. state = `{ PartnerUserId, PartnerName, MyOffer = { { Slot, Id, Mut, Viral } }, TheirOffer = { { Id, Mut, Viral } }, MyReady, TheirReady, CountdownEndsAt (0 или serverTime) }` |
+
+Предметы с `Pass` (Confetti Cannon) есть только у владельцев геймпасса; `ItemsJson` их тоже включает.
+Новые Fx: `"Emote"` {UserId, Emote}, `"Turret"` {From, To} (выстрел), `"Laser"` {Position}, `"Freeze"` {Position, Radius},
+`"Rocket"` {Position}, `"Shot"` {From, To} (дальнее оружие), `"AdminEvent"` {Id} (старт ивента — большой баннер), `"MysteryBox"` {UserId, Meme}.
+`Knockback` теперь используется и для ракетных ботинок (stun = 0: просто толчок).
