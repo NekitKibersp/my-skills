@@ -211,4 +211,101 @@ Locale.Add({
 	MysteryBoxOther = { "📦 {Player} got {Meme} from a Mystery Box!", "📦 {Player} получил {Meme} из Мистери-бокса!" },
 })
 
+-- v4: коды, друзья/группа, Мем-пропуск, колесо, мем недели, скины, меню HUD
+Locale.Add({
+	-- боковые кнопки и меню
+	BtnPass = { "Pass", "Пропуск" },
+	BtnSpin = { "Spin", "Колесо" },
+	BtnMenu = { "Menu", "Меню" },
+	BtnCodes = { "Codes", "Коды" },
+	BtnSkins = { "Skins", "Скины" },
+	MenuTitle = { "☰ Menu", "☰ Меню" },
+
+	-- время «д ч»
+	TimeDH = { "{D}d {H}h", "{D}д {H}ч" },
+	TimeHM = { "{H}h {M}m", "{H}ч {M}м" },
+
+	-- друзья и группа
+	UiSocialBoost = { "👥 +{Percent}%", "👥 +{Percent}%" },
+	SocialInvite = { "👥 Invite friends", "👥 Позвать друзей" },
+	SocialInviteHint = { "+{Per}% income per friend on the server (max {Max}%)", "+{Per}% дохода за каждого друга на сервере (макс. {Max}%)" },
+	SocialInviteUnavailable = { "Invites are not available right now", "Приглашения сейчас недоступны" },
+	SocialJoinGroup = { "⭐ Join group (+{Percent}%)", "⭐ Вступить в группу (+{Percent}%)" },
+
+	-- коды
+	CodesTitle = { "🎟️ Codes", "🎟️ Коды" },
+	CodesHint = { "Find codes in our group and update notes", "Ищи коды в нашей группе и в описании обновлений" },
+	CodesPlaceholder = { "Enter code...", "Введи код..." },
+	CodesRedeem = { "REDEEM", "АКТИВИРОВАТЬ" },
+	CodesEmpty = { "Type a code first", "Сначала введи код" },
+
+	-- награды (окна и всплывашки)
+	RewardCoins = { "+{Coins}", "+{Coins}" },
+	RewardCoinsApprox = { "~{Coins}", "~{Coins}" },
+	RewardSpins = { "Spins: +{Count}", "Вращения: +{Count}" },
+	RewardSkin = { "Skin: {Name}", "Скин: {Name}" },
+	PopupCodeTitle = { "🎟️ Code {Code}", "🎟️ Код {Code}" },
+	PopupSpinTitle = { "🎡 Wheel reward!", "🎡 Награда колеса!" },
+	PopupPassTitle = { "🎫 Meme Pass — level {Level}", "🎫 Мем-пропуск — уровень {Level}" },
+	PopupPassPremium = { "⭐ PREMIUM", "⭐ ПРЕМИУМ" },
+	PopupRewardEmpty = { "Reward received!", "Награда получена!" },
+
+	-- Мем-пропуск
+	PassTitle = { "🎫 Meme Pass", "🎫 Мем-пропуск" },
+	PassEndsIn = { "Ends in {Time}", "До конца: {Time}" },
+	PassEnded = { "Season is over", "Сезон окончен" },
+	PassLevel = { "Level {Level}/{Max}", "Уровень {Level}/{Max}" },
+	PassXp = { "{Xp}/{Need} XP", "{Xp}/{Need} XP" },
+	PassMaxLevel = { "MAX LEVEL", "МАКС. УРОВЕНЬ" },
+	PassLv = { "Lv {Level}", "Ур. {Level}" },
+	PassFree = { "FREE", "БЕСПЛАТНО" },
+	PassPremium = { "⭐ PREMIUM", "⭐ ПРЕМИУМ" },
+	PassClaim = { "CLAIM", "ЗАБРАТЬ" },
+	PassUnlockPremium = { "⭐ Unlock Premium ({Robux} R$)", "⭐ Открыть Премиум ({Robux} R$)" },
+	PassPremiumOwned = { "⭐ Premium active", "⭐ Премиум активен" },
+	PassBuyLevels = { "+{Count} levels ({Robux} R$)", "+{Count} уровней ({Robux} R$)" },
+	PassXpHint = { "XP for buying, stealing, merging, defending, quests and playtime", "XP за покупки, кражи, слияния, защиту, квесты и время в игре" },
+
+	-- колесо
+	SpinTitle = { "🎡 Lucky Wheel", "🎡 Колесо удачи" },
+	SpinFree = { "SPIN (free)", "КРУТИТЬ (бесплатно)" },
+	SpinLeft = { "SPIN ({Count} left)", "КРУТИТЬ (ещё {Count})" },
+	SpinNone = { "No spins left", "Вращений нет" },
+	SpinSpinning = { "Spinning...", "Крутится..." },
+	SpinHint = { "1 free spin every day", "1 бесплатное вращение каждый день" },
+	SpinOdds = { "Chances", "Шансы" },
+
+	-- мем недели и Индекс
+	BannerWeekly = { "⏳ LIMITED: {Face} {Name} — ends in {Time}", "⏳ ЛИМИТ: {Face} {Name} — ещё {Time}" },
+	IndexLimited = { "⏳ Limited", "⏳ Лимитный" },
+	IndexLimitedNow = { "⏳ This week!", "⏳ На этой неделе!" },
+	IndexExclusive = { "Pass / Wheel only", "Только пропуск / колесо" },
+
+	-- скины
+	SkinsTitle = { "🎨 Skins", "🎨 Скины" },
+	SkinsBase = { "🏠 Base", "🏠 База" },
+	SkinsSlipper = { "🩴 Slipper", "🩴 Тапок" },
+	SkinEquipped = { "EQUIPPED", "ВЫБРАН" },
+	SkinEquip = { "EQUIP", "ВЫБРАТЬ" },
+	SkinFromPass = { "From Meme Pass", "Из Мем-пропуска" },
+	SkinFromSpin = { "From the Wheel", "С колеса удачи" },
+})
+
+-- Ответы сервера v4: добавляем, только если сервер не положил свои строки в Shared/Strings
+do
+	local fallback: { [string]: { string } } = {
+		CodeRedeemed = { "Code redeemed!", "Код активирован!" },
+		CodeInvalid = { "This code doesn't exist", "Такого кода нет" },
+		CodeUsed = { "You already used this code", "Ты уже активировал этот код" },
+		CodeExpired = { "This code has expired", "Срок действия кода истёк" },
+	}
+	local missing = {}
+	for key, value in fallback do
+		if Locale.T(key) == key then
+			missing[key] = value
+		end
+	end
+	Locale.Add(missing)
+end
+
 return Locale

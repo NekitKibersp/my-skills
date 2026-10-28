@@ -22,6 +22,10 @@ local EmoteService = require(script.EmoteService)
 local SocialService = require(script.SocialService)
 local AnalyticsService = require(script.AnalyticsService)
 local Grant = require(script.Grant)
+local BattlePassService = require(script.BattlePassService)
+local SpinService = require(script.SpinService)
+local SkinService = require(script.SkinService)
+local WeeklyService = require(script.WeeklyService)
 local Remotes = require(script.Remotes)
 
 -- Сезон по дате (UTC): от него зависят ночные мемы, мутации, декор и цвет монстра
@@ -45,6 +49,10 @@ DefenseService.Start()
 EmoteService.Start()
 SocialService.Start()
 AnalyticsService.Start()
+BattlePassService.Start()
+SpinService.Start()
+SkinService.Start()
+WeeklyService.Start()
 LeaderboardService.Start(world.Leaderboards)
 
 -- Связи между сервисами (без циклических require)
@@ -56,6 +64,11 @@ end
 ShopService.OnToolsChanged = ItemService.RefreshPasses
 RewardService.OnItemGranted = ItemService.RefreshPasses
 Grant.OnItemGranted = ItemService.RefreshPasses
+Grant.OnSkinGranted = SkinService.Refresh
+SkinService.OnSlipperChanged = ItemService.GiveTools
+ShopService.OnSpins = SpinService.AddSpins
+ShopService.OnPassLevels = BattlePassService.AddLevels
+ShopService.OnBattlePass = BattlePassService.Sync
 ShopService.OnMemeRain = function(player)
 	return AdminEventService.StartEvent("MemeRain", Config.AdminEvents.MemeRainDuration, player)
 end
@@ -89,6 +102,9 @@ local function onPlayerAdded(player: Player)
 	PlotService.LoadPlayer(player)
 	SocialService.OnLoaded(player)
 	AnalyticsService.OnLoaded(player)
+	SkinService.OnLoaded(player) -- до выдачи тапка: ставит атрибут SlipperSkin
+	BattlePassService.OnLoaded(player)
+	SpinService.OnLoaded(player)
 	RewardService.OnLoaded(player)
 	ItemService.OnLoaded(player)
 	QuestService.OnLoaded(player)
@@ -124,6 +140,7 @@ Players.PlayerRemoving:Connect(function(player)
 	EmoteService.OnPlayerRemoving(player)
 	SocialService.OnPlayerRemoving(player)
 	AnalyticsService.OnPlayerRemoving(player)
+	SkinService.OnPlayerRemoving(player)
 	PlotService.Release(player)
 	DataService.Release(player)
 end)

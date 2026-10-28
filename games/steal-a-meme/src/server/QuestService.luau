@@ -156,6 +156,7 @@ local function claim(player: Player, index: any): (boolean, string)
 	PlotService.AddCoins(player, coins)
 	sync(player)
 	Remotes.Notify:FireClient(player, "QuestReward", { Coins = coins }, "success")
+	Hooks.Fire(player, "Quest", 1) -- XP Мем-пропуска за квест
 	return true, "QuestClaimed"
 end
 

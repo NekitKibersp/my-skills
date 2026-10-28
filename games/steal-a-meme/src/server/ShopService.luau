@@ -18,6 +18,11 @@ ShopService.OnSummonGod = nil :: (() -> ())?
 ShopService.OnToolsChanged = nil :: ((player: Player) -> ())?
 -- Запустить Мем-дождь на сервере (продукт MemeRain): (player) -> boolean
 ShopService.OnMemeRain = nil :: ((player: Player) -> boolean)?
+-- Вращения колеса и уровни Мем-пропуска за Robux: (player, n) -> boolean (false — данные не загружены)
+ShopService.OnSpins = nil :: ((player: Player, n: number) -> boolean)?
+ShopService.OnPassLevels = nil :: ((player: Player, n: number) -> boolean)?
+-- Куплен премиум Мем-пропуск
+ShopService.OnBattlePass = nil :: ((player: Player) -> ())?
 
 local function passKeyById(id: number): string?
 	for key, pass in Config.GamePasses do
@@ -39,6 +44,8 @@ local function applyPass(player: Player, key: string)
 		PlotService.RefreshIncome(player)
 	elseif (key == "GoldSlipper" or key == "ConfettiCannon") and ShopService.OnToolsChanged then
 		ShopService.OnToolsChanged(player)
+	elseif key == "BattlePass" and ShopService.OnBattlePass then
+		ShopService.OnBattlePass(player)
 	end
 end
 
@@ -125,6 +132,10 @@ local function grantProduct(player: Player, key: string): boolean
 		return false
 	elseif key == "MysteryBox" then
 		return openMysteryBox(player)
+	elseif key == "Spins3" or key == "Spins10" then
+		return ShopService.OnSpins ~= nil and ShopService.OnSpins(player, product.Spins)
+	elseif key == "PassLevels" then
+		return ShopService.OnPassLevels ~= nil and ShopService.OnPassLevels(player, product.Levels)
 	elseif key == "MemeRain" then
 		return ShopService.OnMemeRain ~= nil and ShopService.OnMemeRain(player)
 	end
