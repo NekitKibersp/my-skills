@@ -126,7 +126,9 @@ end
 function RewardService.OnLoaded(player: Player)
 	syncPlaytime(player)
 
-	local income = PlotService.IncomeOf(player)
+	-- Оффлайн-доход считаем без множителя админ-ивента: «Двойные деньги» не должны удваивать
+	-- до 12 часов отсутствия только потому, что игрок зашёл во время ивента
+	local income = PlotService.IncomeOf(player) / math.max(ReplicatedStorage:GetAttribute("EventIncomeMult") or 1, 1)
 
 	-- Оффлайн-доход
 	local lastSeen = DataService.Get(player, "LastSeen")

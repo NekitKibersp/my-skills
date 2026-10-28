@@ -188,6 +188,9 @@ local function onChatted(player: Player, message: string)
 		return
 	end
 	local words = string.split(message, " ")
+	if words[1] ~= "/event" then
+		return -- "/events", "/eventX" и т.п. — не наша команда
+	end
 	local name = words[2] or ""
 	if string.lower(name) == "stop" then
 		AdminEventService.Stop()
@@ -221,6 +224,21 @@ function AdminEventService.Start()
 	Players.PlayerAdded:Connect(watchPlayer)
 	for _, player in Players:GetPlayers() do
 		watchPlayer(player)
+	end
+	-- В новом чате (TextChatService) сообщения со «/» — это команды, и Player.Chatted до них
+	-- может не дойти, поэтому регистрируем /event как TextChatCommand.
+	local TextChatService = game:GetService("TextChatService")
+	if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+		local command = Instance.new("TextChatCommand")
+		command.Name = "AdminEventCommand"
+		command.PrimaryAlias = "/event"
+		command.Triggered:Connect(function(source: TextSource, text: string)
+			local player = Players:GetPlayerByUserId(source.UserId)
+			if player then
+				onChatted(player, text)
+			end
+		end)
+		command.Parent = TextChatService
 	end
 	Players.PlayerRemoving:Connect(function(player)
 		adminCache[player] = nil

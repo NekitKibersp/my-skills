@@ -34,6 +34,8 @@ ConveyorService.Start(MapBuilder.CarpetStart, MapBuilder.CarpetEnd)
 EventService.Start(MapBuilder.HALF_X, MapBuilder.HALF_Z)
 RewardService.Start()
 QuestService.Start()
+-- Колбэк нужен до Start: если сервер стартует посреди слота расписания, ивент запускается сразу
+AdminEventService.OnSpawnRarity = ConveyorService.SpawnRarity
 AdminEventService.Start()
 TradeService.Start()
 DefenseService.Start()
@@ -51,7 +53,6 @@ RewardService.OnItemGranted = ItemService.RefreshPasses
 ShopService.OnMemeRain = function(player)
 	return AdminEventService.StartEvent("MemeRain", Config.AdminEvents.MemeRainDuration, player)
 end
-AdminEventService.OnSpawnRarity = ConveyorService.SpawnRarity
 ShopService.Start()
 
 -- Каждый новый персонаж (данные уже загружены): тапок и перенос на свою базу

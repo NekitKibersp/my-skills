@@ -107,6 +107,16 @@ local function onKnockback(velocity: any, stun: any)
 	if not character or not root or not humanoid or humanoid.Health <= 0 then
 		return
 	end
+	if duration <= 0 then
+		-- stun = 0 (ракетные ботинки): просто толчок без падения и тряски камеры.
+		-- В Physics + сразу GettingUp персонаж «вставал» и терял скорость; прыжок сохраняет полёт.
+		-- Если игрок сейчас оглушён — не прерываем оглушение, только добавляем скорость.
+		if humanoid:GetState() ~= Enum.HumanoidStateType.Physics then
+			humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+		end
+		root.AssemblyLinearVelocity = velocity
+		return
+	end
 	knockToken += 1
 	local token = knockToken
 	humanoid:ChangeState(Enum.HumanoidStateType.Physics)

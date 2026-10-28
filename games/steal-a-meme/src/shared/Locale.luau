@@ -107,7 +107,10 @@ end
 
 -- Строки фич из src/shared/Strings/*.luau (каждый модуль возвращает таблицу { Key = { en, ru } })
 do
-	local folder = script.Parent:FindFirstChild("Strings")
+	-- На клиенте папка может прийти чуть позже модуля — ждём, иначе все строки фич станут ключами
+	local folder = if RunService:IsClient()
+		then script.Parent:WaitForChild("Strings", 10)
+		else script.Parent:FindFirstChild("Strings")
 	if folder then
 		for _, module in folder:GetChildren() do
 			if module:IsA("ModuleScript") then

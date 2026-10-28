@@ -22,7 +22,9 @@ local function onEmote(player: Player, emoteId: unknown)
 		return
 	end
 	local t = os.clock()
-	if t - (lastEmoteAt[player] or -math.huge) < Config.EmoteCooldown then
+	-- Небольшой допуск: клиент считает ту же перезарядку по своим часам, и запрос
+	-- «ровно через EmoteCooldown» из-за пинга не должен молча теряться
+	if t - (lastEmoteAt[player] or -math.huge) < Config.EmoteCooldown - 0.3 then
 		return
 	end
 	local character = player.Character

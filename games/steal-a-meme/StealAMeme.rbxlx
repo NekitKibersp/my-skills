@@ -649,7 +649,10 @@ end
 
 -- Строки фич из src/shared/Strings/*.luau (каждый модуль возвращает таблицу { Key = { en, ru } })
 do
-	local folder = script.Parent:FindFirstChild("Strings")
+	-- На клиенте папка может прийти чуть позже модуля — ждём, иначе все строки фич станут ключами
+	local folder = if RunService:IsClient()
+		then script.Parent:WaitForChild("Strings", 10)
+		else script.Parent:FindFirstChild("Strings")
 	if folder then
 		for _, module in folder:GetChildren() do
 			if module:IsA("ModuleScript") then
@@ -721,7 +724,8 @@ return {
 return {
 	TurretUpgraded = { "Turret is now level {Level}!", "Турель — уровень {Level}!" },
 	LaserUpgraded = { "Laser Gate is now level {Level}!", "Лазерные ворота — уровень {Level}!" },
-	DefenseMax = { "Already at max level!", "Уже максимальный уровень!" },
+	BadRequest = { "Something went wrong, try again", "Что-то пошло не так, попробуй ещё раз" },
+	DefenseMax ={ "Already at max level!", "Уже максимальный уровень!" },
 	TurretHit = { "A turret shot you!", "Тебя подстрелила турель!" },
 	LaserHit = { "You hit a laser gate and dropped the meme!", "Ты задел лазер и уронил мема!" },
 }
@@ -813,6 +817,8 @@ ConveyorService.Start(MapBuilder.CarpetStart, MapBuilder.CarpetEnd)
 EventService.Start(MapBuilder.HALF_X, MapBuilder.HALF_Z)
 RewardService.Start()
 QuestService.Start()
+-- Колбэк нужен до Start: если сервер стартует посреди слота расписания, ивент запускается сразу
+AdminEventService.OnSpawnRarity = ConveyorService.SpawnRarity
 AdminEventService.Start()
 TradeService.Start()
 DefenseService.Start()
@@ -830,7 +836,6 @@ RewardService.OnItemGranted = ItemService.RefreshPasses
 ShopService.OnMemeRain = function(player)
 	return AdminEventService.StartEvent("MemeRain", Config.AdminEvents.MemeRainDuration, player)
 end
-AdminEventService.OnSpawnRarity = ConveyorService.SpawnRarity
 ShopService.Start()
 
 -- Каждый новый персонаж (данные уже загружены): тапок и перенос на свою базу
@@ -1090,6 +1095,9 @@ local function onChatted(player: Player, message: string)
 		return
 	end
 	local words = string.split(message, " ")
+	if words[1] ~= "/event" then
+		return -- "/events", "/eventX" и т.п. — не наша команда
+	end
 	local name = words[2] or ""
 	if string.lower(name) == "stop" then
 		AdminEventService.Stop()
@@ -1123,6 +1131,21 @@ function AdminEventService.Start()
 	Players.PlayerAdded:Connect(watchPlayer)
 	for _, player in Players:GetPlayers() do
 		watchPlayer(player)
+	end
+	-- В новом чате (TextChatService) сообщения со «/» — это команды, и Player.Chatted до них
+	-- может не дойти, поэтому регистрируем /event как TextChatCommand.
+	local TextChatService = game:GetService("TextChatService")
+	if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+		local command = Instance.new("TextChatCommand")
+		command.Name = "AdminEventCommand"
+		command.PrimaryAlias = "/event"
+		command.Triggered:Connect(function(source: TextSource, text: string)
+			local player = Players:GetPlayerByUserId(source.UserId)
+			if player then
+				onChatted(player, text)
+			end
+		end)
+		command.Parent = TextChatService
 	end
 	Players.PlayerRemoving:Connect(function(player)
 		adminCache[player] = nil
@@ -1862,7 +1885,8 @@ end
 local function buildTurret(plot: Model, level: number)
 	local floor = floorOf(plot)
 	local size = floor.Size
-	local base = floor.CFrame * CFrame.new(size.X / 2 - 8, size.Y / 2, -size.Z / 2 + 16)
+	-- X = край - 4: при «- 8» тумба задевала слот 25 (центр x = 28, радиус 4) и стоящего на нём мема
+	local base = floor.CFrame * CFrame.new(size.X / 2 - 4, size.Y / 2, -size.Z / 2 + 16)
 
 	local model = Instance.new("Model")
 	model.Name = "Turret"
@@ -2183,7 +2207,9 @@ local function onEmote(player: Player, emoteId: unknown)
 		return
 	end
 	local t = os.clock()
-	if t - (lastEmoteAt[player] or -math.huge) < Config.EmoteCooldown then
+	-- Небольшой допуск: клиент считает ту же перезарядку по своим часам, и запрос
+	-- «ровно через EmoteCooldown» из-за пинга не должен молча теряться
+	if t - (lastEmoteAt[player] or -math.huge) < Config.EmoteCooldown - 0.3 then
 		return
 	end
 	local character = player.Character
@@ -5330,7 +5356,9 @@ end
 function RewardService.OnLoaded(player: Player)
 	syncPlaytime(player)
 
-	local income = PlotService.IncomeOf(player)
+	-- Оффлайн-доход считаем без множителя админ-ивента: «Двойные деньги» не должны удваивать
+	-- до 12 часов отсутствия только потому, что игрок зашёл во время ивента
+	local income = PlotService.IncomeOf(player) / math.max(ReplicatedStorage:GetAttribute("EventIncomeMult") or 1, 1)
 
 	-- Оффлайн-доход
 	local lastSeen = DataService.Get(player, "LastSeen")
@@ -7400,6 +7428,16 @@ local function onKnockback(velocity: any, stun: any)
 	end
 	local character, root, humanoid = Util.character()
 	if not character or not root or not humanoid or humanoid.Health <= 0 then
+		return
+	end
+	if duration <= 0 then
+		-- stun = 0 (ракетные ботинки): просто толчок без падения и тряски камеры.
+		-- В Physics + сразу GettingUp персонаж «вставал» и терял скорость; прыжок сохраняет полёт.
+		-- Если игрок сейчас оглушён — не прерываем оглушение, только добавляем скорость.
+		if humanoid:GetState() ~= Enum.HumanoidStateType.Physics then
+			humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+		end
+		root.AssemblyLinearVelocity = velocity
 		return
 	end
 	knockToken += 1
