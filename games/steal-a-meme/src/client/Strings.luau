@@ -70,7 +70,7 @@ Locale.Add({
 	RebirthButton = { "REBIRTH", "ПЕРЕРОДИТЬСЯ" },
 
 	-- страж
-	GuardTitle = { "🐱⚔️ Sword Kitten Guard", "🐱⚔️ Страж: Котёнок с мечом" },
+	GuardTitle = { "🐱⚔️ Sword Kitten Guard", "🐱⚔️ Страж: Kitten with a Sword" },
 	GuardInfo = { "Slaps thieves who carry memes away from your base.", "Бьёт воров, которые уносят мемов с твоей базы." },
 	GuardLevelNow = { "Level {Level}/{Max}", "Уровень {Level}/{Max}" },
 	GuardNext = { "Next: range {Range} · hit every {Cooldown}s", "Дальше: радиус {Range} · удар раз в {Cooldown} сек" },
@@ -90,7 +90,7 @@ Locale.Add({
 
 	-- эффекты
 	FxRebirth = { "REBIRTH!", "ПЕРЕРОЖДЕНИЕ!" },
-	MonsterName = { "😃 Smiley", "😃 Смайлик" },
+	MonsterName = { "😃 Smiley", "😃 Smiley" },
 })
 
 return Locale
