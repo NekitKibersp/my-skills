@@ -57,12 +57,22 @@ function UiKit.text(props: { [string]: any }, children: { Instance }?): TextLabe
 	return create("TextLabel", props, children)
 end
 
+-- Звук клика: модуль Sounds ставит сюда функцию (вызывается при нажатии любой UiKit.button)
+UiKit.OnClick = nil :: (() -> ())?
+
 -- Используйте .Activated, а не .MouseButton1Click: Activated работает и на телефоне, и на геймпаде.
 function UiKit.button(props: { [string]: any }): TextButton
 	props.Font = props.Font or Enum.Font.GothamBold
 	props.TextColor3 = props.TextColor3 or COLORS.Text
 	props.AutoButtonColor = if props.AutoButtonColor == nil then true else props.AutoButtonColor
-	return create("TextButton", props, { UiKit.corner(8) })
+	local button = create("TextButton", props, { UiKit.corner(8) })
+	button.Activated:Connect(function()
+		local onClick = UiKit.OnClick
+		if onClick then
+			onClick()
+		end
+	end)
+	return button
 end
 
 function UiKit.screen(name: string): ScreenGui

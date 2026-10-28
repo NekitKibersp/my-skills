@@ -1,6 +1,7 @@
--- Окно защиты базы: три карточки — страж (Kitten with a Sword), турель и лазерные ворота.
--- Уровни — атрибуты игрока GuardLevel / TurretLevel / LaserLevel, цены и параметры — Config.Guard и
--- Config.Defense. Покупку проверяет сервер: Remotes.UpgradeGuard() и Remotes.UpgradeDefense(kind).
+-- Окно защиты и прокачки: карточки — страж (Kitten with a Sword), турель, лазерные ворота и скорость.
+-- Уровни — атрибуты игрока GuardLevel / TurretLevel / LaserLevel / SpeedLevel, цены и параметры —
+-- Config.Guard, Config.Defense и Config.Speed. Покупку проверяет сервер: Remotes.UpgradeGuard(),
+-- Remotes.UpgradeDefense(kind) и Remotes.BuySpeed().
 -- (Раньше страж жил в отдельном GuardWindow; теперь это одна вкладка-карточка здесь.)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -59,6 +60,21 @@ local KINDS = {
 			return Locale.T("DefenseLaserNext", { Cooldown = level.Cooldown, Stun = level.Stun })
 		end,
 	},
+	{
+		Id = "Speed",
+		Title = "UpgSpeedName",
+		Info = "UpgSpeedInfo",
+		Attribute = "SpeedLevel",
+		Levels = Config.Speed,
+		AlwaysUpgrade = true, -- «Улучшить», а не «Нанять» на нулевом уровне
+		Invoke = function()
+			return Remotes:WaitForChild("BuySpeed"):InvokeServer()
+		end,
+		Next = function(level)
+			local current = Config.Speed[Util.num(player, "SpeedLevel")]
+			return Locale.T("UpgSpeedNext", { Bonus = level.Bonus, Now = if current then current.Bonus else 0 })
+		end,
+	},
 }
 
 local DefenseWindow = {}
@@ -75,7 +91,15 @@ function DefenseWindow.CheapestPrice(): number?
 	return best
 end
 
-DefenseWindow.Attributes = { "GuardLevel", "TurretLevel", "LaserLevel" }
+DefenseWindow.Attributes = { "GuardLevel", "TurretLevel", "LaserLevel", "SpeedLevel" }
+
+-- Прокрутить окно к карточке (меню «☰» → «Скорость»); задаётся в Start
+local scrollTo: ((string) -> ())? = nil
+function DefenseWindow.ScrollTo(id: string)
+	if scrollTo then
+		scrollTo(id)
+	end
+end
 
 function DefenseWindow.Start(ctx)
 	local window, body = UiKit.window(ctx.Gui, Locale.T("DefenseTitle"), Vector2.new(560, 480))
@@ -160,11 +184,26 @@ function DefenseWindow.Start(ctx)
 			local ok, success, key = pcall(kind.Invoke)
 			busy = false
 			if ok and type(key) == "string" then
-				ctx.Toast(Locale.T(key, { Level = current + 1, Price = nextLevel.Price }), if success then "success" else "error")
+				ctx.Toast(
+					Locale.T(key, { Level = current + 1, Price = nextLevel.Price, Bonus = nextLevel.Bonus }),
+					if success then "success" else "error",
+					if success then "Bought" else nil
+				)
 			end
 		end)
 
-		cards[kind.Id] = { Kind = kind, Level = level, Next = nextInfo, Buy = buy }
+		cards[kind.Id] = { Kind = kind, Level = level, Next = nextInfo, Buy = buy, Frame = frame }
+	end
+
+	scrollTo = function(id: string)
+		local card = cards[id]
+		if not card then
+			return
+		end
+		-- Раскладка обновится к следующему кадру
+		task.defer(function()
+			list.CanvasPosition = Vector2.new(0, math.max(0, card.Frame.AbsolutePosition.Y - list.AbsolutePosition.Y + list.CanvasPosition.Y))
+		end)
 	end
 
 	local function render()
@@ -176,7 +215,7 @@ function DefenseWindow.Start(ctx)
 			card.Level.Text = Locale.T("GuardLevelNow", { Level = current, Max = #kind.Levels })
 			if nextLevel then
 				card.Next.Text = kind.Next(nextLevel)
-				card.Buy.Text = Locale.T(if current == 0 then "GuardBuy" else "GuardUpgrade", { Price = nextLevel.Price })
+				card.Buy.Text = Locale.T(if current == 0 and not kind.AlwaysUpgrade then "GuardBuy" else "GuardUpgrade", { Price = nextLevel.Price })
 				local affordable = coins >= nextLevel.Price
 				card.Buy.BackgroundColor3 = if affordable then COLORS.Green else COLORS.Panel
 				card.Buy.TextColor3 = if affordable then COLORS.Text else COLORS.Red

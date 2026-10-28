@@ -1,7 +1,7 @@
 -- HUD: деньги/доход/слоты/бонус друзей слева сверху, таймер подарка за игру и боковые кнопки в две
 -- колонки: главная (Магазин, Мем-пропуск, Колесо, Награды дня, Квесты, Меню — со значками) и база
--- (Замок, Перерождение, Защита). Остальные окна (Предметы, Индекс, Скины, Эмоции, Обмен, Коды) и
--- приглашение друзей / группа — в меню «☰»: на телефоне кнопки не закрывают экран.
+-- (Замок, Домой, Перерождение, Защита). Остальные окна (Предметы, Индекс, Скины, Эмоции, Обмен, Коды,
+-- Скорость, Настройки) и приглашение друзей / группа — в меню «☰»: на телефоне кнопки не закрывают экран.
 -- Всё рисуется из атрибутов игрока.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -14,6 +14,7 @@ local Locale = require(Shared:WaitForChild("Locale"))
 local DefenseWindow = require(script.Parent:WaitForChild("DefenseWindow"))
 local PassWindow = require(script.Parent:WaitForChild("PassWindow"))
 local QuestsWindow = require(script.Parent:WaitForChild("QuestsWindow"))
+local RebirthWindow = require(script.Parent:WaitForChild("RebirthWindow"))
 local Social = require(script.Parent:WaitForChild("Social"))
 local SpinWindow = require(script.Parent:WaitForChild("SpinWindow"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
@@ -252,11 +253,16 @@ local function buildMenu(ctx)
 		{ Icon = "😀", Caption = "BtnEmotes", Window = "Emotes" },
 		{ Icon = "🤝", Caption = "BtnTrade", Window = "TradePick" },
 		{ Icon = "🎟️", Caption = "BtnCodes", Window = "Codes" },
+		{ Icon = "👟", Caption = "BtnSpeed", Window = "Defense", Card = "Speed" },
+		{ Icon = "⚙️", Caption = "BtnSettings", Window = "Settings" },
 	}
 	for order, tile in tiles do
 		local button = sideButton(grid, order, tile.Icon, Locale.T(tile.Caption))
 		button.Activated:Connect(function()
 			ctx.Open(tile.Window, true)
+			if tile.Card then
+				DefenseWindow.ScrollTo(tile.Card)
+			end
 		end)
 	end
 
@@ -342,9 +348,11 @@ function Hud.Start(ctx)
 	local menu = sideButton(main, 6, "☰", Locale.T("BtnMenu"))
 
 	local lock, lockCaption = sideButton(extra, 1, "🔒", Locale.T("BtnLock"))
-	local rebirth, rebirthCaption = sideButton(extra, 2, "♻️", Locale.T("BtnRebirth"))
-	local guard, guardCaption = sideButton(extra, 3, "🛡️", Locale.T("BtnDefense"))
+	local home, homeCaption = sideButton(extra, 2, "🏠", Locale.T("BtnHome"))
+	local rebirth, rebirthCaption = sideButton(extra, 3, "♻️", Locale.T("BtnRebirth"))
+	local guard, guardCaption = sideButton(extra, 4, "🛡️", Locale.T("BtnDefense"))
 	local lockIcon = lock:FindFirstChild("Icon") :: TextLabel
+	local homeIcon = home:FindFirstChild("Icon") :: TextLabel
 
 	local passBadge = badge(pass)
 	local spinBadge = badge(spin)
@@ -394,11 +402,47 @@ function Hud.Start(ctx)
 		Remotes:WaitForChild("LockBase"):FireServer()
 	end)
 
-	-- Подпись «Перерождения» — прогресс в процентах (короткая цель всегда на экране)
+	-- «Домой»: перезарядку и запрет с мемом проверяет сервер, кнопка только подсказывает
+	home.Activated:Connect(function()
+		if Util.str(player, "Carrying") ~= "" then
+			ctx.Toast(Locale.T("HomeCarrying"), "error")
+			return
+		end
+		if Util.num(player, "HomeReadyAt") > Util.now() then
+			return
+		end
+		Remotes:WaitForChild("GoHome"):FireServer()
+	end)
+	local function renderHome()
+		local carrying = Util.str(player, "Carrying") ~= ""
+		local left = Util.num(player, "HomeReadyAt") - Util.now()
+		if carrying then
+			homeIcon.Text = "🚫"
+			homeCaption.Text = Locale.T("BtnHome")
+		elseif left > 0 then
+			homeIcon.Text = "🏠"
+			homeCaption.Text = Util.clock(left)
+		else
+			homeIcon.Text = "🏠"
+			homeCaption.Text = Locale.T("BtnHome")
+		end
+		local ready = not carrying and left <= 0
+		home.BackgroundColor3 = if ready then COLORS.Panel else COLORS.PanelLight
+		home.AutoButtonColor = ready
+		homeIcon.TextTransparency = if ready then 0 else 0.4
+	end
+
+	-- Подпись «Перерождения» — прогресс денег в процентах (короткая цель всегда на экране).
+	-- Не хватает мемов для тира — «⚠️» и не больше 99%.
 	local function renderRebirth()
-		local progress = Util.num(player, "Coins") / Config.RebirthCost(Util.num(player, "Rebirths"))
-		rebirthCaption.Text = math.floor(math.clamp(progress, 0, 1) * 100) .. "%"
-		rebirth.BackgroundColor3 = if progress >= 1 then COLORS.Purple else COLORS.Panel
+		local status = RebirthWindow.Status()
+		local percent = math.floor(math.clamp(status.Coins / status.Cost, 0, 1) * 100)
+		if status.MemesOk then
+			rebirthCaption.Text = percent .. "%"
+		else
+			rebirthCaption.Text = "⚠️" .. math.min(percent, 99) .. "%"
+		end
+		rebirth.BackgroundColor3 = if status.CashOk and status.MemesOk then COLORS.Purple else COLORS.Panel
 	end
 
 	-- Подпись «Защиты» — цена самой дешёвой следующей прокачки (страж, турель, лазер)
@@ -436,10 +480,17 @@ function Hud.Start(ctx)
 		end
 	end
 
+	-- Мемы на базе меняются без атрибутов игрока — прогресс перерождения перепроверяем раз в секунду
 	task.spawn(function()
+		local ticks = 0
 		while true do
 			renderLock()
+			renderHome()
 			renderGift()
+			ticks += 1
+			if ticks % 4 == 0 then
+				renderRebirth()
+			end
 			task.wait(0.25)
 		end
 	end)

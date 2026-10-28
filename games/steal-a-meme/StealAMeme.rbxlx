@@ -18,18 +18,19 @@ Config.StartCoins = 100
 Config.StarterMeme = "ClapCat" -- бесплатный мем, который стоит на базе у новичка
 
 -- Редкости по возрастанию. Weight — относительный шанс появления на дорожке.
+-- Rank — «сила» редкости для требований перерождения (Legendary и выше = Rank ≥ 4).
 Config.Rarities = {
-	{ Id = "Common", Name = "Common", NameRu = "Обычный", Color = Color3.fromRGB(200, 205, 215), Weight = 60 },
-	{ Id = "Rare", Name = "Rare", NameRu = "Редкий", Color = Color3.fromRGB(70, 160, 255), Weight = 25 },
-	{ Id = "Epic", Name = "Epic", NameRu = "Эпический", Color = Color3.fromRGB(170, 90, 255), Weight = 10 },
-	{ Id = "Legendary", Name = "Legendary", NameRu = "Легендарный", Color = Color3.fromRGB(255, 200, 40), Weight = 3.5 },
-	{ Id = "Mythic", Name = "Mythic", NameRu = "Мифический", Color = Color3.fromRGB(255, 60, 80), Weight = 1.2 },
-	{ Id = "God", Name = "Meme God", NameRu = "Мем-Бог", Color = Color3.fromRGB(255, 120, 230), Weight = 0.25 },
-	{ Id = "Secret", Name = "SECRET", NameRu = "СЕКРЕТНЫЙ", Color = Color3.fromRGB(30, 30, 30), Weight = 0.05 },
-	{ Id = "Halloween", Name = "Halloween", NameRu = "Хэллоуин", Color = Color3.fromRGB(255, 130, 20), Weight = 0 },
-	{ Id = "Winter", Name = "Winter", NameRu = "Зимний", Color = Color3.fromRGB(120, 210, 255), Weight = 0 },
-	{ Id = "Limited", Name = "LIMITED", NameRu = "ЛИМИТ", Color = Color3.fromRGB(0, 255, 170), Weight = 0 },
-	{ Id = "Exclusive", Name = "EXCLUSIVE", NameRu = "ЭКСКЛЮЗИВ", Color = Color3.fromRGB(255, 215, 0), Weight = 0 },
+	{ Id = "Common", Name = "Common", NameRu = "Обычный", Rank = 1, Color = Color3.fromRGB(200, 205, 215), Weight = 60 },
+	{ Id = "Rare", Name = "Rare", NameRu = "Редкий", Rank = 2, Color = Color3.fromRGB(70, 160, 255), Weight = 25 },
+	{ Id = "Epic", Name = "Epic", NameRu = "Эпический", Rank = 3, Color = Color3.fromRGB(170, 90, 255), Weight = 10 },
+	{ Id = "Legendary", Name = "Legendary", NameRu = "Легендарный", Rank = 4, Color = Color3.fromRGB(255, 200, 40), Weight = 3.5 },
+	{ Id = "Mythic", Name = "Mythic", NameRu = "Мифический", Rank = 5, Color = Color3.fromRGB(255, 60, 80), Weight = 1.2 },
+	{ Id = "God", Name = "Meme God", NameRu = "Мем-Бог", Rank = 6, Color = Color3.fromRGB(255, 120, 230), Weight = 0.25 },
+	{ Id = "Secret", Name = "SECRET", NameRu = "СЕКРЕТНЫЙ", Rank = 7, Color = Color3.fromRGB(30, 30, 30), Weight = 0.05 },
+	{ Id = "Halloween", Name = "Halloween", NameRu = "Хэллоуин", Rank = 3, Color = Color3.fromRGB(255, 130, 20), Weight = 0 },
+	{ Id = "Winter", Name = "Winter", NameRu = "Зимний", Rank = 3, Color = Color3.fromRGB(120, 210, 255), Weight = 0 },
+	{ Id = "Limited", Name = "LIMITED", NameRu = "ЛИМИТ", Rank = 4, Color = Color3.fromRGB(0, 255, 170), Weight = 0 },
+	{ Id = "Exclusive", Name = "EXCLUSIVE", NameRu = "ЭКСКЛЮЗИВ", Rank = 5, Color = Color3.fromRGB(255, 215, 0), Weight = 0 },
 }
 
 -- Мемы. Face — эмодзи-«лицо», Shape — форма тела (Ball/Block/Cylinder), Size — масштаб.
@@ -98,6 +99,10 @@ Config.Creatures = {
 	-- Эксклюзивы боевого пропуска и колеса (на дорожке не появляются)
 	{ Id = "Golden67", Name = "Golden 67", Face = "🥇6️⃣7️⃣", Rarity = "Exclusive", Price = 900000, Income = 7000, Color = Color3.fromRGB(255, 205, 50), Shape = "Block", Size = 1.7, Exclusive = true, ModelId = 0, BaseModel = "SixSeven" },
 	{ Id = "DiamondSahur", Name = "Diamond Sahur", Face = "💎🏏", Rarity = "Exclusive", Price = 5000000, Income = 32000, Color = Color3.fromRGB(130, 230, 255), Shape = "Cylinder", Size = 2, Exclusive = true, ModelId = 0, BaseModel = "TungSahur" },
+	-- Lucky Blocks (Config.LuckyBlocks): на дорожке редко, на базе открываются случайным мемом редкости LuckyRarity
+	{ Id = "LuckyEpic", Name = "Lucky Block (Epic)", Face = "❓", Rarity = "Epic", Price = 9000, Income = 0, Color = Color3.fromRGB(170, 90, 255), Shape = "Block", Size = 0.9, Lucky = true, LuckyRarity = "Epic", LuckyWeight = 70, ModelId = 0 },
+	{ Id = "LuckyLegendary", Name = "Lucky Block (Legendary)", Face = "❓", Rarity = "Legendary", Price = 90000, Income = 0, Color = Color3.fromRGB(255, 200, 40), Shape = "Block", Size = 1, Lucky = true, LuckyRarity = "Legendary", LuckyWeight = 25, ModelId = 0 },
+	{ Id = "LuckyMythic", Name = "Lucky Block (Mythic)", Face = "❓", Rarity = "Mythic", Price = 900000, Income = 0, Color = Color3.fromRGB(255, 60, 80), Shape = "Block", Size = 1.1, Lucky = true, LuckyRarity = "Mythic", LuckyWeight = 5, ModelId = 0 },
 }
 
 -- Мутации умножают доход и цену. Event = true — только ночью и только в своём сезоне (Season).
@@ -121,11 +126,17 @@ Config.Conveyor = {
 }
 
 -- База игрока
+-- База — 3 этажа по FloorSlots слотов. Этаж открывается на перерождении UnlockRebirth.
+-- Геймпасс «+слоты» добавляет PassSlots на 1-м этаже. Номера слотов: этаж 1 — 1..12,
+-- этаж 2 — 13..24, этаж 3 — 25..36, слоты геймпасса — 37..42.
 Config.Plot = {
-	BaseSlots = 10,
-	SlotsPerRebirth = 2,
-	MaxSlots = 20, -- без геймпасса
-	PassSlots = 5, -- геймпасс «+5 слотов» (итого до 25)
+	FloorSlots = 12,
+	Floors = {
+		{ UnlockRebirth = 0, Height = 0 },
+		{ UnlockRebirth = 1, Height = 14 },
+		{ UnlockRebirth = 3, Height = 28 },
+	},
+	PassSlots = 6,
 	LockDuration = 60,
 	LockCooldown = 30, -- после открытия нельзя сразу закрыть снова
 }
@@ -182,11 +193,44 @@ Config.Night = {
 }
 
 -- Перерождение: цена ×4 каждый раз, +50% к доходу и +2 слота
+-- Перерождение: деньги обнуляются, мемы остаются. Каждое даёт +IncomeBonus к множителю дохода.
+-- Tiers[n] — n-е перерождение: цена, нужные мемы на базе (Rarity — эта редкость или выше по Rank,
+-- Id — конкретный мем; мемы НЕ забираются) и награды. После последнего тира цена растёт ×CostMult.
 Config.Rebirth = {
-	BaseCost = 500000,
-	CostMult = 4,
 	IncomeBonus = 0.5,
+	CostMult = 4,
+	Tiers = {
+		{ Cost = 300000, Requires = { { Rarity = "Epic", Count = 1 } }, Rewards = { Floor = 2, Spins = 1 } },
+		{ Cost = 1500000, Requires = { { Rarity = "Legendary", Count = 1 } }, Rewards = { Spins = 2, Item = "Energy" } },
+		{ Cost = 6000000, Requires = { { Rarity = "Legendary", Count = 2 } }, Rewards = { Floor = 3, Spins = 2 } },
+		{ Cost = 25000000, Requires = { { Rarity = "Mythic", Count = 1 } }, Rewards = { Spins = 3 } },
+		{ Cost = 100000000, Requires = { { Rarity = "Mythic", Count = 2 } }, Rewards = { Spins = 3, Item = "RocketBoots" } },
+		{ Cost = 400000000, Requires = { { Rarity = "God", Count = 1 } }, Rewards = { Spins = 4 } },
+		{ Cost = 1500000000, Requires = { { Rarity = "God", Count = 2 } }, Rewards = { Spins = 5 } },
+		{ Cost = 6000000000, Requires = { { Rarity = "Secret", Count = 1 } }, Rewards = { Spins = 5 } },
+		{ Cost = 25000000000, Requires = { { Rarity = "Secret", Count = 1 }, { Rarity = "God", Count = 2 } }, Rewards = { Spins = 6 } },
+		{ Cost = 100000000000, Requires = { { Rarity = "Secret", Count = 2 } }, Rewards = { Spins = 10 } },
+	},
 }
+
+-- Прокачка скорости (за монеты, навсегда): Bonus прибавляется к скорости ходьбы, и с мемом тоже
+Config.Speed = {
+	{ Price = 5000, Bonus = 2 },
+	{ Price = 30000, Bonus = 4 },
+	{ Price = 200000, Bonus = 6 },
+	{ Price = 1500000, Bonus = 8 },
+	{ Price = 10000000, Bonus = 10 },
+}
+
+-- Lucky Blocks: иногда едут по дорожке; на базе через OpenTime секунд открываются случайным мемом
+-- своей редкости. Пока не открылся — его можно украсть (у вора таймер начинается заново).
+Config.LuckyBlocks = {
+	Chance = 0.03, -- доля Lucky Blocks среди мемов на дорожке
+	OpenTime = 60,
+}
+
+-- Кнопка «Домой»: перезарядка, с мемом в руках не работает
+Config.HomeCooldown = 20
 
 -- Оффлайн-доход
 Config.Offline = {
@@ -618,15 +662,65 @@ function Config.PriceOf(id: string, mutationId: string?): number
 	return math.floor(creature.Price * Config.GetMutation(mutationId).Mult)
 end
 
-function Config.MaxSlots(rebirths: number, hasExtraSlotsPass: boolean?): number
-	local base = math.min(Config.Plot.BaseSlots + rebirths * Config.Plot.SlotsPerRebirth, Config.Plot.MaxSlots)
-	return base + (if hasExtraSlotsPass then Config.Plot.PassSlots else 0)
+-- Сколько этажей открыто при таком числе перерождений
+function Config.FloorsUnlocked(rebirths: number): number
+	local count = 0
+	for _, floor in Config.Plot.Floors do
+		if rebirths >= floor.UnlockRebirth then
+			count += 1
+		end
+	end
+	return count
 end
 
-Config.AbsoluteMaxSlots = Config.Plot.MaxSlots + Config.Plot.PassSlots
+-- Слот → номер этажа (1..3); слоты геймпасса — на 1-м этаже
+function Config.FloorOfSlot(slot: number): number
+	local floorCount = #Config.Plot.Floors
+	if slot > floorCount * Config.Plot.FloorSlots then
+		return 1
+	end
+	return (slot - 1) // Config.Plot.FloorSlots + 1
+end
+
+-- Доступен ли слот игроку (этаж открыт; слоты геймпасса — только с геймпассом)
+function Config.SlotAvailable(slot: number, rebirths: number, hasExtraSlotsPass: boolean?): boolean
+	local floorSlots = #Config.Plot.Floors * Config.Plot.FloorSlots
+	if slot > floorSlots then
+		return hasExtraSlotsPass == true and slot <= floorSlots + Config.Plot.PassSlots
+	end
+	return Config.FloorOfSlot(slot) <= Config.FloorsUnlocked(rebirths)
+end
+
+function Config.MaxSlots(rebirths: number, hasExtraSlotsPass: boolean?): number
+	return Config.FloorsUnlocked(rebirths) * Config.Plot.FloorSlots + (if hasExtraSlotsPass then Config.Plot.PassSlots else 0)
+end
+
+Config.AbsoluteMaxSlots = #Config.Plot.Floors * Config.Plot.FloorSlots + Config.Plot.PassSlots
+
+-- Тир следующего перерождения (rebirths — сколько уже сделано); nil — тиры кончились
+function Config.RebirthTier(rebirths: number)
+	return Config.Rebirth.Tiers[rebirths + 1]
+end
 
 function Config.RebirthCost(rebirths: number): number
-	return Config.Rebirth.BaseCost * Config.Rebirth.CostMult ^ rebirths
+	local tier = Config.RebirthTier(rebirths)
+	if tier then
+		return tier.Cost
+	end
+	local tiers = Config.Rebirth.Tiers
+	return tiers[#tiers].Cost * Config.Rebirth.CostMult ^ (rebirths + 1 - #tiers)
+end
+
+-- Сколько мемов на базе подходят под требование ({ Rarity, Count } или { Id, Count })
+function Config.MatchesRequirement(creatureId: string, requirement: any): boolean
+	local creature = Config.GetCreature(creatureId)
+	if not creature or creature.Lucky then
+		return false
+	end
+	if requirement.Id then
+		return creature.Id == requirement.Id
+	end
+	return (Config.GetRarity(creature.Rarity).Rank or 0) >= (Config.GetRarity(requirement.Rarity).Rank or 99)
 end
 
 function Config.IncomeMult(rebirths: number): number
@@ -4339,10 +4433,24 @@ MapBuilder.HALF_Z = 160
 
 local PLOT_X = { -135, -45, 45, 135 }
 local PLOT_Z = 64
-local SLOT_COLUMNS = 5
-local SLOT_SPACING_X = 14
-local SLOT_SPACING_Z = 10.5
 
+-- Этажи базы (координаты в системе базы: -Z — вход со стороны дорожки, +Z — задняя стена).
+-- Этажи 2–3 — платформы над задними 2/3 базы (z от UPPER_FRONT_Z до задней стены), спереди
+-- остаётся открытый двор с входом. Пандус на 2-й этаж — во дворе вдоль правой (+X) стены,
+-- пандус на 3-й — на 2-м этаже вдоль левой (-X) стены (над ним в полу 3-го этажа проём).
+local UPPER_FRONT_Z = -12
+local LANE_X = 33 -- от |x| = 33 до стены (40) — полосы пандусов
+local RAMP_WIDTH = 6.2
+local RAMP_LENGTH = 24 -- подъём 14 на 24 studs ≈ 30°
+local RAMP2_START_Z = -6 -- низ пандуса на 3-й этаж (перед ним площадка 6 studs)
+local RAIL_HEIGHT = 3
+
+-- Слоты: на каждом этаже сетка 4 × 3, слоты геймпасса — ряд из 6 на 1-м этаже перед сеткой
+local SLOT_COLUMNS = 4
+local SLOT_SPACING_X = 14
+local SLOT_ROWS_Z = { 30, 19.5, 9 } -- от задней стены к входу
+local PASS_ROW_Z = -2
+local PASS_SPACING_X = 11
 local function part(props: { [string]: any }): Part
 	local p = Instance.new("Part")
 	p.Anchored = true
@@ -4589,11 +4697,64 @@ local function buildCarpet(map: Instance)
 	})
 end
 
--- Слоты одной базы: 5 колонок × 5 рядов, от задней стены к входу.
+-- Высота верха пола этажа в системе базы (верх пола 1-го этажа = 0.5)
+local function floorTop(floor: number): number
+	return MapBuilder.PLOT_SIZE.Y / 2 + Config.Plot.Floors[floor].Height
+end
+
+-- Центр слота в системе базы (номера — см. Config.Plot)
 local function slotLocalPosition(index: number): Vector3
-	local column = (index - 1) % SLOT_COLUMNS
-	local row = (index - 1) // SLOT_COLUMNS
-	return Vector3.new((column - (SLOT_COLUMNS - 1) / 2) * SLOT_SPACING_X, 0.6, 28 - row * SLOT_SPACING_Z)
+	local perFloor = Config.Plot.FloorSlots
+	local floorSlots = #Config.Plot.Floors * perFloor
+	if index > floorSlots then
+		local k = index - floorSlots - 1
+		return Vector3.new((k - (Config.Plot.PassSlots - 1) / 2) * PASS_SPACING_X, floorTop(1) + 0.1, PASS_ROW_Z)
+	end
+	local floor = Config.FloorOfSlot(index)
+	local i = (index - 1) % perFloor
+	local column = i % SLOT_COLUMNS
+	local row = i // SLOT_COLUMNS + 1
+	return Vector3.new((column - (SLOT_COLUMNS - 1) / 2) * SLOT_SPACING_X, floorTop(floor) + 0.1, SLOT_ROWS_Z[row] or SLOT_ROWS_Z[#SLOT_ROWS_Z])
+end
+
+-- Наклонная плита (пандус/перила): верхняя грань идёт от from до to (в системе базы)
+local function slope(origin: CFrame, from: Vector3, to: Vector3, thickness: number, lift: number): CFrame
+	local mid = (from + to) / 2
+	return origin * CFrame.lookAt(mid, to) * CFrame.new(0, lift - thickness / 2, 0)
+end
+
+-- Барьер закрытого этажа: полупрозрачный блок над пандусом с табличкой «🔒 Rebirth N».
+-- Включает/выключает PlotService (по перерождениям хозяина базы).
+local function buildFloorLock(floor: number, cframe: CFrame, size: Vector3, parent: Instance)
+	local barrier = part({
+		Name = "FloorLock" .. floor,
+		Size = size,
+		CFrame = cframe,
+		Color = Color3.fromRGB(255, 80, 120),
+		Material = Enum.Material.ForceField,
+		Transparency = 0.3,
+		CanCollide = true,
+		Parent = parent,
+	})
+	barrier:SetAttribute("Floor", floor)
+	barrier:SetAttribute("UnlockRebirth", Config.Plot.Floors[floor].UnlockRebirth)
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "LockGui"
+	gui.Size = UDim2.fromScale(12, 3)
+	gui.StudsOffset = Vector3.new(0, size.Y / 2 + 2, 0)
+	gui.MaxDistance = 140
+	gui.LightInfluence = 0
+	local label = Instance.new("TextLabel")
+	label.Name = "Text"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.TextScaled = true
+	label.Font = Enum.Font.GothamBlack
+	label.TextColor3 = Color3.new(1, 1, 1)
+	label.TextStrokeTransparency = 0.2
+	label.Text = "🔒 Rebirth " .. Config.Plot.Floors[floor].UnlockRebirth
+	label.Parent = gui
+	gui.Parent = barrier
 end
 
 local function buildPlot(index: number, center: Vector3, front: Vector3, parent: Instance): Model
@@ -4605,11 +4766,14 @@ local function buildPlot(index: number, center: Vector3, front: Vector3, parent:
 	plot:SetAttribute("OwnerName", "")
 	plot:SetAttribute("LockedUntil", 0)
 	plot:SetAttribute("LockCooldownUntil", 0)
+	plot:SetAttribute("FloorsUnlocked", 1)
 
 	-- lookAt: LookVector смотрит на дорожку, значит «вперёд» в локальных координатах — это -Z.
 	local origin = CFrame.lookAt(center, center + front)
 	local size = MapBuilder.PLOT_SIZE
 	local hue = (index - 1) / 8
+	local floors = Config.Plot.Floors
+	local topHeight = floors[#floors].Height
 
 	local floor = part({
 		Name = "Floor",
@@ -4620,9 +4784,11 @@ local function buildPlot(index: number, center: Vector3, front: Vector3, parent:
 		Parent = plot,
 	})
 	plot.PrimaryPart = floor
+	local upperColor = Color3.fromHSV(hue, 0.3, 0.5)
+	local railColor = Color3.fromHSV(hue, 0.25, 0.85)
 
 	local wallColor = Color3.fromHSV(hue, 0.5, 0.3)
-	local wallHeight = 7
+	local wallHeight = size.Y / 2 + topHeight + 8 -- до верхнего этажа + высота перил с запасом
 	-- Задняя и боковые стены (вход со стороны дорожки открыт)
 	part({
 		Name = "Wall",
@@ -4652,6 +4818,108 @@ local function buildPlot(index: number, center: Vector3, front: Vector3, parent:
 		})
 	end
 
+	-- ===== Этажи 2..N: платформы над задней частью базы =====
+	local upperDepth = size.Z / 2 - UPPER_FRONT_Z
+	local upperCenterZ = (UPPER_FRONT_Z + size.Z / 2) / 2
+	local railZ = UPPER_FRONT_Z + 0.2
+	for floorIndex = 2, #floors do
+		local top = floorTop(floorIndex)
+		local holeLeft = floorIndex >= 3 -- в полу 3-го этажа проём над пандусом со 2-го
+		local leftX = if holeLeft then -LANE_X else -size.X / 2
+		local platform = part({
+			Name = "Floor" .. floorIndex,
+			Size = Vector3.new(size.X / 2 - leftX, 1, upperDepth),
+			CFrame = origin * CFrame.new((leftX + size.X / 2) / 2, top - 0.5, upperCenterZ),
+			Color = upperColor,
+			Material = Enum.Material.WoodPlanks,
+			Parent = plot,
+		})
+		platform:SetAttribute("SkinFloor", true)
+		platform:SetAttribute("Floor", floorIndex)
+		if holeLeft then
+			-- Кусок пола за проёмом: сюда выходит пандус
+			local landingStart = RAMP2_START_Z + RAMP_LENGTH
+			local landing = part({
+				Name = "Floor" .. floorIndex .. "Landing",
+				Size = Vector3.new(size.X / 2 - LANE_X, 1, size.Z / 2 - landingStart),
+				CFrame = origin * CFrame.new(-(size.X / 2 + LANE_X) / 2, top - 0.5, (landingStart + size.Z / 2) / 2),
+				Color = upperColor,
+				Material = Enum.Material.WoodPlanks,
+				Parent = plot,
+			})
+			landing:SetAttribute("SkinFloor", true)
+			landing:SetAttribute("Floor", floorIndex)
+			-- Перила вдоль проёма
+			part({
+				Name = "Railing",
+				Size = Vector3.new(0.4, RAIL_HEIGHT, landingStart - UPPER_FRONT_Z),
+				CFrame = origin * CFrame.new(-LANE_X + 0.2, top + RAIL_HEIGHT / 2, (UPPER_FRONT_Z + landingStart) / 2),
+				Color = railColor,
+				Parent = plot,
+			})
+		end
+		-- Перила по переднему краю: на 2-м этаже — кроме места, куда выходит пандус (+X),
+		-- на 3-м — кроме проёма (-X)
+		local railFrom = if holeLeft then -LANE_X else -size.X / 2
+		local railTo = if holeLeft then size.X / 2 else LANE_X - 0.3
+		part({
+			Name = "Railing",
+			Size = Vector3.new(railTo - railFrom, RAIL_HEIGHT, 0.4),
+			CFrame = origin * CFrame.new((railFrom + railTo) / 2, top + RAIL_HEIGHT / 2, railZ),
+			Color = railColor,
+			Parent = plot,
+		})
+	end
+
+	-- ===== Пандусы =====
+	local laneCenter = (LANE_X + size.X / 2 - 0.75) / 2 -- середина между перилами и внутренней гранью стены
+	local ramps = {
+		-- на 2-й этаж: во дворе вдоль +X стены, от входа до края 2-го этажа
+		{ X = laneCenter, FromZ = UPPER_FRONT_Z - RAMP_LENGTH, Floor = 2 },
+		-- на 3-й этаж: на 2-м этаже вдоль -X стены
+		{ X = -laneCenter, FromZ = RAMP2_START_Z, Floor = 3 },
+	}
+	for _, ramp in ramps do
+		if not floors[ramp.Floor] then
+			continue
+		end
+		local bottom = floorTop(ramp.Floor - 1)
+		local top = floorTop(ramp.Floor)
+		local from = Vector3.new(ramp.X, bottom, ramp.FromZ)
+		local to = Vector3.new(ramp.X, top, ramp.FromZ + RAMP_LENGTH)
+		local length = (to - from).Magnitude
+		local stairs = part({
+			Name = "Stairs",
+			Size = Vector3.new(RAMP_WIDTH, 1, length),
+			CFrame = slope(origin, from, to, 1, 0),
+			Color = upperColor,
+			Material = Enum.Material.DiamondPlate,
+			Parent = plot,
+		})
+		stairs:SetAttribute("SkinFloor", true)
+		stairs:SetAttribute("Floor", ramp.Floor)
+		-- Перила со стороны базы (у стены их заменяет стена). Нижняя треть открыта:
+		-- на пандус можно зайти и сбоку, не обходя перила
+		local inner = if ramp.X > 0 then LANE_X - 0.2 else -LANE_X + 0.2
+		local railFrom = from:Lerp(to, 0.3)
+		part({
+			Name = "Railing",
+			Size = Vector3.new(0.4, RAIL_HEIGHT, length * 0.7),
+			CFrame = slope(origin, Vector3.new(inner, railFrom.Y, railFrom.Z), Vector3.new(inner, top, to.Z), RAIL_HEIGHT, RAIL_HEIGHT),
+			Color = railColor,
+			Parent = plot,
+		})
+		-- Барьер закрытого этажа: накрывает весь пандус (обойти сбоку или перепрыгнуть нельзя)
+		local lockBottom = bottom
+		local lockTop = top + 7.5
+		buildFloorLock(
+			ramp.Floor,
+			origin * CFrame.new(ramp.X, (lockBottom + lockTop) / 2, ramp.FromZ + RAMP_LENGTH / 2),
+			Vector3.new(size.X / 2 - LANE_X + 0.3, lockTop - lockBottom, RAMP_LENGTH),
+			plot
+		)
+	end
+
 	-- Табличка над входом (SurfaceGui рисует клиент, Face = Front смотрит на дорожку)
 	part({
 		Name = "Sign",
@@ -4661,11 +4929,11 @@ local function buildPlot(index: number, center: Vector3, front: Vector3, parent:
 		Parent = plot,
 	})
 
-	-- Силовой щит на входе: виден, когда база закрыта
+	-- Силовой щит на входе: виден, когда база закрыта (во всю ширину и высоту базы)
 	part({
 		Name = "Shield",
-		Size = Vector3.new(31, 14, 0.4),
-		CFrame = origin * CFrame.new(0, 7, -size.Z / 2),
+		Size = Vector3.new(size.X - 1.5, wallHeight, 0.4),
+		CFrame = origin * CFrame.new(0, wallHeight / 2, -size.Z / 2 + 0.3),
 		Color = Color3.fromRGB(80, 200, 255),
 		Material = Enum.Material.ForceField,
 		Transparency = 1,
@@ -4690,13 +4958,15 @@ local function buildPlot(index: number, center: Vector3, front: Vector3, parent:
 			Parent = slots,
 		})
 		slot:SetAttribute("Index", slotIndex)
+		slot:SetAttribute("Floor", Config.FloorOfSlot(slotIndex))
 		slot:SetAttribute("Unlocked", false)
 	end
 
+	-- Кнопка замка: во дворе у входа, левее пандуса на 2-й этаж
 	local lockButton = part({
 		Name = "LockButton",
 		Size = Vector3.new(4, 3, 4),
-		CFrame = origin * CFrame.new(size.X / 2 - 8, 1.5, -size.Z / 2 + 8),
+		CFrame = origin * CFrame.new(LANE_X - 9, 1.5, -size.Z / 2 + 6),
 		Color = Color3.fromRGB(80, 200, 255),
 		Material = Enum.Material.Neon,
 		Parent = plot,
@@ -5231,7 +5501,8 @@ return MemeFactory
       <Item class="ModuleScript" referent="33">
         <Properties>
           <string name="Name">PlotService</string>
-          <string name="Source"><![CDATA[-- Базы игроков: выдача базы, мемы в слотах, доход в секунду, замок, страж, Индекс, перерождения.
+          <string name="Source"><![CDATA[-- Базы игроков: выдача базы, мемы в слотах, доход в секунду, замок, страж, Индекс, перерождения,
+-- этажи (барьеры закрытых этажей) и открытие Lucky Blocks.
 -- Мемы на базе хранятся в DataService (таблица Memes); модели в мире — их отображение.
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
@@ -5258,6 +5529,24 @@ local away: { [Player]: { [number]: boolean } } = {} -- слоты, чьих м�
 PlotService.OnStealPrompt = nil :: ((thief: Player, owner: Player, slot: number, prompt: ProximityPrompt) -> ())?
 -- Мем выставлен в обмен — его нельзя продать, слить, украсть (выставляет TradeService)
 PlotService.IsTradeLocked = nil :: ((player: Player, slot: number) -> boolean)?
+-- Награды перерождения (спины, предмет): (player, rewards из Config.Rebirth.Tiers[n].Rewards).
+-- Выставляет FoundationService — через Grant, который сам требует PlotService.
+PlotService.OnRebirthRewards = nil :: ((player: Player, rewards: any) -> ())?
+
+-- Порядок заполнения слотов: сначала нижние этажи (слоты геймпасса — на 1-м этаже), внутри этажа по номеру
+local SLOT_ORDER: { number } = {}
+for slot = 1, Config.AbsoluteMaxSlots do
+	table.insert(SLOT_ORDER, slot)
+end
+table.sort(SLOT_ORDER, function(a, b)
+	local floorA, floorB = Config.FloorOfSlot(a), Config.FloorOfSlot(b)
+	if floorA ~= floorB then
+		return floorA < floorB
+	end
+	return a < b
+end)
+
+local LUCKY_CHECK_INTERVAL = 1 -- сек: как часто проверять, не пора ли открыть Lucky Block
 
 -- Мем сейчас недоступен для действий: его несут или он в обмене
 function PlotService.IsBusy(player: Player, slot: number): boolean
@@ -5296,7 +5585,9 @@ function PlotService.InPlot(plot: Model, position: Vector3): boolean
 	local floor = plot:FindFirstChild("Floor") :: BasePart
 	local localPos = floor.CFrame:PointToObjectSpace(position)
 	local size = floor.Size
-	return math.abs(localPos.X) <= size.X / 2 and math.abs(localPos.Z) <= size.Z / 2 and localPos.Y > -5 and localPos.Y < 40
+	-- По высоте — все этажи и прыжок над верхним
+	local top = Config.Plot.Floors[#Config.Plot.Floors].Height + 22
+	return math.abs(localPos.X) <= size.X / 2 and math.abs(localPos.Z) <= size.Z / 2 and localPos.Y > -5 and localPos.Y < top
 end
 
 -- Точка перед входом в базу (сюда выталкивает с закрытой базы)
@@ -5328,6 +5619,29 @@ function PlotService.MaxSlots(player: Player): number
 	return Config.MaxSlots(DataService.Get(player, "Rebirths"), player:GetAttribute("Pass_ExtraSlots") == true)
 end
 
+-- Можно ли ставить мема в слот (этаж открыт; слоты геймпасса — с геймпассом)
+function PlotService.SlotAvailable(player: Player, slot: number): boolean
+	return Config.SlotAvailable(slot, DataService.Get(player, "Rebirths"), player:GetAttribute("Pass_ExtraSlots") == true)
+end
+
+function PlotService.FloorsUnlocked(player: Player): number
+	return Config.FloorsUnlocked(DataService.Get(player, "Rebirths"))
+end
+
+-- Случайный обычный мем редкости: без сезонных, лимитированных, эксклюзивов и Lucky Blocks
+function PlotService.RandomMeme(rarity: string): string?
+	local pool = {}
+	for _, creature in Config.Creatures do
+		if creature.Rarity == rarity and not creature.Event and not creature.Limited and not creature.Exclusive and not creature.Lucky then
+			table.insert(pool, creature.Id)
+		end
+	end
+	if #pool == 0 then
+		return nil
+	end
+	return pool[math.random(1, #pool)]
+end
+
 function PlotService.GetEntries(player: Player): { Entry }
 	return DataService.GetTable(player, "Memes")
 end
@@ -5349,12 +5663,27 @@ function PlotService.FreeSlot(player: Player): number?
 	for _, entry in PlotService.GetEntries(player) do
 		used[entry.Slot] = true
 	end
-	for slot = 1, PlotService.MaxSlots(player) do
-		if not used[slot] then
+	for _, slot in SLOT_ORDER do
+		if not used[slot] and PlotService.SlotAvailable(player, slot) then
 			return slot
 		end
 	end
 	return nil
+end
+
+-- Сколько доступных слотов свободно
+function PlotService.FreeSlotCount(player: Player): number
+	local used = {}
+	for _, entry in PlotService.GetEntries(player) do
+		used[entry.Slot] = true
+	end
+	local free = 0
+	for slot = 1, Config.AbsoluteMaxSlots do
+		if not used[slot] and PlotService.SlotAvailable(player, slot) then
+			free += 1
+		end
+	end
+	return free
 end
 
 function PlotService.IsAway(player: Player, slot: number): boolean
@@ -5439,6 +5768,10 @@ local function syncIndex(player: Player)
 end
 
 local function discover(player: Player, id: string, mutationId: string)
+	local creature = Config.GetCreature(id)
+	if not creature or creature.Lucky then
+		return -- Lucky Blocks в Индекс не попадают
+	end
 	local index = DataService.GetTable(player, "Index")
 	local key = Config.IndexKey(id, mutationId)
 	if not index[key] then
@@ -5454,6 +5787,11 @@ local function setupPlacedModel(player: Player, model: Model, slot: number)
 	model:SetAttribute("State", "Placed")
 	model:SetAttribute("OwnerUserId", player.UserId)
 	model:SetAttribute("Slot", slot)
+	model:SetAttribute("Floor", Config.FloorOfSlot(slot))
+	-- Lucky Block: таймер открытия начинается заново при каждой расстановке
+	-- (покупка, возврат после кражи, доставка вору, обмен, перезаход)
+	local creature = Config.GetCreature(model:GetAttribute("CreatureId"))
+	model:SetAttribute("OpensAt", if creature and creature.Lucky then now() + Config.LuckyBlocks.OpenTime else nil)
 
 	local steal = MemeFactory.AddPrompt(model, "StealPrompt", "Steal", Config.Steal.HoldDuration)
 	steal.Triggered:Connect(function(thief)
@@ -5519,21 +5857,39 @@ function PlotService.ReturnModel(player: Player, slot: number, model: Model)
 	end
 end
 
+-- Барьеры закрытых этажей: открытый этаж — барьер невидим и проходим (floorsUnlocked = 1 — свободная база)
+local function updateFloors(plot: Model, floorsUnlocked: number)
+	plot:SetAttribute("FloorsUnlocked", floorsUnlocked)
+	for floor = 2, #Config.Plot.Floors do
+		local barrier = plot:FindFirstChild("FloorLock" .. floor) :: BasePart?
+		if barrier then
+			local open = floor <= floorsUnlocked
+			barrier.CanCollide = not open
+			barrier.CanQuery = not open
+			barrier.Transparency = if open then 1 else 0.3
+			local gui = barrier:FindFirstChild("LockGui") :: BillboardGui?
+			if gui then
+				gui.Enabled = not open
+			end
+		end
+	end
+end
+
 local function updateSlotsInfo(player: Player)
 	local plot = plotOf[player]
 	if not plot then
 		return
 	end
-	local maxSlots = PlotService.MaxSlots(player)
 	for slot = 1, Config.AbsoluteMaxSlots do
 		local part = slotPart(plot, slot)
-		local unlocked = slot <= maxSlots
+		local unlocked = PlotService.SlotAvailable(player, slot)
 		part:SetAttribute("Unlocked", unlocked)
 		part.Transparency = if unlocked then 0 else 0.75
 		part.Color = if unlocked then Color3.fromRGB(90, 90, 110) else Color3.fromRGB(40, 40, 45)
 	end
+	updateFloors(plot, PlotService.FloorsUnlocked(player))
 	player:SetAttribute("SlotsUsed", #PlotService.GetEntries(player))
-	player:SetAttribute("MaxSlots", maxSlots)
+	player:SetAttribute("MaxSlots", PlotService.MaxSlots(player))
 end
 PlotService.UpdateSlotsInfo = updateSlotsInfo
 
@@ -5615,6 +5971,10 @@ function PlotService.Merge(player: Player, slot: number)
 	local entry = PlotService.GetEntry(player, slot)
 	if not entry or entry.Viral or PlotService.IsBusy(player, slot) then
 		return
+	end
+	local creature = Config.GetCreature(entry.Id)
+	if creature and creature.Lucky then
+		return -- Lucky Blocks не сливаются
 	end
 	local same = {}
 	for _, other in PlotService.GetEntries(player) do
@@ -5737,6 +6097,17 @@ end
 
 -- ===== Перерождение =====
 
+-- Сколько мемов на базе подходят под требование (без унесённых и выставленных в обмен)
+local function countMatching(player: Player, requirement: any): number
+	local count = 0
+	for _, entry in PlotService.GetEntries(player) do
+		if not PlotService.IsBusy(player, entry.Slot) and Config.MatchesRequirement(entry.Id, requirement) then
+			count += 1
+		end
+	end
+	return count
+end
+
 function PlotService.Rebirth(player: Player): (boolean, string)
 	local rebirths = DataService.Get(player, "Rebirths")
 	local cost = Config.RebirthCost(rebirths)
@@ -5744,13 +6115,37 @@ function PlotService.Rebirth(player: Player): (boolean, string)
 		Remotes.Notify:FireClient(player, "RebirthNeed", { Price = cost }, "error")
 		return false, "RebirthNeed"
 	end
+	-- Требования тира: нужные мемы должны стоять на базе (их не забирают)
+	local tier = Config.RebirthTier(rebirths)
+	if tier and tier.Requires then
+		for _, requirement in tier.Requires do
+			if countMatching(player, requirement) < requirement.Count then
+				if requirement.Id then
+					Remotes.Notify:FireClient(player, "RebirthNeedMemeId", { Count = requirement.Count, Meme = requirement.Id }, "error")
+				else
+					Remotes.Notify:FireClient(player, "RebirthNeedMemes", { Count = requirement.Count, Rarity = requirement.Rarity }, "error")
+				end
+				return false, "RebirthNeedMemes"
+			end
+		end
+	end
+	local floorsBefore = PlotService.FloorsUnlocked(player)
 	DataService.Set(player, "Coins", 0)
 	AnalyticsService.Economy(player, "Sink", cost, "Gameplay", "Rebirth")
 	DataService.Set(player, "Rebirths", rebirths + 1)
+	local rewards = if tier then tier.Rewards else nil
+	if rewards and PlotService.OnRebirthRewards then
+		PlotService.OnRebirthRewards(player, rewards)
+	end
+	-- Новый этаж (Rewards.Floor) открывается сам: этажи считаются по числу перерождений
 	updateSlotsInfo(player)
 	PlotService.RefreshIncome(player)
 	Remotes.Fx:FireAllClients("Rebirth", { UserId = player.UserId })
 	Remotes.Notify:FireClient(player, "Rebirthed", { Count = rebirths + 1 }, "success")
+	local floorsAfter = PlotService.FloorsUnlocked(player)
+	if floorsAfter > floorsBefore then
+		Remotes.Notify:FireClient(player, "FloorUnlocked", { Floor = floorsAfter }, "success")
+	end
 	return true, "Rebirthed"
 end
 
@@ -5780,13 +6175,8 @@ function PlotService.LoadPlayer(player: Player)
 		return
 	end
 	local entries = PlotService.GetEntries(player)
-	local maxSlots = PlotService.MaxSlots(player)
-	-- Если геймпасс слотов пропал (возврат), лишние мемы переезжают на свободные места или остаются вне слотов
-	for _, entry in entries do
-		if entry.Slot > maxSlots then
-			warn("[PlotService] Мем за пределами слотов", player.Name, entry.Id)
-		end
-	end
+	-- Мемы в недоступных слотах (геймпасс слотов пропал после возврата) остаются на своих местах:
+	-- они видны, приносят доход и их можно украсть или продать — просто новых туда не поставить.
 	if #entries == 0 and DataService.IsNew(player) then
 		table.insert(entries, { Id = Config.StarterMeme, Mut = "None", Viral = false, Slot = 1 })
 	end
@@ -5824,6 +6214,7 @@ function PlotService.Release(player: Player)
 		part:SetAttribute("Unlocked", false)
 		part.Transparency = 0.6
 	end
+	updateFloors(plot, 1)
 	plotOf[player] = nil
 	models[player] = nil
 	away[player] = nil
@@ -9806,6 +10197,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Строки UI добавляются в Locale до того, как кто-то их попросит
 local Locale = require(script:WaitForChild("Strings"))
 local UiKit = require(script:WaitForChild("UiKit"))
+local Settings = require(script:WaitForChild("Settings"))
+local Sounds = require(script:WaitForChild("Sounds"))
 
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 
@@ -9827,7 +10220,8 @@ local rawToast = UiKit.toaster(toastHolder)
 -- Один и тот же текст дважды подряд не показываем: сервер шлёт Notify, а окна ещё
 -- показывают ключ, который вернула RemoteFunction (Rebirth/UpgradeGuard/ClaimDaily/...)
 local recentToasts: { [string]: number } = {}
-local function toast(message: string, kind: string?)
+-- sound — особый звук события (Sounds.ForNotify), иначе звук по kind
+local function toast(message: string, kind: string?, sound: string?)
 	local now = os.clock()
 	if recentToasts[message] and now - recentToasts[message] < 2 then
 		return
@@ -9839,14 +10233,17 @@ local function toast(message: string, kind: string?)
 		end
 	end
 	rawToast(message, kind)
+	Sounds.Toast(kind, sound)
 end
 
--- Масштаб интерфейса по высоте экрана: телефон в альбомной ориентации ~ 0.6, ПК — 1
+-- Масштаб интерфейса по высоте экрана: телефон в альбомной ориентации ~ 0.6, ПК — 1;
+-- умножается на настройку игрока UiScale (0.7..1.3)
 local scales: { UIScale } = {}
 local function currentScale(): number
 	local camera = workspace.CurrentCamera
 	local height = if camera then camera.ViewportSize.Y else 720
-	return math.clamp(height / 720, 0.6, 1)
+	local userScale = Settings.Get("UiScale")
+	return math.clamp(height / 720, 0.6, 1) * (if type(userScale) == "number" then userScale else 1)
 end
 local function rescale()
 	local value = currentScale()
@@ -9863,6 +10260,11 @@ local function watchCamera()
 end
 workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(watchCamera)
 watchCamera()
+Settings.Changed:Connect(function(key)
+	if key == "UiScale" then
+		rescale()
+	end
+end)
 
 local windows: { [string]: GuiObject } = {}
 
@@ -9903,15 +10305,21 @@ Remotes:WaitForChild("Notify").OnClientEvent:Connect(function(key, args, kind)
 	if type(key) ~= "string" then
 		return
 	end
-	toast(Locale.T(key, if type(args) == "table" then args else nil), if type(kind) == "string" then kind else nil)
+	toast(
+		Locale.T(key, if type(args) == "table" then args else nil),
+		if type(kind) == "string" then kind else nil,
+		Sounds.ForNotify(key)
+	)
 end)
 
 -- Модули: окна регистрируются раньше HUD, который их открывает
 local modules = {
+	"Sounds",
 	"Shop",
 	"IndexWindow",
 	"RebirthWindow",
 	"DefenseWindow",
+	"SettingsWindow",
 	"Items",
 	"DailyWindow",
 	"QuestsWindow",
@@ -9926,6 +10334,7 @@ local modules = {
 	"Social",
 	"Banners",
 	"Carry",
+	"Alarm",
 	"PlotSigns",
 	"Prompts",
 	"MemeBillboards",
@@ -9946,6 +10355,210 @@ end
 ]]></string>
         </Properties>
         <Item class="ModuleScript" referent="51">
+          <Properties>
+            <string name="Name">Alarm</string>
+            <string name="Source"><![CDATA[-- Тревога «крадут твоего мема»: пока атрибут игрока StolenBy ~= 0 (UserId вора, мем — StolenMeme),
+-- по краям экрана пульсирует красная рамка (4 Frame с UIGradient, без картинок), сверху баннер
+-- «🚨 <вор> ворует твоего <мем>! — бей тапком!», от своего персонажа к вору тянется красный луч,
+-- раз в ALARM_PERIOD секунд звучит сирена (Sounds). StolenBy = 0 — всё убираем.
+-- Всё локально и видно только хозяину мема.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Locale = require(Shared:WaitForChild("Locale"))
+local Settings = require(script.Parent:WaitForChild("Settings"))
+local Sounds = require(script.Parent:WaitForChild("Sounds"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local create = UiKit.create
+local player = Players.LocalPlayer
+
+local ALARM_COLOR = Color3.fromRGB(255, 30, 40)
+local ALARM_PERIOD = 1.2
+local EDGE = 0.16 -- толщина рамки (доля экрана)
+local PULSE = TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+
+local Alarm = {}
+
+-- Красная рамка: каждая сторона — Frame, прозрачность растёт от края внутрь (UIGradient)
+local function buildVignette(): (ScreenGui, { Frame })
+	local gui = create("ScreenGui", {
+		Name = "StealAlarm",
+		IgnoreGuiInset = true,
+		ResetOnSpawn = false,
+		DisplayOrder = -1, -- под интерфейсом: кнопки не закрываются
+		Enabled = false,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	-- { позиция, размер, поворот градиента (0 — от левого края) }
+	local sides = {
+		{ UDim2.fromScale(0, 0), UDim2.fromScale(1, EDGE), 90 },
+		{ UDim2.fromScale(0, 1 - EDGE), UDim2.fromScale(1, EDGE), -90 },
+		{ UDim2.fromScale(0, 0), UDim2.fromScale(EDGE * 0.6, 1), 0 },
+		{ UDim2.fromScale(1 - EDGE * 0.6, 0), UDim2.fromScale(EDGE * 0.6, 1), 180 },
+	}
+	local frames = {}
+	for _, side in sides do
+		local frame = create("Frame", {
+			Position = side[1],
+			Size = side[2],
+			BackgroundColor3 = ALARM_COLOR,
+			BackgroundTransparency = 0.2,
+			BorderSizePixel = 0,
+			Active = false,
+			Parent = gui,
+		}, {
+			create("UIGradient", {
+				Rotation = side[3],
+				Transparency = NumberSequence.new(0, 1),
+			}),
+		})
+		table.insert(frames, frame)
+	end
+	return gui, frames
+end
+
+function Alarm.Start(ctx)
+	local vignette, frames = buildVignette()
+	local pulses: { Tween } = {}
+
+	local banner = UiKit.text({
+		Name = "StealAlarmBanner",
+		Text = "",
+		TextSize = 22,
+		TextColor3 = Color3.new(1, 1, 1),
+		TextStrokeTransparency = 0.3,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.26),
+		AutomaticSize = Enum.AutomaticSize.X,
+		Size = UDim2.fromOffset(0, 42),
+		BackgroundColor3 = Color3.fromRGB(120, 10, 20),
+		BackgroundTransparency = 0.1,
+		Visible = false,
+		Parent = ctx.Gui,
+	})
+	UiKit.corner(12).Parent = banner
+	create("UIPadding", { PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14), Parent = banner })
+	create("UIStroke", { Color = ALARM_COLOR, Thickness = 3, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Parent = banner })
+	ctx.Scale(banner)
+	local bannerPop = create("UIScale", { Parent = banner })
+
+	-- Луч к вору: вложения локальные, в корнях обоих персонажей
+	local beam: Beam? = nil
+	local fromAttachment: Attachment? = nil
+	local toAttachment: Attachment? = nil
+
+	local function clearBeam()
+		if beam then
+			beam:Destroy()
+		end
+		if fromAttachment then
+			fromAttachment:Destroy()
+		end
+		if toAttachment then
+			toAttachment:Destroy()
+		end
+		beam, fromAttachment, toAttachment = nil, nil, nil
+	end
+
+	local function ensureBeam(thief: Player?)
+		local _, root = Util.character()
+		local thiefCharacter = thief and thief.Character
+		local thiefRoot = thiefCharacter and thiefCharacter:FindFirstChild("HumanoidRootPart")
+		if not root or not thiefRoot or not thiefRoot:IsA("BasePart") then
+			clearBeam()
+			return
+		end
+		if beam and fromAttachment and toAttachment and fromAttachment.Parent == root and toAttachment.Parent == thiefRoot then
+			return
+		end
+		clearBeam()
+		local a0 = create("Attachment", { Name = "AlarmBeamFrom", Parent = root })
+		local a1 = create("Attachment", { Name = "AlarmBeamTo", Parent = thiefRoot })
+		local low = Settings.Get("LowGraphics") == true
+		beam = create("Beam", {
+			Name = "AlarmBeam",
+			Attachment0 = a0,
+			Attachment1 = a1,
+			Color = ColorSequence.new(ALARM_COLOR),
+			Transparency = NumberSequence.new(0.15, 0.4),
+			Width0 = 0.7,
+			Width1 = 1.2,
+			Segments = if low then 4 else 16,
+			FaceCamera = true,
+			LightEmission = 1,
+			Parent = root,
+		})
+		fromAttachment, toAttachment = a0, a1
+	end
+
+	local active = false
+	local lastSiren = 0
+
+	local function setActive(on: boolean)
+		if on == active then
+			return
+		end
+		active = on
+		vignette.Enabled = on
+		banner.Visible = on
+		for _, tween in pulses do
+			tween:Cancel()
+		end
+		table.clear(pulses)
+		if on then
+			for _, frame in frames do
+				frame.BackgroundTransparency = 0.15
+				local tween = TweenService:Create(frame, PULSE, { BackgroundTransparency = 0.75 })
+				tween:Play()
+				table.insert(pulses, tween)
+			end
+			bannerPop.Scale = 0.6
+			TweenService:Create(bannerPop, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+			lastSiren = 0
+		else
+			clearBeam()
+		end
+	end
+
+	local function update()
+		local thiefId = Util.num(player, "StolenBy")
+		setActive(thiefId ~= 0)
+		if not active then
+			return
+		end
+		local thief = Players:GetPlayerByUserId(thiefId)
+		banner.Text = Locale.T("AlarmBanner", {
+			Player = if thief then thief.DisplayName else Locale.T("AlarmSomeone"),
+			Meme = Util.str(player, "StolenMeme"),
+		})
+		ensureBeam(thief)
+		if os.clock() - lastSiren >= ALARM_PERIOD then
+			lastSiren = os.clock()
+			Sounds.Play("Alarm")
+		end
+	end
+
+	player:GetAttributeChangedSignal("StolenBy"):Connect(update)
+	player:GetAttributeChangedSignal("StolenMeme"):Connect(update)
+	player.CharacterRemoving:Connect(clearBeam)
+	task.spawn(function()
+		while true do
+			update()
+			task.wait(0.2)
+		end
+	end)
+end
+
+return Alarm
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="52">
           <Properties>
             <string name="Name">Banners</string>
             <string name="Source"><![CDATA[-- Баннеры сверху по центру: админ-ивент (идёт / до следующего), «В ТРЕНДЕ», Ночь Смайлика
@@ -10121,7 +10734,7 @@ return Banners
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="52">
+        <Item class="ModuleScript" referent="53">
           <Properties>
             <string name="Name">Carry</string>
             <string name="Source"><![CDATA[-- Кража: пока игрок несёт мема (атрибут Carrying), показываем баннер с таймером
@@ -10132,6 +10745,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
 local Locale = require(Shared:WaitForChild("Locale"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
@@ -10142,6 +10756,8 @@ local player = Players.LocalPlayer
 
 local INTRO_SECONDS = 90 -- сколько показывать метку над своей базой после входа
 local BEAM_COLOR = Color3.fromRGB(80, 255, 140)
+-- База многоэтажная: метка над верхним этажом (Config.Plot.Floors[*].Height), луч — ко входу на земле (Floor)
+local MARKER_HEIGHT = Config.Plot.Floors[#Config.Plot.Floors].Height + 14
 
 local Carry = {}
 
@@ -10232,7 +10848,7 @@ function Carry.Start(ctx)
 	local marker = create("BillboardGui", {
 		Name = "YourBase",
 		Size = UDim2.fromOffset(220, 56),
-		StudsOffsetWorldSpace = Vector3.new(0, 14, 0),
+		StudsOffsetWorldSpace = Vector3.new(0, MARKER_HEIGHT, 0),
 		AlwaysOnTop = true,
 		LightInfluence = 0,
 		Enabled = false,
@@ -10293,7 +10909,7 @@ return Carry
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="53">
+        <Item class="ModuleScript" referent="54">
           <Properties>
             <string name="Name">CodesWindow</string>
             <string name="Source"><![CDATA[-- Окно кодов: поле ввода + «Активировать» -> Remotes.RedeemCode(text).
@@ -10396,7 +11012,7 @@ return CodesWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="54">
+        <Item class="ModuleScript" referent="55">
           <Properties>
             <string name="Name">DailyWindow</string>
             <string name="Source"><![CDATA[-- Календарь ежедневных наград: 7 клеток из Config.DailyCalendar, забранные дни с галочкой,
@@ -10630,12 +11246,13 @@ return DailyWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="55">
+        <Item class="ModuleScript" referent="56">
           <Properties>
             <string name="Name">DefenseWindow</string>
-            <string name="Source"><![CDATA[-- Окно защиты базы: три карточки — страж (Kitten with a Sword), турель и лазерные ворота.
--- Уровни — атрибуты игрока GuardLevel / TurretLevel / LaserLevel, цены и параметры — Config.Guard и
--- Config.Defense. Покупку проверяет сервер: Remotes.UpgradeGuard() и Remotes.UpgradeDefense(kind).
+            <string name="Source"><![CDATA[-- Окно защиты и прокачки: карточки — страж (Kitten with a Sword), турель, лазерные ворота и скорость.
+-- Уровни — атрибуты игрока GuardLevel / TurretLevel / LaserLevel / SpeedLevel, цены и параметры —
+-- Config.Guard, Config.Defense и Config.Speed. Покупку проверяет сервер: Remotes.UpgradeGuard(),
+-- Remotes.UpgradeDefense(kind) и Remotes.BuySpeed().
 -- (Раньше страж жил в отдельном GuardWindow; теперь это одна вкладка-карточка здесь.)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -10694,6 +11311,21 @@ local KINDS = {
 			return Locale.T("DefenseLaserNext", { Cooldown = level.Cooldown, Stun = level.Stun })
 		end,
 	},
+	{
+		Id = "Speed",
+		Title = "UpgSpeedName",
+		Info = "UpgSpeedInfo",
+		Attribute = "SpeedLevel",
+		Levels = Config.Speed,
+		AlwaysUpgrade = true, -- «Улучшить», а не «Нанять» на нулевом уровне
+		Invoke = function()
+			return Remotes:WaitForChild("BuySpeed"):InvokeServer()
+		end,
+		Next = function(level)
+			local current = Config.Speed[Util.num(player, "SpeedLevel")]
+			return Locale.T("UpgSpeedNext", { Bonus = level.Bonus, Now = if current then current.Bonus else 0 })
+		end,
+	},
 }
 
 local DefenseWindow = {}
@@ -10710,7 +11342,15 @@ function DefenseWindow.CheapestPrice(): number?
 	return best
 end
 
-DefenseWindow.Attributes = { "GuardLevel", "TurretLevel", "LaserLevel" }
+DefenseWindow.Attributes = { "GuardLevel", "TurretLevel", "LaserLevel", "SpeedLevel" }
+
+-- Прокрутить окно к карточке (меню «☰» → «Скорость»); задаётся в Start
+local scrollTo: ((string) -> ())? = nil
+function DefenseWindow.ScrollTo(id: string)
+	if scrollTo then
+		scrollTo(id)
+	end
+end
 
 function DefenseWindow.Start(ctx)
 	local window, body = UiKit.window(ctx.Gui, Locale.T("DefenseTitle"), Vector2.new(560, 480))
@@ -10795,11 +11435,26 @@ function DefenseWindow.Start(ctx)
 			local ok, success, key = pcall(kind.Invoke)
 			busy = false
 			if ok and type(key) == "string" then
-				ctx.Toast(Locale.T(key, { Level = current + 1, Price = nextLevel.Price }), if success then "success" else "error")
+				ctx.Toast(
+					Locale.T(key, { Level = current + 1, Price = nextLevel.Price, Bonus = nextLevel.Bonus }),
+					if success then "success" else "error",
+					if success then "Bought" else nil
+				)
 			end
 		end)
 
-		cards[kind.Id] = { Kind = kind, Level = level, Next = nextInfo, Buy = buy }
+		cards[kind.Id] = { Kind = kind, Level = level, Next = nextInfo, Buy = buy, Frame = frame }
+	end
+
+	scrollTo = function(id: string)
+		local card = cards[id]
+		if not card then
+			return
+		end
+		-- Раскладка обновится к следующему кадру
+		task.defer(function()
+			list.CanvasPosition = Vector2.new(0, math.max(0, card.Frame.AbsolutePosition.Y - list.AbsolutePosition.Y + list.CanvasPosition.Y))
+		end)
 	end
 
 	local function render()
@@ -10811,7 +11466,7 @@ function DefenseWindow.Start(ctx)
 			card.Level.Text = Locale.T("GuardLevelNow", { Level = current, Max = #kind.Levels })
 			if nextLevel then
 				card.Next.Text = kind.Next(nextLevel)
-				card.Buy.Text = Locale.T(if current == 0 then "GuardBuy" else "GuardUpgrade", { Price = nextLevel.Price })
+				card.Buy.Text = Locale.T(if current == 0 and not kind.AlwaysUpgrade then "GuardBuy" else "GuardUpgrade", { Price = nextLevel.Price })
 				local affordable = coins >= nextLevel.Price
 				card.Buy.BackgroundColor3 = if affordable then COLORS.Green else COLORS.Panel
 				card.Buy.TextColor3 = if affordable then COLORS.Text else COLORS.Red
@@ -10842,7 +11497,7 @@ return DefenseWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="56">
+        <Item class="ModuleScript" referent="57">
           <Properties>
             <string name="Name">Effects</string>
             <string name="Source"><![CDATA[-- Клиентские эффекты: отбрасывание с оглушением (Remotes.Knockback), разовые вспышки/конфетти
@@ -10858,6 +11513,7 @@ local TweenService = game:GetService("TweenService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Locale = require(Shared:WaitForChild("Locale"))
+local Settings = require(script.Parent:WaitForChild("Settings"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
@@ -11004,7 +11660,11 @@ local function piece(position: Vector3, size: Vector3, color: Color3, shape: Enu
 end
 
 -- Разлетающиеся кусочки цветов colors
+-- «Слабая графика» (Settings.LowGraphics) — вчетверо меньше кусочков
 local function confetti(position: Vector3, colors: { Color3 }, count: number, spread: number)
+	if Settings.Get("LowGraphics") == true then
+		count = math.ceil(count / 4)
+	end
 	count = math.min(count, MAX_PIECES - livePieces)
 	for _ = 1, count do
 		livePieces += 1
@@ -11290,7 +11950,7 @@ return Effects
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="57">
+        <Item class="ModuleScript" referent="58">
           <Properties>
             <string name="Name">Emotes</string>
             <string name="Source"><![CDATA[-- Эмоции: окно-сетка из Config.Emotes (закрытые геймпассом — с замком и покупкой) и процедурная
@@ -11732,13 +12392,15 @@ return Emotes
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="58">
+        <Item class="ModuleScript" referent="59">
           <Properties>
             <string name="Name">FxExtra</string>
             <string name="Source"><![CDATA[-- Эффекты v3 по Remotes.Fx: выстрел турели ("Turret" {From, To}), вспышка лазерных ворот ("Laser"
 -- {Position}), ледяная бомба ("Freeze" {Position, Radius}), ракетные ботинки ("Rocket" {Position}),
 -- дальнее оружие ("Shot" {From, To, Item?}), старт админ-ивента ("AdminEvent" {Id} — большая заставка
--- по центру на 3 с) и мистери-бокс ("MysteryBox" {UserId, Meme}: себе — анимация открытия, другим — тост).
+-- по центру на 3 с), мистери-бокс ("MysteryBox" {UserId, Meme}: себе — анимация открытия, другим — тост)
+-- и открытие Lucky Block ("LuckyOpen" {Position, Meme, UserId}: вспышка + «<Face> <Name>!» цветом редкости,
+-- хозяину — тост).
 -- Всё локально, без звуков и текстур по ID; детали/конфетти — помощники из Effects.
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
@@ -12007,6 +12669,25 @@ local function mysteryReveal(memeId: string)
 	Debris:AddItem(gui, 4)
 end
 
+-- Lucky Block открылся: вспышка и конфетти цвета редкости, над ним — лицо и имя мема
+local function onLuckyOpen(ctx, data)
+	local creature = if type(data.Meme) == "string" then Config.GetCreature(data.Meme) else nil
+	if not creature then
+		return
+	end
+	local rarity = Config.GetRarity(creature.Rarity)
+	local color = if creature.Rarity == "Secret" then Color3.new(1, 1, 1) else rarity.Color
+	local position = data.Position
+	if isVector(position) and near(position) then
+		Effects.Flash(position, color, 10, 0.5)
+		Effects.Confetti(position, { color, COLORS.Gold, Color3.new(1, 1, 1) }, 40, 9)
+		Effects.FloatText(position + Vector3.new(0, 4, 0), creature.Face .. " " .. creature.Name .. "!", color)
+	end
+	if data.UserId == player.UserId then
+		ctx.Toast(Locale.T("LuckyOpenedYou", { Meme = creature.Id }), "success", "LuckyOpen")
+	end
+end
+
 function FxExtra.Start(ctx)
 	local handlers = {
 		Turret = onTurret,
@@ -12023,6 +12704,8 @@ function FxExtra.Start(ctx)
 			local handler = handlers[kind]
 			if handler then
 				handler(data)
+			elseif kind == "LuckyOpen" then
+				onLuckyOpen(ctx, data)
 			elseif kind == "AdminEvent" and type(data.Id) == "string" then
 				adminSplash(data.Id)
 			elseif kind == "MysteryBox" and type(data.Meme) == "string" and Config.GetCreature(data.Meme) then
@@ -12041,13 +12724,13 @@ return FxExtra
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="59">
+        <Item class="ModuleScript" referent="60">
           <Properties>
             <string name="Name">Hud</string>
             <string name="Source"><![CDATA[-- HUD: деньги/доход/слоты/бонус друзей слева сверху, таймер подарка за игру и боковые кнопки в две
 -- колонки: главная (Магазин, Мем-пропуск, Колесо, Награды дня, Квесты, Меню — со значками) и база
--- (Замок, Перерождение, Защита). Остальные окна (Предметы, Индекс, Скины, Эмоции, Обмен, Коды) и
--- приглашение друзей / группа — в меню «☰»: на телефоне кнопки не закрывают экран.
+-- (Замок, Домой, Перерождение, Защита). Остальные окна (Предметы, Индекс, Скины, Эмоции, Обмен, Коды,
+-- Скорость, Настройки) и приглашение друзей / группа — в меню «☰»: на телефоне кнопки не закрывают экран.
 -- Всё рисуется из атрибутов игрока.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -12060,6 +12743,7 @@ local Locale = require(Shared:WaitForChild("Locale"))
 local DefenseWindow = require(script.Parent:WaitForChild("DefenseWindow"))
 local PassWindow = require(script.Parent:WaitForChild("PassWindow"))
 local QuestsWindow = require(script.Parent:WaitForChild("QuestsWindow"))
+local RebirthWindow = require(script.Parent:WaitForChild("RebirthWindow"))
 local Social = require(script.Parent:WaitForChild("Social"))
 local SpinWindow = require(script.Parent:WaitForChild("SpinWindow"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
@@ -12298,11 +12982,16 @@ local function buildMenu(ctx)
 		{ Icon = "😀", Caption = "BtnEmotes", Window = "Emotes" },
 		{ Icon = "🤝", Caption = "BtnTrade", Window = "TradePick" },
 		{ Icon = "🎟️", Caption = "BtnCodes", Window = "Codes" },
+		{ Icon = "👟", Caption = "BtnSpeed", Window = "Defense", Card = "Speed" },
+		{ Icon = "⚙️", Caption = "BtnSettings", Window = "Settings" },
 	}
 	for order, tile in tiles do
 		local button = sideButton(grid, order, tile.Icon, Locale.T(tile.Caption))
 		button.Activated:Connect(function()
 			ctx.Open(tile.Window, true)
+			if tile.Card then
+				DefenseWindow.ScrollTo(tile.Card)
+			end
 		end)
 	end
 
@@ -12388,9 +13077,11 @@ function Hud.Start(ctx)
 	local menu = sideButton(main, 6, "☰", Locale.T("BtnMenu"))
 
 	local lock, lockCaption = sideButton(extra, 1, "🔒", Locale.T("BtnLock"))
-	local rebirth, rebirthCaption = sideButton(extra, 2, "♻️", Locale.T("BtnRebirth"))
-	local guard, guardCaption = sideButton(extra, 3, "🛡️", Locale.T("BtnDefense"))
+	local home, homeCaption = sideButton(extra, 2, "🏠", Locale.T("BtnHome"))
+	local rebirth, rebirthCaption = sideButton(extra, 3, "♻️", Locale.T("BtnRebirth"))
+	local guard, guardCaption = sideButton(extra, 4, "🛡️", Locale.T("BtnDefense"))
 	local lockIcon = lock:FindFirstChild("Icon") :: TextLabel
+	local homeIcon = home:FindFirstChild("Icon") :: TextLabel
 
 	local passBadge = badge(pass)
 	local spinBadge = badge(spin)
@@ -12440,11 +13131,47 @@ function Hud.Start(ctx)
 		Remotes:WaitForChild("LockBase"):FireServer()
 	end)
 
-	-- Подпись «Перерождения» — прогресс в процентах (короткая цель всегда на экране)
+	-- «Домой»: перезарядку и запрет с мемом проверяет сервер, кнопка только подсказывает
+	home.Activated:Connect(function()
+		if Util.str(player, "Carrying") ~= "" then
+			ctx.Toast(Locale.T("HomeCarrying"), "error")
+			return
+		end
+		if Util.num(player, "HomeReadyAt") > Util.now() then
+			return
+		end
+		Remotes:WaitForChild("GoHome"):FireServer()
+	end)
+	local function renderHome()
+		local carrying = Util.str(player, "Carrying") ~= ""
+		local left = Util.num(player, "HomeReadyAt") - Util.now()
+		if carrying then
+			homeIcon.Text = "🚫"
+			homeCaption.Text = Locale.T("BtnHome")
+		elseif left > 0 then
+			homeIcon.Text = "🏠"
+			homeCaption.Text = Util.clock(left)
+		else
+			homeIcon.Text = "🏠"
+			homeCaption.Text = Locale.T("BtnHome")
+		end
+		local ready = not carrying and left <= 0
+		home.BackgroundColor3 = if ready then COLORS.Panel else COLORS.PanelLight
+		home.AutoButtonColor = ready
+		homeIcon.TextTransparency = if ready then 0 else 0.4
+	end
+
+	-- Подпись «Перерождения» — прогресс денег в процентах (короткая цель всегда на экране).
+	-- Не хватает мемов для тира — «⚠️» и не больше 99%.
 	local function renderRebirth()
-		local progress = Util.num(player, "Coins") / Config.RebirthCost(Util.num(player, "Rebirths"))
-		rebirthCaption.Text = math.floor(math.clamp(progress, 0, 1) * 100) .. "%"
-		rebirth.BackgroundColor3 = if progress >= 1 then COLORS.Purple else COLORS.Panel
+		local status = RebirthWindow.Status()
+		local percent = math.floor(math.clamp(status.Coins / status.Cost, 0, 1) * 100)
+		if status.MemesOk then
+			rebirthCaption.Text = percent .. "%"
+		else
+			rebirthCaption.Text = "⚠️" .. math.min(percent, 99) .. "%"
+		end
+		rebirth.BackgroundColor3 = if status.CashOk and status.MemesOk then COLORS.Purple else COLORS.Panel
 	end
 
 	-- Подпись «Защиты» — цена самой дешёвой следующей прокачки (страж, турель, лазер)
@@ -12482,10 +13209,17 @@ function Hud.Start(ctx)
 		end
 	end
 
+	-- Мемы на базе меняются без атрибутов игрока — прогресс перерождения перепроверяем раз в секунду
 	task.spawn(function()
+		local ticks = 0
 		while true do
 			renderLock()
+			renderHome()
 			renderGift()
+			ticks += 1
+			if ticks % 4 == 0 then
+				renderRebirth()
+			end
 			task.wait(0.25)
 		end
 	end)
@@ -12495,13 +13229,13 @@ return Hud
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="60">
+        <Item class="ModuleScript" referent="61">
           <Properties>
             <string name="Name">IndexWindow</string>
             <string name="Source"><![CDATA[-- Окно Индекса: сетка всех мемов из Config.Creatures. Открытые — цветные, закрытые — «???».
 -- Источник — атрибут игрока IndexJson (JSON-массив ключей "Id|Mutation", см. Config.IndexKey).
 -- Лимитные мемы помечены «Лимитный» («На этой неделе!» — мем недели WeeklyMeme), эксклюзивы —
--- «Только пропуск / колесо».
+-- «Только пропуск / колесо». Lucky Block (creature.Lucky) — не мем, в Индекс не входит и в сетке не показывается.
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -12610,7 +13344,12 @@ function IndexWindow.Start(ctx)
 
 	-- Ячейки создаются один раз, render() только перекрашивает
 	local cells = {}
+	local total = 0
 	for order, creature in Config.Creatures do
+		if creature.Lucky then
+			continue
+		end
+		total += 1
 		local cell = create("Frame", {
 			BackgroundColor3 = UNKNOWN_BG,
 			LayoutOrder = order,
@@ -12715,7 +13454,7 @@ function IndexWindow.Start(ctx)
 			Count = count,
 			Percent = math.floor(count * Config.IndexBonusPerEntry * 100 + 0.5),
 		})
-		sub.Text = Locale.T("IndexSub", { Found = found, Total = #Config.Creatures, Mutated = mutated })
+		sub.Text = Locale.T("IndexSub", { Found = found, Total = total, Mutated = mutated })
 	end
 
 	player:GetAttributeChangedSignal("IndexJson"):Connect(render)
@@ -12728,7 +13467,7 @@ return IndexWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="61">
+        <Item class="ModuleScript" referent="62">
           <Properties>
             <string name="Name">Items</string>
             <string name="Source"><![CDATA[-- Окно предметов: оружие и гаджеты из Config.Items, покупка за монеты навсегда.
@@ -12978,13 +13717,15 @@ return Items
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="62">
+        <Item class="ModuleScript" referent="63">
           <Properties>
             <string name="Name">MemeBillboards</string>
             <string name="Source"><![CDATA[-- Таблички над мемами (тег "Meme"): мутация, ВИРУСНЫЙ, имя, редкость, доход/сек, цена на дорожке.
 -- BillboardGui создаются локально в PlayerGui и привязываются к Body (Adornee), поэтому
 -- переживают стриминг: Body ушёл — табличка пустая, вернулся — снова привязываем.
 -- Редкость «Лимит» пульсирует (мем недели), цвета Limited/Exclusive — из Config.Rarities.
+-- Lucky Block (creature.Lucky): «❓ Lucky Block (<редкость>)» и на базе — отсчёт до открытия (OpensAt).
+-- Настройки: HideBillboards — таблички только у своих мемов и на дорожке; LowGraphics — ближе MaxDistance.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -12993,6 +13734,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Format = require(Shared:WaitForChild("Format"))
 local Locale = require(Shared:WaitForChild("Locale"))
+local Settings = require(script.Parent:WaitForChild("Settings"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
@@ -13002,6 +13744,7 @@ local player = Players.LocalPlayer
 
 local VIRAL_COLOR = Color3.fromRGB(255, 80, 220)
 local MAX_DISTANCE = 60
+local LOW_MAX_DISTANCE = 35 -- со «слабой графикой»
 local PULSE = TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
 local PULSE_RARITIES = { Limited = true }
 
@@ -13052,11 +13795,21 @@ local function render(entry: Entry)
 	entry.Tags.Text = table.concat(tags, "  ")
 	entry.Tags.Visible = #tags > 0
 
-	entry.Name.Text = if creature then Locale.Name(creature) else id
-
 	-- Редкость; «Секретный» почти чёрный — белый текст с тёмной обводкой
 	local rarityId = if creature then creature.Rarity else "Common"
 	local rarity = Config.GetRarity(rarityId)
+	local lucky = creature ~= nil and creature.Lucky == true
+
+	if lucky then
+		local luckyRarity = Config.GetRarity(creature.LuckyRarity or rarityId)
+		entry.Name.Text = Locale.T("BbLucky", { Rarity = Locale.Name(luckyRarity) })
+		entry.Name.TextColor3 = luckyRarity.Color
+	else
+		entry.Name.Text = if creature then Locale.Name(creature) else id
+		entry.Name.TextColor3 = COLORS.Text
+	end
+	-- У Lucky Block редкость уже в имени
+	entry.Rarity.Visible = not lucky
 	entry.Rarity.Text = Locale.Name(rarity)
 	if rarityId == "Secret" then
 		entry.Rarity.TextColor3 = Color3.new(1, 1, 1)
@@ -13086,7 +13839,30 @@ local function render(entry: Entry)
 
 	-- Цена — только на дорожке: зелёная, если хватает денег, иначе красная
 	local price = Util.num(model, "Price")
-	local onCarpet = state == "Carpet" and Util.num(model, "OwnerUserId") == 0 and price > 0
+	local ownerId = Util.num(model, "OwnerUserId")
+	local onCarpet = state == "Carpet" and ownerId == 0 and price > 0
+
+	-- Lucky Block: вместо дохода — отсчёт до открытия на базе или подсказка, что внутри
+	if lucky and creature then
+		local opensAt = Util.num(model, "OpensAt")
+		if opensAt > 0 and ownerId ~= 0 and state ~= "Carpet" and state ~= "Carried" then
+			local left = opensAt - Util.now()
+			entry.Income.Text = if left > 0
+				then "⏳ " .. Locale.T("BbLuckyOpens", { Time = Util.clock(left) })
+				else "✨ " .. Locale.T("BbLuckyOpening")
+			entry.Income.TextColor3 = COLORS.Gold
+		else
+			local luckyRarity = Config.GetRarity(creature.LuckyRarity or rarityId)
+			entry.Income.Text = Locale.T("BbLuckyHint", { Rarity = Locale.Name(luckyRarity) })
+			entry.Income.TextColor3 = COLORS.Muted
+		end
+	end
+
+	-- Видимость: со «скрыть чужие» — только свои, дорожка и мем, которого несу я сам
+	local hide = Settings.Get("HideBillboards") == true
+	local carriedByMe = state == "Carried" and id ~= "" and Util.str(player, "Carrying") == id
+	entry.Gui.Enabled = not hide or ownerId == player.UserId or state == "Carpet" or carriedByMe
+	entry.Gui.MaxDistance = if Settings.Get("LowGraphics") == true then LOW_MAX_DISTANCE else MAX_DISTANCE
 	entry.Price.Visible = onCarpet
 	if onCarpet then
 		entry.Price.Text = "$" .. Format.Number(price)
@@ -13134,7 +13910,6 @@ local function track(model: Instance): () -> ()
 		Income = row(list, 4, 20, 17),
 		Price = row(list, 5, 24, 21),
 	}
-	entry.Name.TextColor3 = COLORS.Text
 	entry.Name.TextStrokeTransparency = 0
 	entry.Price.TextStrokeTransparency = 0
 	entries[model] = entry
@@ -13179,6 +13954,21 @@ function MemeBillboards.Start()
 	create("Folder", { Name = "MemeBillboards", Parent = player:WaitForChild("PlayerGui") })
 
 	ReplicatedStorage:GetAttributeChangedSignal("TrendingId"):Connect(renderAll)
+	Settings.Changed:Connect(renderAll)
+	player:GetAttributeChangedSignal("Carrying"):Connect(renderAll)
+
+	-- Отсчёт Lucky Block на базах
+	task.spawn(function()
+		while true do
+			task.wait(0.5)
+			for _, entry in entries do
+				local creature = Config.GetCreature(Util.str(entry.Model, "CreatureId"))
+				if creature and creature.Lucky and entry.Gui.Enabled then
+					render(entry)
+				end
+			end
+		end
+	end)
 	-- Цвет цены зависит от денег игрока
 	player:GetAttributeChangedSignal("Coins"):Connect(function()
 		for _, entry in entries do
@@ -13196,7 +13986,7 @@ return MemeBillboards
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="63">
+        <Item class="ModuleScript" referent="64">
           <Properties>
             <string name="Name">PassWindow</string>
             <string name="Source"><![CDATA[-- Окно Мем-пропуска (боевой пропуск сезона). Источник — атрибут игрока BPJson:
@@ -13613,7 +14403,7 @@ return PassWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="64">
+        <Item class="ModuleScript" referent="65">
           <Properties>
             <string name="Name">PlotSigns</string>
             <string name="Source"><![CDATA[-- Таблички баз: SurfaceGui на Sign каждой базы (Face = Front) — имя хозяина или «Свободно»,
@@ -13727,7 +14517,7 @@ return PlotSigns
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="65">
+        <Item class="ModuleScript" referent="66">
           <Properties>
             <string name="Name">Popups</string>
             <string name="Source"><![CDATA[-- Всплывающие окна от сервера (Remotes.Popup): оффлайн-доход и ежедневная награда
@@ -13903,7 +14693,7 @@ return Popups
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="66">
+        <Item class="ModuleScript" referent="67">
           <Properties>
             <string name="Name">Prompts</string>
             <string name="Source"><![CDATA[-- ProximityPrompt мемов и замков баз: перевод ActionText/ObjectText и локальное выключение лишних
@@ -14174,7 +14964,7 @@ return Prompts
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="67">
+        <Item class="ModuleScript" referent="68">
           <Properties>
             <string name="Name">QuestsWindow</string>
             <string name="Source"><![CDATA[-- Окно ежедневных квестов. Источник — атрибут игрока QuestsJson:
@@ -14500,10 +15290,12 @@ return QuestsWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="68">
+        <Item class="ModuleScript" referent="69">
           <Properties>
             <string name="Name">RebirthWindow</string>
-            <string name="Source"><![CDATA[-- Окно перерождения: цена, прогресс денег до цены, что даёт, кнопка.
+            <string name="Source"><![CDATA[-- Окно перерождения: следующий тир (Config.RebirthTier) — цена с прогрессом денег, требования к мемам
+-- на базе с живыми галочками, награды (этаж, вращения, предмет, +доход) и кнопка (активна, только
+-- когда всё выполнено). После последнего тира — обычная растущая цена без требований.
 -- Цену и условия проверяет сервер (Remotes.Rebirth), клиент только показывает и просит.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -14523,24 +15315,146 @@ local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 
 local RebirthWindow = {}
 
+export type ReqState = { Requirement: any, Have: number, Met: boolean }
+export type Status = {
+	Rebirths: number,
+	Cost: number,
+	Coins: number,
+	CashOk: boolean,
+	MemesOk: boolean,
+	Tier: any?,
+	Reqs: { ReqState },
+}
+
+-- Id мемов, которые стоят на своей базе (несомый вором мем не считается)
+local function baseMemeIds(): { string }
+	local ids = {}
+	local plot = Util.myPlot()
+	local folder = plot and plot:FindFirstChild("Memes")
+	if not folder then
+		return ids
+	end
+	for _, model in folder:GetChildren() do
+		local id = Util.str(model, "CreatureId")
+		if id ~= "" and Util.str(model, "State") ~= "Carried" then
+			table.insert(ids, id)
+		end
+	end
+	return ids
+end
+
+-- Состояние следующего перерождения (для окна и подписи кнопки в HUD).
+-- Каждое требование считается отдельно по всем мемам базы (как Config.MatchesRequirement).
+function RebirthWindow.Status(): Status
+	local rebirths = Util.num(player, "Rebirths")
+	local coins = Util.num(player, "Coins")
+	local cost = Config.RebirthCost(rebirths)
+	local tier = Config.RebirthTier(rebirths)
+	local reqs: { ReqState } = {}
+	local memesOk = true
+	if tier and tier.Requires then
+		local ids = baseMemeIds()
+		for _, requirement in tier.Requires do
+			local have = 0
+			for _, id in ids do
+				if Config.MatchesRequirement(id, requirement) then
+					have += 1
+				end
+			end
+			local met = have >= (requirement.Count or 1)
+			memesOk = memesOk and met
+			table.insert(reqs, { Requirement = requirement, Have = have, Met = met })
+		end
+	end
+	return {
+		Rebirths = rebirths,
+		Cost = cost,
+		Coins = coins,
+		CashOk = coins >= cost,
+		MemesOk = memesOk,
+		Tier = tier,
+		Reqs = reqs,
+	}
+end
+
+local function requirementText(state: ReqState): string
+	local requirement = state.Requirement
+	local args = {
+		Mark = if state.Met then "✅" else "❌",
+		Count = requirement.Count or 1,
+		Have = state.Have,
+	}
+	if requirement.Id then
+		local creature = Config.GetCreature(requirement.Id)
+		args.Name = if creature then creature.Name else requirement.Id
+		return Locale.T("RebirthReqMeme", args)
+	end
+	args.Rarity = Locale.Name(Config.GetRarity(requirement.Rarity))
+	return Locale.T("RebirthReqRarity", args)
+end
+
+-- Ближайший ещё закрытый этаж после перерождения rebirths + 1 (номер этажа, нужное перерождение)
+local function nextLockedFloor(rebirthsAfter: number): (number?, number?)
+	for index, floor in Config.Plot.Floors do
+		if floor.UnlockRebirth > rebirthsAfter then
+			return index, floor.UnlockRebirth
+		end
+	end
+	return nil, nil
+end
+
 function RebirthWindow.Start(ctx)
-	local window, body = UiKit.window(ctx.Gui, Locale.T("RebirthTitle"), Vector2.new(460, 360))
+	local window, body = UiKit.window(ctx.Gui, Locale.T("RebirthTitle"), Vector2.new(480, 470))
 	window.Name = "RebirthWindow"
 	ctx.Register("Rebirth", window)
 
-	create("UIListLayout", {
-		Padding = UDim.new(0, 8),
-		SortOrder = Enum.SortOrder.LayoutOrder,
+	-- Кнопка снизу, остальное прокручивается над ней
+	local go = UiKit.button({
+		Text = Locale.T("RebirthButton"),
+		TextScaled = true,
+		AnchorPoint = Vector2.new(0, 1),
+		Position = UDim2.fromScale(0, 1),
+		Size = UDim2.new(1, 0, 0, 50),
+		BackgroundColor3 = COLORS.Purple,
 		Parent = body,
 	})
+	create("UITextSizeConstraint", { MaxTextSize = 22, Parent = go })
 
-	local cost = UiKit.text({ TextSize = 22, TextColor3 = COLORS.Gold, Size = UDim2.new(1, 0, 0, 28), LayoutOrder = 1, Parent = body })
+	local scroll = create("ScrollingFrame", {
+		Size = UDim2.new(1, 0, 1, -58),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 5,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+		Parent = body,
+	}, {
+		create("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }),
+		create("UIPadding", { PaddingRight = UDim.new(0, 8) }),
+	})
+
+	local function line(order: number, textSize: number, color: Color3?): TextLabel
+		return UiKit.text({
+			Text = "",
+			TextSize = textSize,
+			TextWrapped = true,
+			TextColor3 = color or COLORS.Text,
+			AutomaticSize = Enum.AutomaticSize.Y,
+			Size = UDim2.new(1, 0, 0, textSize + 4),
+			LayoutOrder = order,
+			Parent = scroll,
+		})
+	end
+
+	local nextLabel = line(1, 16, COLORS.Muted)
+	local cost = line(2, 22, COLORS.Gold)
 
 	local bar = create("Frame", {
 		Size = UDim2.new(1, 0, 0, 26),
 		BackgroundColor3 = COLORS.PanelLight,
-		LayoutOrder = 2,
-		Parent = body,
+		LayoutOrder = 3,
+		Parent = scroll,
 	}, { UiKit.corner(8) })
 	local fill = create("Frame", {
 		Size = UDim2.fromScale(0, 1),
@@ -14556,51 +15470,131 @@ function RebirthWindow.Start(ctx)
 		Parent = bar,
 	})
 
-	local function perk(order: number): TextLabel
-		return UiKit.text({
-			TextSize = 16,
-			TextWrapped = true,
-			Size = UDim2.new(1, 0, 0, 22),
-			LayoutOrder = order,
-			Parent = body,
-		})
-	end
-	local perkIncome = perk(3)
-	local perkSlots = perk(4)
-	local cashReset = perk(5)
-	cashReset.TextColor3 = COLORS.Muted
-	cashReset.TextSize = 14
+	local reqTitle = line(10, 16, COLORS.Muted)
+	reqTitle.Text = Locale.T("RebirthReqTitle")
+	-- Строки требований/наград пересоздаются при каждом render (их 1–4)
+	local reqHolder = create("Frame", {
+		Size = UDim2.fromScale(1, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BackgroundTransparency = 1,
+		LayoutOrder = 11,
+		Parent = scroll,
+	}, { create("UIListLayout", { Padding = UDim.new(0, 2), SortOrder = Enum.SortOrder.LayoutOrder }) })
+
+	local rewardsTitle = line(20, 16, COLORS.Muted)
+	rewardsTitle.Text = Locale.T("RebirthRewardsTitle")
+	local rewardHolder = create("Frame", {
+		Size = UDim2.fromScale(1, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BackgroundTransparency = 1,
+		LayoutOrder = 21,
+		Parent = scroll,
+	}, { create("UIListLayout", { Padding = UDim.new(0, 2), SortOrder = Enum.SortOrder.LayoutOrder }) })
+
+	local floorHint = line(30, 14, COLORS.Muted)
+	local cashReset = line(31, 14, COLORS.Muted)
 	cashReset.Text = Locale.T("RebirthCashReset")
 
-	local go = UiKit.button({
-		Text = Locale.T("RebirthButton"),
-		TextSize = 22,
-		Size = UDim2.new(1, 0, 0, 50),
-		BackgroundColor3 = COLORS.Purple,
-		LayoutOrder = 6,
-		Parent = body,
-	})
+	local function setLines(holder: Frame, lines: { { Text: string, Color: Color3 } })
+		for _, child in holder:GetChildren() do
+			if child:IsA("TextLabel") then
+				child:Destroy()
+			end
+		end
+		for order, item in lines do
+			UiKit.text({
+				Text = item.Text,
+				TextSize = 17,
+				TextWrapped = true,
+				TextColor3 = item.Color,
+				AutomaticSize = Enum.AutomaticSize.Y,
+				Size = UDim2.new(1, 0, 0, 21),
+				LayoutOrder = order,
+				Parent = holder,
+			})
+		end
+	end
 
+	local lastKey = ""
 	local function render()
-		local rebirths = Util.num(player, "Rebirths")
-		local coins = Util.num(player, "Coins")
-		local price = Config.RebirthCost(rebirths)
-		local progress = math.clamp(coins / price, 0, 1)
+		local status = RebirthWindow.Status()
+		local rebirths = status.Rebirths
+		local tier = status.Tier
+		local progress = math.clamp(status.Coins / status.Cost, 0, 1)
 
-		cost.Text = Locale.T("RebirthCost", { Price = price })
+		nextLabel.Text = Locale.T("RebirthNext", { Count = rebirths + 1 })
+		cost.Text = Locale.T("RebirthCost", { Price = status.Cost })
 		TweenService:Create(fill, TweenInfo.new(0.25), { Size = UDim2.fromScale(progress, 1) }):Play()
-		barText.Text = "$" .. Format.Number(coins) .. " / $" .. Format.Number(price) .. "  (" .. math.floor(progress * 100) .. "%)"
-		go.BackgroundColor3 = if progress >= 1 then COLORS.Green else COLORS.PanelLight
+		fill.BackgroundColor3 = if status.CashOk then COLORS.Green else COLORS.Gold
+		barText.Text = "$" .. Format.Number(status.Coins) .. " / $" .. Format.Number(status.Cost)
+			.. "  (" .. math.floor(progress * 100) .. "%)"
 
-		perkIncome.Text = Locale.T("RebirthPerkIncome", {
-			Percent = math.floor(Config.Rebirth.IncomeBonus * 100 + 0.5),
-			Mult = Config.IncomeMult(rebirths + 1),
+		-- Требования (строки пересоздаём, только если текст поменялся)
+		local reqLines = {}
+		if #status.Reqs == 0 then
+			table.insert(reqLines, { Text = Locale.T("RebirthReqNone"), Color = COLORS.Green })
+		end
+		for _, state in status.Reqs do
+			table.insert(reqLines, { Text = requirementText(state), Color = if state.Met then COLORS.Green else COLORS.Red })
+		end
+
+		-- Награды
+		local rewardLines = {}
+		table.insert(rewardLines, {
+			Text = Locale.T("RebirthRewardIncome", {
+				Percent = math.floor(Config.Rebirth.IncomeBonus * 100 + 0.5),
+				Mult = Config.IncomeMult(rebirths + 1),
+			}),
+			Color = COLORS.Text,
 		})
-		local now = Config.MaxSlots(rebirths)
-		local after = Config.MaxSlots(rebirths + 1)
-		perkSlots.Text = if after > now
-			then Locale.T("RebirthPerkSlots", { Count = after - now })
-			else Locale.T("RebirthPerkSlotsMax")
+		local rewards = if tier then tier.Rewards or {} else {}
+		if type(rewards.Floor) == "number" then
+			table.insert(rewardLines, {
+				Text = Locale.T("RebirthRewardFloor", { Floor = rewards.Floor, Slots = Config.Plot.FloorSlots }),
+				Color = COLORS.Gold,
+			})
+		end
+		if type(rewards.Spins) == "number" and rewards.Spins > 0 then
+			table.insert(rewardLines, { Text = Locale.T("RebirthRewardSpins", { Count = rewards.Spins }), Color = COLORS.Text })
+		end
+		local item = if type(rewards.Item) == "string" then Config.GetItem(rewards.Item) else nil
+		if item then
+			table.insert(rewardLines, {
+				Text = Locale.T("RebirthRewardItem", { Face = item.Face, Name = Locale.Name(item) }),
+				Color = COLORS.Text,
+			})
+		end
+
+		local key = rebirths .. "|"
+		for _, entry in reqLines do
+			key ..= entry.Text .. "|"
+		end
+		if key ~= lastKey then
+			lastKey = key
+			setLines(reqHolder, reqLines)
+			setLines(rewardHolder, rewardLines)
+		end
+
+		-- Подсказка про этажи / бесконечные перерождения
+		local floorIndex, floorRebirth = nextLockedFloor(rebirths + 1)
+		if not tier then
+			floorHint.Text = Locale.T("RebirthEndless", { Mult = Config.Rebirth.CostMult })
+		elseif floorIndex and rewards.Floor ~= floorIndex then
+			floorHint.Text = Locale.T("RebirthNextFloor", { Floor = floorIndex, Rebirth = floorRebirth })
+		else
+			floorHint.Text = ""
+		end
+		floorHint.Visible = floorHint.Text ~= ""
+
+		-- Кнопка: активна, только когда хватает и денег, и мемов (сервер всё равно проверит)
+		local ready = status.CashOk and status.MemesOk
+		go.Text = if ready
+			then Locale.T("RebirthButton")
+			elseif not status.MemesOk then Locale.T("RebirthBtnNeedMemes")
+			else Locale.T("RebirthBtnNeedCash")
+		go.BackgroundColor3 = if ready then COLORS.Green else COLORS.PanelLight
+		go.TextColor3 = if ready then COLORS.Text else COLORS.Muted
+		go.AutoButtonColor = ready
 	end
 
 	player:GetAttributeChangedSignal("Coins"):Connect(function()
@@ -14612,13 +15606,24 @@ function RebirthWindow.Start(ctx)
 	window:GetPropertyChangedSignal("Visible"):Connect(render)
 	render()
 
+	-- Мемы на базе меняются часто (покупки, кражи, продажи) — пока окно открыто, перепроверяем
+	task.spawn(function()
+		while true do
+			task.wait(0.5)
+			if window.Visible then
+				render()
+			end
+		end
+	end)
+
 	local busy = false
 	go.Activated:Connect(function()
-		if busy then
+		local status = RebirthWindow.Status()
+		if busy or not (status.CashOk and status.MemesOk) then
 			return
 		end
 		busy = true
-		local rebirths = Util.num(player, "Rebirths")
+		local rebirths = status.Rebirths
 		local ok, success, key = pcall(function()
 			return Remotes:WaitForChild("Rebirth"):InvokeServer()
 		end)
@@ -14629,7 +15634,8 @@ function RebirthWindow.Start(ctx)
 		if type(key) == "string" then
 			ctx.Toast(
 				Locale.T(key, { Count = rebirths + 1, Price = Config.RebirthCost(rebirths) }),
-				if success then "success" else "error"
+				if success then "success" else "error",
+				if success then "Rebirth" else nil
 			)
 		end
 		if success then
@@ -14642,7 +15648,7 @@ return RebirthWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="69">
+        <Item class="ModuleScript" referent="70">
           <Properties>
             <string name="Name">Rewards</string>
             <string name="Source"><![CDATA[-- Общие помощники для наград v4 (коды, Мем-пропуск, колесо): описание награды из Config
@@ -14773,7 +15779,350 @@ return Rewards
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="70">
+        <Item class="ModuleScript" referent="71">
+          <Properties>
+            <string name="Name">Settings</string>
+            <string name="Source"><![CDATA[--!strict
+-- Настройки игрока: звук, слабая графика, скрытие чужих табличек мемов, масштаб интерфейса.
+-- Источник — атрибут SettingsJson (сервер сохраняет), изменения просим через Remotes.SetSetting(key, value).
+-- Клиент применяет новое значение сразу (оптимистично); эхо сервера в течение PENDING_SECONDS
+-- не перетирает только что изменённый ключ.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Util = require(script.Parent:WaitForChild("Util"))
+
+local player = Players.LocalPlayer
+
+local PENDING_SECONDS = 2
+local SCALE_MIN, SCALE_MAX = 0.7, 1.3
+
+local Settings = {}
+
+local DEFAULTS: { [string]: any } = {
+	Sound = true,
+	LowGraphics = false,
+	HideBillboards = false,
+	UiScale = 1,
+}
+
+local values: { [string]: any } = table.clone(DEFAULTS)
+local pendingAt: { [string]: number } = {}
+local changed = Instance.new("BindableEvent")
+
+-- Settings.Changed:Connect(function(key, value) ... end)
+Settings.Changed = changed.Event
+Settings.ScaleMin = SCALE_MIN
+Settings.ScaleMax = SCALE_MAX
+
+local function sanitize(key: string, value: any): any
+	local default = DEFAULTS[key]
+	if default == nil then
+		return nil
+	end
+	if type(default) == "boolean" then
+		return if type(value) == "boolean" then value else nil
+	end
+	if type(value) ~= "number" or value ~= value then
+		return nil
+	end
+	-- Шаг 0.05, в пределах 0.7..1.3
+	return math.clamp(math.floor(value * 20 + 0.5) / 20, SCALE_MIN, SCALE_MAX)
+end
+
+function Settings.Get(key: string): any
+	local value = values[key]
+	if value == nil then
+		return DEFAULTS[key]
+	end
+	return value
+end
+
+-- Применить локально и попросить сервер сохранить
+function Settings.Set(key: string, value: any)
+	local clean = sanitize(key, value)
+	if clean == nil then
+		return
+	end
+	pendingAt[key] = os.clock()
+	if values[key] ~= clean then
+		values[key] = clean
+		changed:Fire(key, clean)
+	end
+	local remote = ReplicatedStorage:WaitForChild("Remotes"):FindFirstChild("SetSetting")
+	if remote and remote:IsA("RemoteEvent") then
+		remote:FireServer(key, clean)
+	end
+end
+
+local function readServer()
+	local data = Util.json(player, "SettingsJson")
+	if type(data) ~= "table" then
+		return
+	end
+	local now = os.clock()
+	for key in DEFAULTS do
+		local pending = pendingAt[key]
+		local clean = sanitize(key, data[key])
+		if clean ~= nil and not (pending and now - pending < PENDING_SECONDS) and values[key] ~= clean then
+			values[key] = clean
+			changed:Fire(key, clean)
+		end
+	end
+end
+
+player:GetAttributeChangedSignal("SettingsJson"):Connect(readServer)
+readServer()
+
+return Settings
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="72">
+          <Properties>
+            <string name="Name">SettingsWindow</string>
+            <string name="Source"><![CDATA[-- Окно настроек ⚙️ (открывается из меню «☰»): звук, слабая графика, скрытие табличек чужих мемов,
+-- размер интерфейса. Значения — модуль Settings (атрибут SettingsJson + Remotes.SetSetting),
+-- применяются сразу. Здесь же — локальная «слабая графика»: выключаем частицы/огонь/дым в мире и
+-- пост-эффекты освещения только у себя (сервер ничего не меняет); вспышки и конфетти Effects
+-- урезает сам, дальность табличек — MemeBillboards.
+local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Locale = require(Shared:WaitForChild("Locale"))
+local Settings = require(script.Parent:WaitForChild("Settings"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+
+local COLORS = UiKit.Colors
+local create = UiKit.create
+
+local SCALE_STEP = 0.1
+-- Пост-эффекты, которые выключаем (ColorCorrection не трогаем — им красится Ночь Смайлика)
+local POST_EFFECTS = { "BloomEffect", "SunRaysEffect", "DepthOfFieldEffect" }
+local EMITTERS = { "ParticleEmitter", "Fire", "Smoke", "Sparkles", "Trail" }
+
+local SettingsWindow = {}
+
+-- ===== Слабая графика =====
+local disabled: { [Instance]: boolean } = {} -- что выключили мы (чтобы вернуть именно это)
+local savedShadows: boolean? = nil
+local descendantConnection: RBXScriptConnection? = nil
+
+local function isEmitter(inst: Instance): boolean
+	for _, className in EMITTERS do
+		if inst:IsA(className) then
+			return true
+		end
+	end
+	return false
+end
+
+local function isPostEffect(inst: Instance): boolean
+	for _, className in POST_EFFECTS do
+		if inst:IsA(className) then
+			return true
+		end
+	end
+	return false
+end
+
+local function switchOff(inst: Instance)
+	if disabled[inst] then
+		return
+	end
+	local target: any = inst
+	local ok, enabled = pcall(function()
+		return target.Enabled
+	end)
+	if ok and enabled == true then
+		disabled[inst] = true
+		target.Enabled = false
+	end
+end
+
+local function applyLowGraphics(low: boolean)
+	if low then
+		for _, inst in workspace:GetDescendants() do
+			if isEmitter(inst) then
+				switchOff(inst)
+			end
+		end
+		for _, inst in Lighting:GetChildren() do
+			if isPostEffect(inst) then
+				switchOff(inst)
+			end
+		end
+		if savedShadows == nil then
+			savedShadows = Lighting.GlobalShadows
+		end
+		Lighting.GlobalShadows = false
+		if not descendantConnection then
+			descendantConnection = workspace.DescendantAdded:Connect(function(inst)
+				if isEmitter(inst) then
+					-- Свойства копии могут прийти чуть позже самого объекта
+					task.defer(switchOff, inst)
+				end
+			end)
+		end
+	else
+		if descendantConnection then
+			descendantConnection:Disconnect()
+			descendantConnection = nil
+		end
+		for inst in disabled do
+			if inst.Parent then
+				local target: any = inst
+				pcall(function()
+					target.Enabled = true
+				end)
+			end
+		end
+		table.clear(disabled)
+		if savedShadows ~= nil then
+			Lighting.GlobalShadows = savedShadows
+			savedShadows = nil
+		end
+	end
+end
+
+-- ===== Окно =====
+local function card(parent: Instance, order: number, title: string, hint: string?): Frame
+	local frame = create("Frame", {
+		Size = UDim2.new(1, 0, 0, if hint then 62 else 50),
+		BackgroundColor3 = COLORS.PanelLight,
+		LayoutOrder = order,
+		Parent = parent,
+	}, { UiKit.corner(10), UiKit.padding(8) })
+	UiKit.text({
+		Text = title,
+		TextScaled = true,
+		Size = UDim2.new(1, -130, 0, 24),
+		Parent = frame,
+	}, { create("UITextSizeConstraint", { MaxTextSize = 18, MinTextSize = 10 }) })
+	if hint then
+		UiKit.text({
+			Text = hint,
+			TextScaled = true,
+			TextWrapped = true,
+			Font = Enum.Font.Gotham,
+			TextColor3 = COLORS.Muted,
+			Position = UDim2.fromOffset(0, 26),
+			Size = UDim2.new(1, -130, 0, 20),
+			Parent = frame,
+		}, { create("UITextSizeConstraint", { MaxTextSize = 13, MinTextSize = 8 }) })
+	end
+	return frame
+end
+
+local function toggle(parent: Instance, order: number, key: string, title: string, hint: string?)
+	local frame = card(parent, order, title, hint)
+	local button = UiKit.button({
+		TextScaled = true,
+		AnchorPoint = Vector2.new(1, 0.5),
+		Position = UDim2.fromScale(1, 0.5),
+		Size = UDim2.fromOffset(110, 36),
+		Parent = frame,
+	})
+	create("UITextSizeConstraint", { MaxTextSize = 18, Parent = button })
+	local function render()
+		local on = Settings.Get(key) == true
+		button.Text = Locale.T(if on then "SetOn" else "SetOff")
+		button.BackgroundColor3 = if on then COLORS.Green else COLORS.Panel
+	end
+	button.Activated:Connect(function()
+		Settings.Set(key, not (Settings.Get(key) == true))
+	end)
+	Settings.Changed:Connect(function(changedKey)
+		if changedKey == key then
+			render()
+		end
+	end)
+	render()
+end
+
+local function scaleRow(parent: Instance, order: number)
+	local frame = card(parent, order, "")
+	local title = frame:FindFirstChildWhichIsA("TextLabel") :: TextLabel
+	local function stepButton(text: string, x: number): TextButton
+		local button = UiKit.button({
+			Text = text,
+			TextSize = 22,
+			AnchorPoint = Vector2.new(1, 0.5),
+			Position = UDim2.new(1, x, 0.5, 0),
+			Size = UDim2.fromOffset(52, 36),
+			BackgroundColor3 = COLORS.Purple,
+			Parent = frame,
+		})
+		return button
+	end
+	local minus = stepButton("−", -58)
+	local plus = stepButton("+", 0)
+	local function current(): number
+		local value = Settings.Get("UiScale")
+		return if type(value) == "number" then value else 1
+	end
+	local function render()
+		local value = current()
+		title.Text = Locale.T("SetUiScale", { Percent = math.floor(value * 100 + 0.5) })
+		minus.AutoButtonColor = value > Settings.ScaleMin + 0.001
+		plus.AutoButtonColor = value < Settings.ScaleMax - 0.001
+		minus.BackgroundColor3 = if minus.AutoButtonColor then COLORS.Purple else COLORS.Panel
+		plus.BackgroundColor3 = if plus.AutoButtonColor then COLORS.Purple else COLORS.Panel
+	end
+	minus.Activated:Connect(function()
+		Settings.Set("UiScale", math.max(Settings.ScaleMin, current() - SCALE_STEP))
+	end)
+	plus.Activated:Connect(function()
+		Settings.Set("UiScale", math.min(Settings.ScaleMax, current() + SCALE_STEP))
+	end)
+	Settings.Changed:Connect(function(key)
+		if key == "UiScale" then
+			render()
+		end
+	end)
+	render()
+end
+
+function SettingsWindow.Start(ctx)
+	local window, body = UiKit.window(ctx.Gui, Locale.T("SettingsTitle"), Vector2.new(440, 360))
+	window.Name = "SettingsWindow"
+	ctx.Register("Settings", window)
+
+	local list = create("ScrollingFrame", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 5,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+		Parent = body,
+	}, {
+		create("UIListLayout", { Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }),
+		create("UIPadding", { PaddingRight = UDim.new(0, 8) }),
+	})
+
+	toggle(list, 1, "Sound", Locale.T("SetSound"))
+	toggle(list, 2, "LowGraphics", Locale.T("SetLowGraphics"), Locale.T("SetLowGraphicsHint"))
+	toggle(list, 3, "HideBillboards", Locale.T("SetHideBillboards"), Locale.T("SetHideBillboardsHint"))
+	scaleRow(list, 4)
+
+	Settings.Changed:Connect(function(key, value)
+		if key == "LowGraphics" then
+			applyLowGraphics(value == true)
+		end
+	end)
+	if Settings.Get("LowGraphics") == true then
+		applyLowGraphics(true)
+	end
+end
+
+return SettingsWindow
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="73">
           <Properties>
             <string name="Name">Shop</string>
             <string name="Source"><![CDATA[-- Окно магазина: геймпассы (навсегда) и продукты за Robux (бусты, деньги).
@@ -14973,7 +16322,7 @@ return Shop
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="71">
+        <Item class="ModuleScript" referent="74">
           <Properties>
             <string name="Name">SkinsWindow</string>
             <string name="Source"><![CDATA[-- Окно скинов: две вкладки (база / тапок) из Config.Skins. Источник — атрибут игрока SkinsJson:
@@ -15242,7 +16591,7 @@ return SkinsWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="72">
+        <Item class="ModuleScript" referent="75">
           <Properties>
             <string name="Name">Social</string>
             <string name="Source"><![CDATA[-- Друзья, группа и избранное — только клиентские окна Roblox (бонусы считает сервер):
@@ -15321,7 +16670,178 @@ return Social
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="73">
+        <Item class="ModuleScript" referent="76">
+          <Properties>
+            <string name="Name">Sounds</string>
+            <string name="Source"><![CDATA[-- Звуки событий: разовые 2D-звуки через SoundService (слышит только этот игрок).
+-- Пока используются только файлы, которые идут вместе с клиентом Roblox (rbxasset://sounds/...).
+-- Чтобы поставить свои звуки — замените Id в таблице SOUNDS на "rbxassetid://<ваш id>"
+-- (id не выдумываем: только загруженные вами / из Creator Store).
+-- Звук выключается настройкой Sound = false (Settings).
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SoundService = game:GetService("SoundService")
+
+local Settings = require(script.Parent:WaitForChild("Settings"))
+local UiKit = require(script.Parent:WaitForChild("UiKit"))
+
+local player = Players.LocalPlayer
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+
+-- Событие -> звук. Speed — PlaybackSpeed (выше — тоньше и короче).
+local SOUNDS: { [string]: { Id: string, Volume: number, Speed: number } } = {
+	Click = { Id = "rbxasset://sounds/button.wav", Volume = 0.35, Speed = 1 },
+	Success = { Id = "rbxasset://sounds/electronicpingshort.wav", Volume = 0.4, Speed = 1.1 },
+	Error = { Id = "rbxasset://sounds/button.wav", Volume = 0.5, Speed = 0.6 },
+	Bought = { Id = "rbxasset://sounds/electronicpingshort.wav", Volume = 0.5, Speed = 1.4 },
+	Slap = { Id = "rbxasset://sounds/collide.wav", Volume = 0.6, Speed = 1 },
+	Stolen = { Id = "rbxasset://sounds/swoosh.wav", Volume = 0.6, Speed = 0.9 },
+	Delivered = { Id = "rbxasset://sounds/electronicpingshort.wav", Volume = 0.6, Speed = 1.7 },
+	MemeLost = { Id = "rbxasset://sounds/uuhhh.mp3", Volume = 0.5, Speed = 1 },
+	LuckyOpen = { Id = "rbxasset://sounds/swoosh.wav", Volume = 0.6, Speed = 1.4 },
+	Rebirth = { Id = "rbxasset://sounds/swoosh.wav", Volume = 0.7, Speed = 0.6 },
+	Alarm = { Id = "rbxasset://sounds/electronicpingshort.wav", Volume = 0.6, Speed = 0.55 },
+	Pickup = { Id = "rbxasset://sounds/action_jump.mp3", Volume = 0.35, Speed = 1.6 },
+}
+
+-- Ключи Notify -> событие звука вместо обычного «успех/ошибка». "None" — без звука
+-- (о краже своего мема уже кричит тревога).
+local NOTIFY_SOUNDS: { [string]: string } = {
+	Bought = "Bought",
+	ItemBought = "Bought",
+	SpeedUpgraded = "Bought",
+	GuardUpgraded = "Bought",
+	PassBought = "Bought",
+	StealStarted = "Stolen",
+	Delivered = "Delivered",
+	MemeLost = "MemeLost",
+	Rebirthed = "Rebirth",
+	BeingStolen = "None",
+}
+
+local HEAR_DISTANCE = 70 -- Fx дальше этого (от камеры) не озвучиваем
+local REPEAT_GAP = 0.25 -- одно и то же событие не чаще
+
+local Sounds = {}
+
+local templates: { [string]: Sound } = {}
+local lastPlayed: { [string]: number } = {}
+local folder: Folder? = nil
+
+local function template(name: string): Sound?
+	local existing = templates[name]
+	if existing then
+		return existing
+	end
+	local info = SOUNDS[name]
+	if not info then
+		return nil
+	end
+	if not folder then
+		local newFolder = Instance.new("Folder")
+		newFolder.Name = "LocalSounds"
+		newFolder.Parent = SoundService
+		folder = newFolder
+	end
+	local sound = Instance.new("Sound")
+	sound.Name = name
+	sound.SoundId = info.Id
+	sound.Volume = info.Volume
+	sound.PlaybackSpeed = info.Speed
+	sound.Parent = folder
+	templates[name] = sound
+	return sound
+end
+
+-- Проиграть звук события (если звук включён и это событие не звучало только что)
+function Sounds.Play(name: string)
+	if Settings.Get("Sound") == false then
+		return
+	end
+	local now = os.clock()
+	if lastPlayed[name] and now - lastPlayed[name] < REPEAT_GAP then
+		return
+	end
+	local sound = template(name)
+	if not sound then
+		return
+	end
+	lastPlayed[name] = now
+	-- Копия, чтобы одинаковые звуки могли накладываться
+	local copy = sound:Clone()
+	copy.Parent = sound.Parent
+	copy:Play()
+	copy.Ended:Once(function()
+		copy:Destroy()
+	end)
+	task.delay(6, function()
+		if copy.Parent then
+			copy:Destroy()
+		end
+	end)
+end
+
+-- Звук для уведомления: особый по ключу или по виду (success / error); info — без звука
+function Sounds.Toast(kind: string?, special: string?)
+	if special == "None" then
+		return
+	end
+	if special then
+		Sounds.Play(special)
+	elseif kind == "success" then
+		Sounds.Play("Success")
+	elseif kind == "error" then
+		Sounds.Play("Error")
+	end
+end
+
+function Sounds.ForNotify(key: string): string?
+	return NOTIFY_SOUNDS[key]
+end
+
+local function near(position: any): boolean
+	if typeof(position) ~= "Vector3" then
+		return false
+	end
+	local camera = workspace.CurrentCamera
+	return camera ~= nil and (camera.CFrame.Position - position).Magnitude <= HEAR_DISTANCE
+end
+
+local function onFx(kind: any, data: any)
+	if type(kind) ~= "string" or type(data) ~= "table" then
+		return
+	end
+	local mine = data.UserId == player.UserId
+	if kind == "Slap" and near(data.Position) then
+		Sounds.Play("Slap")
+	elseif kind == "Bought" and near(data.Position) then
+		Sounds.Play("Bought")
+	elseif kind == "Stolen" and near(data.Position) then
+		Sounds.Play("Stolen")
+	elseif kind == "Delivered" and mine then
+		Sounds.Play("Delivered")
+	elseif kind == "LuckyOpen" and (mine or near(data.Position)) then
+		Sounds.Play("LuckyOpen")
+	elseif kind == "Rebirth" and mine then
+		Sounds.Play("Rebirth")
+	elseif kind == "Pickup" and (mine or data.UserId == nil) then
+		Sounds.Play("Pickup")
+	end
+end
+
+function Sounds.Start()
+	-- Клик любой кнопки UiKit.button
+	UiKit.OnClick = function()
+		Sounds.Play("Click")
+	end
+	Remotes:WaitForChild("Fx").OnClientEvent:Connect(onFx)
+end
+
+return Sounds
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="77">
           <Properties>
             <string name="Name">SpinWindow</string>
             <string name="Source"><![CDATA[-- Колесо удачи: сегменты из Config.Spin.Segments по кругу, указатель сверху.
@@ -15671,7 +17191,7 @@ return SpinWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="74">
+        <Item class="ModuleScript" referent="78">
           <Properties>
             <string name="Name">Status</string>
             <string name="Source"><![CDATA[-- Состояние своего персонажа над панелью предметов (снизу по центру):
@@ -15910,7 +17430,7 @@ return Status
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="75">
+        <Item class="ModuleScript" referent="79">
           <Properties>
             <string name="Name">Strings</string>
             <string name="Source"><![CDATA[--!strict
@@ -16099,7 +17619,7 @@ Locale.Add({
 	TradeTip = { "Tap your memes to add them", "Нажимай на своих мемов, чтобы добавить" },
 
 	-- защита базы
-	DefenseTitle = { "🛡️ Base Defense", "🛡️ Защита базы" },
+	DefenseTitle = { "🛡️ Defense & Upgrades", "🛡️ Защита и прокачка" },
 	DefenseGuardName = { "🐱⚔️ Sword Kitten", "🐱⚔️ Kitten with a Sword" },
 	DefenseTurretName = { "🔫 Turret", "🔫 Турель" },
 	DefenseTurretInfo = { "Shoots thieves carrying your memes and strangers on your base.", "Стреляет в воров с твоими мемами и в чужаков на базе." },
@@ -16206,6 +17726,58 @@ Locale.Add({
 	SkinFromSpin = { "From the Wheel", "С колеса удачи" },
 })
 
+-- v5 (фундамент): перерождения с требованиями, скорость, «Домой», тревога, Lucky Blocks, настройки
+Locale.Add({
+	-- перерождение
+	RebirthNext = { "Next: Rebirth #{Count}", "Дальше: перерождение №{Count}" },
+	RebirthReqTitle = { "Needed on your base (memes stay):", "Нужно на базе (мемы останутся):" },
+	RebirthReqRarity = { "{Mark} {Count}× {Rarity} or better ({Have}/{Count})", "{Mark} {Count}× {Rarity} или лучше ({Have}/{Count})" },
+	RebirthReqMeme = { "{Mark} {Count}× {Name} ({Have}/{Count})", "{Mark} {Count}× {Name} ({Have}/{Count})" },
+	RebirthReqNone = { "✅ No memes needed", "✅ Мемы не нужны" },
+	RebirthRewardsTitle = { "Rewards:", "Награды:" },
+	RebirthRewardIncome = { "💸 +{Percent}% income forever (becomes x{Mult})", "💸 +{Percent}% дохода навсегда (станет ×{Mult})" },
+	RebirthRewardFloor = { "🏢 Floor {Floor} unlocks (+{Slots} slots)", "🏢 Открывается {Floor}-й этаж (+{Slots} слотов)" },
+	RebirthRewardSpins = { "🎡 +{Count} wheel spins", "🎡 +{Count} вращ. колеса" },
+	RebirthRewardItem = { "🎁 Item: {Face} {Name}", "🎁 Предмет: {Face} {Name}" },
+	RebirthNextFloor = { "🔒 Floor {Floor} unlocks at Rebirth {Rebirth}", "🔒 {Floor}-й этаж откроется на перерождении {Rebirth}" },
+	RebirthEndless = { "All milestones done! Each rebirth now costs x{Mult} more", "Все ступени пройдены! Дальше каждое перерождение дороже в {Mult} раза" },
+	RebirthBtnNeedMemes = { "🔒 Need memes", "🔒 Нужны мемы" },
+	RebirthBtnNeedCash = { "🔒 Need cash", "🔒 Не хватает денег" },
+
+	-- скорость (карточка в окне защиты)
+	BtnSpeed = { "Speed", "Скорость" },
+	UpgSpeedName = { "👟 Speed", "👟 Скорость" },
+	UpgSpeedInfo = { "Run faster forever — even while carrying a meme.", "Бегай быстрее навсегда — даже с мемом в руках." },
+	UpgSpeedNext = { "Next: +{Bonus} speed (now +{Now})", "Дальше: +{Bonus} к скорости (сейчас +{Now})" },
+
+	-- «Домой»
+	BtnHome = { "Home", "Домой" },
+	HomeCarrying = { "Can't go home while carrying a meme!", "С мемом в руках домой нельзя!" },
+
+	-- тревога: крадут твоего мема
+	AlarmBanner = { "🚨 {Player} is stealing your {Meme}! — slap them!", "🚨 {Player} ворует твоего мема {Meme}! — бей тапком!" },
+	AlarmSomeone = { "Someone", "Кто-то" },
+
+	-- Lucky Blocks
+	BbLucky = { "❓ Lucky Block ({Rarity})", "❓ Lucky Block ({Rarity})" },
+	BbLuckyOpens = { "Opens in {Time}", "Откроется через {Time}" },
+	BbLuckyOpening = { "Opening...", "Открывается..." },
+	BbLuckyHint = { "Random {Rarity} meme inside", "Внутри — случайный мем: {Rarity}" },
+	LuckyOpenedYou = { "🎉 Your Lucky Block opened: {Meme}!", "🎉 Твой Lucky Block открылся: {Meme}!" },
+
+	-- настройки
+	BtnSettings = { "Settings", "Настройки" },
+	SettingsTitle = { "⚙️ Settings", "⚙️ Настройки" },
+	SetSound = { "🔊 Sound", "🔊 Звук" },
+	SetLowGraphics = { "🪶 Low graphics", "🪶 Слабая графика" },
+	SetLowGraphicsHint = { "Fewer particles and effects, meme signs closer", "Меньше частиц и эффектов, таблички мемов ближе" },
+	SetHideBillboards = { "🙈 Hide other players' meme signs", "🙈 Скрыть таблички чужих мемов" },
+	SetHideBillboardsHint = { "Only your memes and the carpet keep signs", "Таблички только у своих мемов и на дорожке" },
+	SetUiScale = { "🔍 UI size: {Percent}%", "🔍 Размер интерфейса: {Percent}%" },
+	SetOn = { "ON", "ВКЛ" },
+	SetOff = { "OFF", "ВЫКЛ" },
+})
+
 -- Ответы сервера v4: добавляем, только если сервер не положил свои строки в Shared/Strings
 do
 	local fallback: { [string]: { string } } = {
@@ -16213,6 +17785,10 @@ do
 		CodeInvalid = { "This code doesn't exist", "Такого кода нет" },
 		CodeUsed = { "You already used this code", "Ты уже активировал этот код" },
 		CodeExpired = { "This code has expired", "Срок действия кода истёк" },
+		-- v5: ответы Rebirth / BuySpeed (основные строки — в Shared/Strings/Foundation.luau)
+		RebirthNeedMemes = { "You need more strong memes on your base to rebirth", "Для перерождения нужно больше сильных мемов на базе" },
+		SpeedUpgraded = { "Speed upgraded!", "Скорость прокачана!" },
+		SpeedMax = { "Speed is at max level!", "Скорость уже максимальная!" },
 	}
 	local missing = {}
 	for key, value in fallback do
@@ -16227,7 +17803,7 @@ return Locale
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="76">
+        <Item class="ModuleScript" referent="80">
           <Properties>
             <string name="Name">TradeWindow</string>
             <string name="Source"><![CDATA[-- Обмен мемами между игроками. Клиент только показывает состояние и шлёт намерения; что можно
@@ -16843,7 +18419,7 @@ return TradeWindow
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="77">
+        <Item class="ModuleScript" referent="81">
           <Properties>
             <string name="Name">Tutorial</string>
             <string name="Source"><![CDATA[-- Обучение новичка (атрибут игрока TutorialDone == 0): карточка с шагом внизу по центру и
@@ -17123,7 +18699,7 @@ return Tutorial
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="78">
+        <Item class="ModuleScript" referent="82">
           <Properties>
             <string name="Name">UiKit</string>
             <string name="Source"><![CDATA[-- Небольшой набор для построения UI кодом (Studio под рукой нет, поэтому весь интерфейс — в скриптах).
@@ -17185,12 +18761,22 @@ function UiKit.text(props: { [string]: any }, children: { Instance }?): TextLabe
 	return create("TextLabel", props, children)
 end
 
+-- Звук клика: модуль Sounds ставит сюда функцию (вызывается при нажатии любой UiKit.button)
+UiKit.OnClick = nil :: (() -> ())?
+
 -- Используйте .Activated, а не .MouseButton1Click: Activated работает и на телефоне, и на геймпаде.
 function UiKit.button(props: { [string]: any }): TextButton
 	props.Font = props.Font or Enum.Font.GothamBold
 	props.TextColor3 = props.TextColor3 or COLORS.Text
 	props.AutoButtonColor = if props.AutoButtonColor == nil then true else props.AutoButtonColor
-	return create("TextButton", props, { UiKit.corner(8) })
+	local button = create("TextButton", props, { UiKit.corner(8) })
+	button.Activated:Connect(function()
+		local onClick = UiKit.OnClick
+		if onClick then
+			onClick()
+		end
+	end)
+	return button
 end
 
 function UiKit.screen(name: string): ScreenGui
@@ -17295,7 +18881,7 @@ return UiKit
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="79">
+        <Item class="ModuleScript" referent="83">
           <Properties>
             <string name="Name">Util</string>
             <string name="Source"><![CDATA[--!strict
@@ -17487,7 +19073,7 @@ return Util
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="80">
+        <Item class="ModuleScript" referent="84">
           <Properties>
             <string name="Name">Zones</string>
             <string name="Source"><![CDATA[-- Клиентская часть зон большой карты: всплывающее «+$X» над собранным пикапом Конфетного парка
@@ -17562,7 +19148,7 @@ return Zones
       </Item>
     </Item>
   </Item>
-  <Item class="Workspace" referent="81">
+  <Item class="Workspace" referent="85">
     <Properties>
       <string name="Name">Workspace</string>
       <bool name="NeedsPivotMigration">false</bool>

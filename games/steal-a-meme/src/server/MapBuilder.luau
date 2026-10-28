@@ -19,10 +19,24 @@ MapBuilder.HALF_Z = 160
 
 local PLOT_X = { -135, -45, 45, 135 }
 local PLOT_Z = 64
-local SLOT_COLUMNS = 5
-local SLOT_SPACING_X = 14
-local SLOT_SPACING_Z = 10.5
 
+-- Этажи базы (координаты в системе базы: -Z — вход со стороны дорожки, +Z — задняя стена).
+-- Этажи 2–3 — платформы над задними 2/3 базы (z от UPPER_FRONT_Z до задней стены), спереди
+-- остаётся открытый двор с входом. Пандус на 2-й этаж — во дворе вдоль правой (+X) стены,
+-- пандус на 3-й — на 2-м этаже вдоль левой (-X) стены (над ним в полу 3-го этажа проём).
+local UPPER_FRONT_Z = -12
+local LANE_X = 33 -- от |x| = 33 до стены (40) — полосы пандусов
+local RAMP_WIDTH = 6.2
+local RAMP_LENGTH = 24 -- подъём 14 на 24 studs ≈ 30°
+local RAMP2_START_Z = -6 -- низ пандуса на 3-й этаж (перед ним площадка 6 studs)
+local RAIL_HEIGHT = 3
+
+-- Слоты: на каждом этаже сетка 4 × 3, слоты геймпасса — ряд из 6 на 1-м этаже перед сеткой
+local SLOT_COLUMNS = 4
+local SLOT_SPACING_X = 14
+local SLOT_ROWS_Z = { 30, 19.5, 9 } -- от задней стены к входу
+local PASS_ROW_Z = -2
+local PASS_SPACING_X = 11
 local function part(props: { [string]: any }): Part
 	local p = Instance.new("Part")
 	p.Anchored = true
@@ -269,11 +283,64 @@ local function buildCarpet(map: Instance)
 	})
 end
 
--- Слоты одной базы: 5 колонок × 5 рядов, от задней стены к входу.
+-- Высота верха пола этажа в системе базы (верх пола 1-го этажа = 0.5)
+local function floorTop(floor: number): number
+	return MapBuilder.PLOT_SIZE.Y / 2 + Config.Plot.Floors[floor].Height
+end
+
+-- Центр слота в системе базы (номера — см. Config.Plot)
 local function slotLocalPosition(index: number): Vector3
-	local column = (index - 1) % SLOT_COLUMNS
-	local row = (index - 1) // SLOT_COLUMNS
-	return Vector3.new((column - (SLOT_COLUMNS - 1) / 2) * SLOT_SPACING_X, 0.6, 28 - row * SLOT_SPACING_Z)
+	local perFloor = Config.Plot.FloorSlots
+	local floorSlots = #Config.Plot.Floors * perFloor
+	if index > floorSlots then
+		local k = index - floorSlots - 1
+		return Vector3.new((k - (Config.Plot.PassSlots - 1) / 2) * PASS_SPACING_X, floorTop(1) + 0.1, PASS_ROW_Z)
+	end
+	local floor = Config.FloorOfSlot(index)
+	local i = (index - 1) % perFloor
+	local column = i % SLOT_COLUMNS
+	local row = i // SLOT_COLUMNS + 1
+	return Vector3.new((column - (SLOT_COLUMNS - 1) / 2) * SLOT_SPACING_X, floorTop(floor) + 0.1, SLOT_ROWS_Z[row] or SLOT_ROWS_Z[#SLOT_ROWS_Z])
+end
+
+-- Наклонная плита (пандус/перила): верхняя грань идёт от from до to (в системе базы)
+local function slope(origin: CFrame, from: Vector3, to: Vector3, thickness: number, lift: number): CFrame
+	local mid = (from + to) / 2
+	return origin * CFrame.lookAt(mid, to) * CFrame.new(0, lift - thickness / 2, 0)
+end
+
+-- Барьер закрытого этажа: полупрозрачный блок над пандусом с табличкой «🔒 Rebirth N».
+-- Включает/выключает PlotService (по перерождениям хозяина базы).
+local function buildFloorLock(floor: number, cframe: CFrame, size: Vector3, parent: Instance)
+	local barrier = part({
+		Name = "FloorLock" .. floor,
+		Size = size,
+		CFrame = cframe,
+		Color = Color3.fromRGB(255, 80, 120),
+		Material = Enum.Material.ForceField,
+		Transparency = 0.3,
+		CanCollide = true,
+		Parent = parent,
+	})
+	barrier:SetAttribute("Floor", floor)
+	barrier:SetAttribute("UnlockRebirth", Config.Plot.Floors[floor].UnlockRebirth)
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "LockGui"
+	gui.Size = UDim2.fromScale(12, 3)
+	gui.StudsOffset = Vector3.new(0, size.Y / 2 + 2, 0)
+	gui.MaxDistance = 140
+	gui.LightInfluence = 0
+	local label = Instance.new("TextLabel")
+	label.Name = "Text"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.TextScaled = true
+	label.Font = Enum.Font.GothamBlack
+	label.TextColor3 = Color3.new(1, 1, 1)
+	label.TextStrokeTransparency = 0.2
+	label.Text = "🔒 Rebirth " .. Config.Plot.Floors[floor].UnlockRebirth
+	label.Parent = gui
+	gui.Parent = barrier
 end
 
 local function buildPlot(index: number, center: Vector3, front: Vector3, parent: Instance): Model
@@ -285,11 +352,14 @@ local function buildPlot(index: number, center: Vector3, front: Vector3, parent:
 	plot:SetAttribute("OwnerName", "")
 	plot:SetAttribute("LockedUntil", 0)
 	plot:SetAttribute("LockCooldownUntil", 0)
+	plot:SetAttribute("FloorsUnlocked", 1)
 
 	-- lookAt: LookVector смотрит на дорожку, значит «вперёд» в локальных координатах — это -Z.
 	local origin = CFrame.lookAt(center, center + front)
 	local size = MapBuilder.PLOT_SIZE
 	local hue = (index - 1) / 8
+	local floors = Config.Plot.Floors
+	local topHeight = floors[#floors].Height
 
 	local floor = part({
 		Name = "Floor",
@@ -300,9 +370,11 @@ local function buildPlot(index: number, center: Vector3, front: Vector3, parent:
 		Parent = plot,
 	})
 	plot.PrimaryPart = floor
+	local upperColor = Color3.fromHSV(hue, 0.3, 0.5)
+	local railColor = Color3.fromHSV(hue, 0.25, 0.85)
 
 	local wallColor = Color3.fromHSV(hue, 0.5, 0.3)
-	local wallHeight = 7
+	local wallHeight = size.Y / 2 + topHeight + 8 -- до верхнего этажа + высота перил с запасом
 	-- Задняя и боковые стены (вход со стороны дорожки открыт)
 	part({
 		Name = "Wall",
@@ -332,6 +404,108 @@ local function buildPlot(index: number, center: Vector3, front: Vector3, parent:
 		})
 	end
 
+	-- ===== Этажи 2..N: платформы над задней частью базы =====
+	local upperDepth = size.Z / 2 - UPPER_FRONT_Z
+	local upperCenterZ = (UPPER_FRONT_Z + size.Z / 2) / 2
+	local railZ = UPPER_FRONT_Z + 0.2
+	for floorIndex = 2, #floors do
+		local top = floorTop(floorIndex)
+		local holeLeft = floorIndex >= 3 -- в полу 3-го этажа проём над пандусом со 2-го
+		local leftX = if holeLeft then -LANE_X else -size.X / 2
+		local platform = part({
+			Name = "Floor" .. floorIndex,
+			Size = Vector3.new(size.X / 2 - leftX, 1, upperDepth),
+			CFrame = origin * CFrame.new((leftX + size.X / 2) / 2, top - 0.5, upperCenterZ),
+			Color = upperColor,
+			Material = Enum.Material.WoodPlanks,
+			Parent = plot,
+		})
+		platform:SetAttribute("SkinFloor", true)
+		platform:SetAttribute("Floor", floorIndex)
+		if holeLeft then
+			-- Кусок пола за проёмом: сюда выходит пандус
+			local landingStart = RAMP2_START_Z + RAMP_LENGTH
+			local landing = part({
+				Name = "Floor" .. floorIndex .. "Landing",
+				Size = Vector3.new(size.X / 2 - LANE_X, 1, size.Z / 2 - landingStart),
+				CFrame = origin * CFrame.new(-(size.X / 2 + LANE_X) / 2, top - 0.5, (landingStart + size.Z / 2) / 2),
+				Color = upperColor,
+				Material = Enum.Material.WoodPlanks,
+				Parent = plot,
+			})
+			landing:SetAttribute("SkinFloor", true)
+			landing:SetAttribute("Floor", floorIndex)
+			-- Перила вдоль проёма
+			part({
+				Name = "Railing",
+				Size = Vector3.new(0.4, RAIL_HEIGHT, landingStart - UPPER_FRONT_Z),
+				CFrame = origin * CFrame.new(-LANE_X + 0.2, top + RAIL_HEIGHT / 2, (UPPER_FRONT_Z + landingStart) / 2),
+				Color = railColor,
+				Parent = plot,
+			})
+		end
+		-- Перила по переднему краю: на 2-м этаже — кроме места, куда выходит пандус (+X),
+		-- на 3-м — кроме проёма (-X)
+		local railFrom = if holeLeft then -LANE_X else -size.X / 2
+		local railTo = if holeLeft then size.X / 2 else LANE_X - 0.3
+		part({
+			Name = "Railing",
+			Size = Vector3.new(railTo - railFrom, RAIL_HEIGHT, 0.4),
+			CFrame = origin * CFrame.new((railFrom + railTo) / 2, top + RAIL_HEIGHT / 2, railZ),
+			Color = railColor,
+			Parent = plot,
+		})
+	end
+
+	-- ===== Пандусы =====
+	local laneCenter = (LANE_X + size.X / 2 - 0.75) / 2 -- середина между перилами и внутренней гранью стены
+	local ramps = {
+		-- на 2-й этаж: во дворе вдоль +X стены, от входа до края 2-го этажа
+		{ X = laneCenter, FromZ = UPPER_FRONT_Z - RAMP_LENGTH, Floor = 2 },
+		-- на 3-й этаж: на 2-м этаже вдоль -X стены
+		{ X = -laneCenter, FromZ = RAMP2_START_Z, Floor = 3 },
+	}
+	for _, ramp in ramps do
+		if not floors[ramp.Floor] then
+			continue
+		end
+		local bottom = floorTop(ramp.Floor - 1)
+		local top = floorTop(ramp.Floor)
+		local from = Vector3.new(ramp.X, bottom, ramp.FromZ)
+		local to = Vector3.new(ramp.X, top, ramp.FromZ + RAMP_LENGTH)
+		local length = (to - from).Magnitude
+		local stairs = part({
+			Name = "Stairs",
+			Size = Vector3.new(RAMP_WIDTH, 1, length),
+			CFrame = slope(origin, from, to, 1, 0),
+			Color = upperColor,
+			Material = Enum.Material.DiamondPlate,
+			Parent = plot,
+		})
+		stairs:SetAttribute("SkinFloor", true)
+		stairs:SetAttribute("Floor", ramp.Floor)
+		-- Перила со стороны базы (у стены их заменяет стена). Нижняя треть открыта:
+		-- на пандус можно зайти и сбоку, не обходя перила
+		local inner = if ramp.X > 0 then LANE_X - 0.2 else -LANE_X + 0.2
+		local railFrom = from:Lerp(to, 0.3)
+		part({
+			Name = "Railing",
+			Size = Vector3.new(0.4, RAIL_HEIGHT, length * 0.7),
+			CFrame = slope(origin, Vector3.new(inner, railFrom.Y, railFrom.Z), Vector3.new(inner, top, to.Z), RAIL_HEIGHT, RAIL_HEIGHT),
+			Color = railColor,
+			Parent = plot,
+		})
+		-- Барьер закрытого этажа: накрывает весь пандус (обойти сбоку или перепрыгнуть нельзя)
+		local lockBottom = bottom
+		local lockTop = top + 7.5
+		buildFloorLock(
+			ramp.Floor,
+			origin * CFrame.new(ramp.X, (lockBottom + lockTop) / 2, ramp.FromZ + RAMP_LENGTH / 2),
+			Vector3.new(size.X / 2 - LANE_X + 0.3, lockTop - lockBottom, RAMP_LENGTH),
+			plot
+		)
+	end
+
 	-- Табличка над входом (SurfaceGui рисует клиент, Face = Front смотрит на дорожку)
 	part({
 		Name = "Sign",
@@ -341,11 +515,11 @@ local function buildPlot(index: number, center: Vector3, front: Vector3, parent:
 		Parent = plot,
 	})
 
-	-- Силовой щит на входе: виден, когда база закрыта
+	-- Силовой щит на входе: виден, когда база закрыта (во всю ширину и высоту базы)
 	part({
 		Name = "Shield",
-		Size = Vector3.new(31, 14, 0.4),
-		CFrame = origin * CFrame.new(0, 7, -size.Z / 2),
+		Size = Vector3.new(size.X - 1.5, wallHeight, 0.4),
+		CFrame = origin * CFrame.new(0, wallHeight / 2, -size.Z / 2 + 0.3),
 		Color = Color3.fromRGB(80, 200, 255),
 		Material = Enum.Material.ForceField,
 		Transparency = 1,
@@ -370,13 +544,15 @@ local function buildPlot(index: number, center: Vector3, front: Vector3, parent:
 			Parent = slots,
 		})
 		slot:SetAttribute("Index", slotIndex)
+		slot:SetAttribute("Floor", Config.FloorOfSlot(slotIndex))
 		slot:SetAttribute("Unlocked", false)
 	end
 
+	-- Кнопка замка: во дворе у входа, левее пандуса на 2-й этаж
 	local lockButton = part({
 		Name = "LockButton",
 		Size = Vector3.new(4, 3, 4),
-		CFrame = origin * CFrame.new(size.X / 2 - 8, 1.5, -size.Z / 2 + 8),
+		CFrame = origin * CFrame.new(LANE_X - 9, 1.5, -size.Z / 2 + 6),
 		Color = Color3.fromRGB(80, 200, 255),
 		Material = Enum.Material.Neon,
 		Parent = plot,

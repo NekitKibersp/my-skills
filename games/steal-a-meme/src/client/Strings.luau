@@ -184,7 +184,7 @@ Locale.Add({
 	TradeTip = { "Tap your memes to add them", "Нажимай на своих мемов, чтобы добавить" },
 
 	-- защита базы
-	DefenseTitle = { "🛡️ Base Defense", "🛡️ Защита базы" },
+	DefenseTitle = { "🛡️ Defense & Upgrades", "🛡️ Защита и прокачка" },
 	DefenseGuardName = { "🐱⚔️ Sword Kitten", "🐱⚔️ Kitten with a Sword" },
 	DefenseTurretName = { "🔫 Turret", "🔫 Турель" },
 	DefenseTurretInfo = { "Shoots thieves carrying your memes and strangers on your base.", "Стреляет в воров с твоими мемами и в чужаков на базе." },
@@ -291,6 +291,58 @@ Locale.Add({
 	SkinFromSpin = { "From the Wheel", "С колеса удачи" },
 })
 
+-- v5 (фундамент): перерождения с требованиями, скорость, «Домой», тревога, Lucky Blocks, настройки
+Locale.Add({
+	-- перерождение
+	RebirthNext = { "Next: Rebirth #{Count}", "Дальше: перерождение №{Count}" },
+	RebirthReqTitle = { "Needed on your base (memes stay):", "Нужно на базе (мемы останутся):" },
+	RebirthReqRarity = { "{Mark} {Count}× {Rarity} or better ({Have}/{Count})", "{Mark} {Count}× {Rarity} или лучше ({Have}/{Count})" },
+	RebirthReqMeme = { "{Mark} {Count}× {Name} ({Have}/{Count})", "{Mark} {Count}× {Name} ({Have}/{Count})" },
+	RebirthReqNone = { "✅ No memes needed", "✅ Мемы не нужны" },
+	RebirthRewardsTitle = { "Rewards:", "Награды:" },
+	RebirthRewardIncome = { "💸 +{Percent}% income forever (becomes x{Mult})", "💸 +{Percent}% дохода навсегда (станет ×{Mult})" },
+	RebirthRewardFloor = { "🏢 Floor {Floor} unlocks (+{Slots} slots)", "🏢 Открывается {Floor}-й этаж (+{Slots} слотов)" },
+	RebirthRewardSpins = { "🎡 +{Count} wheel spins", "🎡 +{Count} вращ. колеса" },
+	RebirthRewardItem = { "🎁 Item: {Face} {Name}", "🎁 Предмет: {Face} {Name}" },
+	RebirthNextFloor = { "🔒 Floor {Floor} unlocks at Rebirth {Rebirth}", "🔒 {Floor}-й этаж откроется на перерождении {Rebirth}" },
+	RebirthEndless = { "All milestones done! Each rebirth now costs x{Mult} more", "Все ступени пройдены! Дальше каждое перерождение дороже в {Mult} раза" },
+	RebirthBtnNeedMemes = { "🔒 Need memes", "🔒 Нужны мемы" },
+	RebirthBtnNeedCash = { "🔒 Need cash", "🔒 Не хватает денег" },
+
+	-- скорость (карточка в окне защиты)
+	BtnSpeed = { "Speed", "Скорость" },
+	UpgSpeedName = { "👟 Speed", "👟 Скорость" },
+	UpgSpeedInfo = { "Run faster forever — even while carrying a meme.", "Бегай быстрее навсегда — даже с мемом в руках." },
+	UpgSpeedNext = { "Next: +{Bonus} speed (now +{Now})", "Дальше: +{Bonus} к скорости (сейчас +{Now})" },
+
+	-- «Домой»
+	BtnHome = { "Home", "Домой" },
+	HomeCarrying = { "Can't go home while carrying a meme!", "С мемом в руках домой нельзя!" },
+
+	-- тревога: крадут твоего мема
+	AlarmBanner = { "🚨 {Player} is stealing your {Meme}! — slap them!", "🚨 {Player} ворует твоего мема {Meme}! — бей тапком!" },
+	AlarmSomeone = { "Someone", "Кто-то" },
+
+	-- Lucky Blocks
+	BbLucky = { "❓ Lucky Block ({Rarity})", "❓ Lucky Block ({Rarity})" },
+	BbLuckyOpens = { "Opens in {Time}", "Откроется через {Time}" },
+	BbLuckyOpening = { "Opening...", "Открывается..." },
+	BbLuckyHint = { "Random {Rarity} meme inside", "Внутри — случайный мем: {Rarity}" },
+	LuckyOpenedYou = { "🎉 Your Lucky Block opened: {Meme}!", "🎉 Твой Lucky Block открылся: {Meme}!" },
+
+	-- настройки
+	BtnSettings = { "Settings", "Настройки" },
+	SettingsTitle = { "⚙️ Settings", "⚙️ Настройки" },
+	SetSound = { "🔊 Sound", "🔊 Звук" },
+	SetLowGraphics = { "🪶 Low graphics", "🪶 Слабая графика" },
+	SetLowGraphicsHint = { "Fewer particles and effects, meme signs closer", "Меньше частиц и эффектов, таблички мемов ближе" },
+	SetHideBillboards = { "🙈 Hide other players' meme signs", "🙈 Скрыть таблички чужих мемов" },
+	SetHideBillboardsHint = { "Only your memes and the carpet keep signs", "Таблички только у своих мемов и на дорожке" },
+	SetUiScale = { "🔍 UI size: {Percent}%", "🔍 Размер интерфейса: {Percent}%" },
+	SetOn = { "ON", "ВКЛ" },
+	SetOff = { "OFF", "ВЫКЛ" },
+})
+
 -- Ответы сервера v4: добавляем, только если сервер не положил свои строки в Shared/Strings
 do
 	local fallback: { [string]: { string } } = {
@@ -298,6 +350,10 @@ do
 		CodeInvalid = { "This code doesn't exist", "Такого кода нет" },
 		CodeUsed = { "You already used this code", "Ты уже активировал этот код" },
 		CodeExpired = { "This code has expired", "Срок действия кода истёк" },
+		-- v5: ответы Rebirth / BuySpeed (основные строки — в Shared/Strings/Foundation.luau)
+		RebirthNeedMemes = { "You need more strong memes on your base to rebirth", "Для перерождения нужно больше сильных мемов на базе" },
+		SpeedUpgraded = { "Speed upgraded!", "Скорость прокачана!" },
+		SpeedMax = { "Speed is at max level!", "Скорость уже максимальная!" },
 	}
 	local missing = {}
 	for key, value in fallback do

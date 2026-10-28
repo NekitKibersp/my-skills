@@ -18,6 +18,7 @@ type Carry = {
 	Model: Model,
 	Id: string,
 	EndsAt: number,
+	StartedAt: number, -- для тревоги хозяина: показываем самую свежую кражу
 	-- Анти-чит: последняя проверенная позиция вора и число нарушений скорости
 	LastPos: Vector3?,
 	LastTime: number?,
@@ -63,13 +64,42 @@ function StealService.IsCarrying(player: Player): boolean
 	return carries[player] ~= nil
 end
 
--- Скорость персонажа: с мемом медленнее, энергетик (атрибут BoostUntil на персонаже) быстрее
+-- Тревога хозяина: атрибуты StolenBy / StolenMeme — самая свежая из текущих краж его мемов
+local function refreshAlarm(owner: Player)
+	local latest: Carry? = nil
+	local latestThief: Player? = nil
+	for thief, carry in carries do
+		if carry.Owner == owner and (not latest or carry.StartedAt > latest.StartedAt) then
+			latest, latestThief = carry, thief
+		end
+	end
+	if latest and latestThief then
+		owner:SetAttribute("StolenBy", latestThief.UserId)
+		owner:SetAttribute("StolenMeme", latest.Id)
+	else
+		owner:SetAttribute("StolenBy", 0)
+		owner:SetAttribute("StolenMeme", "")
+	end
+end
+
+-- Бонус прокачки скорости (Config.Speed, уровень SpeedLevel в данных)
+local function speedBonus(player: Player): number
+	if not DataService.IsLoaded(player) then
+		return 0
+	end
+	local level = math.min(DataService.Get(player, "SpeedLevel"), #Config.Speed)
+	local stats = Config.Speed[level]
+	return if stats then stats.Bonus else 0
+end
+
+-- Скорость персонажа: с мемом медленнее, энергетик (атрибут BoostUntil на персонаже) быстрее,
+-- прокачка скорости прибавляется и к обычной скорости, и к скорости с мемом
 function StealService.UpdateSpeed(player: Player)
 	local humanoid = humanoidOf(player)
 	if not humanoid then
 		return
 	end
-	local speed = if carries[player] then Config.Steal.CarryWalkSpeed else BASE_WALK_SPEED
+	local speed = (if carries[player] then Config.Steal.CarryWalkSpeed else BASE_WALK_SPEED) + speedBonus(player)
 	local character = player.Character :: Model
 	if (character:GetAttribute("BoostUntil") or 0) > now() then
 		speed += character:GetAttribute("BoostSpeed") or 0
@@ -88,6 +118,7 @@ function StealService.Fail(thief: Player)
 	StealService.UpdateSpeed(thief)
 
 	local owner = carry.Owner
+	refreshAlarm(owner)
 	if owner.Parent and PlotService.GetPlot(owner) and DataService.IsLoaded(owner) and PlotService.GetEntry(owner, carry.Slot) then
 		PlotService.ReturnModel(owner, carry.Slot, carry.Model)
 		PlotService.SetAway(owner, carry.Slot, false)
@@ -119,6 +150,7 @@ local function deliver(thief: Player)
 	carries[thief] = nil
 	setCarryAttributes(thief, "", 0)
 	StealService.UpdateSpeed(thief)
+	refreshAlarm(owner)
 
 	local position = carry.Model:GetPivot().Position
 	carry.Model:Destroy()
@@ -176,6 +208,12 @@ function StealService.TryStart(thief: Player, owner: Player, slot: number, promp
 	if (root.Position - model:GetPivot().Position).Magnitude > 18 then
 		return
 	end
+	-- Вор должен стоять на том же этаже, что и мем (не воровать сквозь пол/потолок)
+	local slotY = PlotService.SlotCFrame(plot, slot).Position.Y
+	local dy = root.Position.Y - slotY
+	if dy < -2 or dy > 11 then
+		return
+	end
 
 	PlotService.DetachModel(owner, slot)
 	PlotService.SetAway(owner, slot, true)
@@ -186,14 +224,16 @@ function StealService.TryStart(thief: Player, owner: Player, slot: number, promp
 		end
 	end
 	model:SetAttribute("State", "Carried")
+	model:SetAttribute("OpensAt", nil) -- Lucky Block: таймер начнётся заново там, где его поставят
 	local height = (model.PrimaryPart :: BasePart).Size.Y
 	MemeFactory.AttachTo(model, root, CFrame.new(0, 3 + height / 2, 0))
 	model.Parent = workspace
 
 	local id = model:GetAttribute("CreatureId")
 	local endsAt = now() + Config.Steal.CarryTimeout
-	carries[thief] = { Owner = owner, Slot = slot, Model = model, Id = id, EndsAt = endsAt }
+	carries[thief] = { Owner = owner, Slot = slot, Model = model, Id = id, EndsAt = endsAt, StartedAt = os.clock() }
 	setCarryAttributes(thief, id, endsAt)
+	refreshAlarm(owner)
 	StealService.UpdateSpeed(thief)
 	if StealService.OnStealStarted then
 		StealService.OnStealStarted(thief)
@@ -282,6 +322,7 @@ function StealService.OnCharacter(player: Player, character: Model)
 		humanoid.Died:Connect(function()
 			StealService.Fail(player)
 		end)
+		StealService.UpdateSpeed(player) -- прокачка скорости действует сразу после появления
 	end
 end
 
@@ -289,6 +330,12 @@ function StealService.OnPlayerRemoving(player: Player)
 	StealService.Fail(player)
 	StealService.CancelFromOwner(player)
 	holdStart[player] = nil
+end
+
+-- Начальные атрибуты тревоги (после загрузки данных)
+function StealService.OnLoaded(player: Player)
+	refreshAlarm(player)
+	StealService.UpdateSpeed(player)
 end
 
 -- ===== Цикл: доставка, таймеры, страж =====
