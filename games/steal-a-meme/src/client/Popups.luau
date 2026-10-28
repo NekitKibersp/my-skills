@@ -1,10 +1,14 @@
 -- Всплывающие окна от сервера (Remotes.Popup): оффлайн-доход и ежедневная награда
--- (Daily: Day + одно или несколько из Coins / Meme (Id) / Item (Id)).
+-- (Daily: Day + одно или несколько из Coins / Meme (Id) / Item (Id)), а также v4:
+-- "Code" { Code, Coins?, Meme?, Spins?, Item? }, "Spin" { ... } (после анимации колеса),
+-- "Pass" { Level, Track, Coins?, Meme?, Spins?, Skin?, Item? }.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Locale = require(Shared:WaitForChild("Locale"))
+local Rewards = require(script.Parent:WaitForChild("Rewards"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
@@ -35,6 +39,18 @@ local function dailyText(data): string
 	return Locale.T("PopupDailyHead", { Day = day }) .. "\n" .. table.concat(lines, "\n")
 end
 
+-- Текст награды кода / колеса / пропуска: строка на каждую часть (RichText, мем — цветом редкости)
+local function rewardText(data, header: string?): string
+	local lines = Rewards.lines(data)
+	if #lines == 0 then
+		table.insert(lines, Locale.T("PopupRewardEmpty"))
+	end
+	if header then
+		table.insert(lines, 1, header)
+	end
+	return table.concat(lines, "\n")
+end
+
 function Popups.Start(ctx)
 	-- Очередь: если пришли и «Оффлайн», и «Ежедневная», показываем по одному
 	local queue: { { Title: string, Text: string } } = {}
@@ -44,6 +60,11 @@ function Popups.Start(ctx)
 	window.Name = "PopupWindow"
 	window.ZIndex = 10
 	local title = window:FindFirstChildWhichIsA("TextLabel")
+	if title then
+		-- Заголовки наград бывают длинными («Мем-пропуск — уровень 20»): ужимаем, а не обрезаем
+		title.TextScaled = true
+		create("UITextSizeConstraint", { MaxTextSize = 26, Parent = title })
+	end
 
 	local message = UiKit.text({
 		TextSize = 22,
@@ -55,6 +76,8 @@ function Popups.Start(ctx)
 	})
 	create("UITextSizeConstraint", { MaxTextSize = 24, Parent = message })
 	message.TextScaled = true
+	message.RichText = true
+	local pop = create("UIScale", { Parent = window })
 	local ok = UiKit.button({
 		Text = Locale.T("PopupOk"),
 		TextSize = 22,
@@ -78,6 +101,9 @@ function Popups.Start(ctx)
 		end
 		message.Text = item.Text
 		window.Visible = true
+		-- Награда «выскакивает»
+		pop.Scale = 0.7
+		TweenService:Create(pop, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
 	end
 
 	ok.Activated:Connect(showNext)
@@ -88,12 +114,35 @@ function Popups.Start(ctx)
 		end
 	end)
 
+	local function enqueue(item: { Title: string, Text: string })
+		table.insert(queue, item)
+		if not showing then
+			showNext()
+		end
+	end
+
 	Remotes:WaitForChild("Popup").OnClientEvent:Connect(function(kind, data)
 		if type(data) ~= "table" then
 			return
 		end
 		local coins = if type(data.Coins) == "number" then data.Coins else 0
-		if kind == "Offline" then
+		if kind == "Spin" then
+			-- Ждём, пока колесо докрутится (SpinWindow держит Rewards.SpinHoldUntil)
+			task.spawn(function()
+				while os.clock() < Rewards.SpinHoldUntil do
+					task.wait(0.1)
+				end
+				enqueue({ Title = Locale.T("PopupSpinTitle"), Text = rewardText(data) })
+			end)
+			return
+		elseif kind == "Code" then
+			local code = if type(data.Code) == "string" then string.upper(string.sub(data.Code, 1, 32)) else ""
+			table.insert(queue, { Title = Locale.T("PopupCodeTitle", { Code = code }), Text = rewardText(data) })
+		elseif kind == "Pass" then
+			local level = if type(data.Level) == "number" then data.Level else 0
+			local header = if data.Track == "Premium" then Locale.T("PopupPassPremium") else nil
+			table.insert(queue, { Title = Locale.T("PopupPassTitle", { Level = level }), Text = rewardText(data, header) })
+		elseif kind == "Offline" then
 			local seconds = if type(data.Seconds) == "number" then data.Seconds else 0
 			table.insert(queue, {
 				Title = Locale.T("PopupOfflineTitle"),
