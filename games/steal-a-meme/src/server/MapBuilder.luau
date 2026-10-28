@@ -578,7 +578,9 @@ local function buildPlot(index: number, center: Vector3, front: Vector3, parent:
 
 	local guardSpot = Instance.new("Attachment")
 	guardSpot.Name = "GuardSpot"
-	guardSpot.Position = Vector3.new(-(size.X / 2 - 8), size.Y / 2, -size.Z / 2 + 10)
+	-- Страж — во дворе между спавном и пандусом на 2-й этаж: воры с верхних этажей
+	-- спускаются только по этому пандусу (x > 33), иначе страж в -X углу их не достаёт
+	guardSpot.Position = Vector3.new(14, size.Y / 2, -size.Z / 2 + 10)
 	guardSpot.Parent = floor
 
 	local memes = Instance.new("Folder")

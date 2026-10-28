@@ -98,6 +98,15 @@ function Locale.T(key: string, args: { [string]: any }?): string
 				return Locale.MemeName(value)
 			elseif name == "Coins" or name == "Price" then
 				return "$" .. Format.Number(value)
+			elseif name == "Item" and type(value) == "string" and Config.GetItem(value) then
+				return Locale.Name(Config.GetItem(value)) -- сервер шлёт Id предмета
+			elseif name == "Rarity" and type(value) == "string" then
+				-- сервер шлёт Id редкости; клиентский UI может передать уже готовое имя
+				for _, rarity in Config.Rarities do
+					if rarity.Id == value then
+						return Locale.Name(rarity)
+					end
+				end
 			end
 			return tostring(value)
 		end)

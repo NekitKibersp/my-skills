@@ -647,11 +647,13 @@ end
 
 -- ===== Перерождение =====
 
--- Сколько мемов на базе подходят под требование (без унесённых и выставленных в обмен)
+-- Сколько мемов на базе подходят под требование. Как у клиента (RebirthWindow.Status): каждое
+-- требование считается отдельно по всем мемам базы, кроме унесённых (вор/Смайлик) — мем в обмене
+-- стоит на базе и считается.
 local function countMatching(player: Player, requirement: any): number
 	local count = 0
 	for _, entry in PlotService.GetEntries(player) do
-		if not PlotService.IsBusy(player, entry.Slot) and Config.MatchesRequirement(entry.Id, requirement) then
+		if not PlotService.IsAway(player, entry.Slot) and Config.MatchesRequirement(entry.Id, requirement) then
 			count += 1
 		end
 	end
@@ -669,11 +671,12 @@ function PlotService.Rebirth(player: Player): (boolean, string)
 	local tier = Config.RebirthTier(rebirths)
 	if tier and tier.Requires then
 		for _, requirement in tier.Requires do
-			if countMatching(player, requirement) < requirement.Count then
+			local need = requirement.Count or 1
+			if countMatching(player, requirement) < need then
 				if requirement.Id then
-					Remotes.Notify:FireClient(player, "RebirthNeedMemeId", { Count = requirement.Count, Meme = requirement.Id }, "error")
+					Remotes.Notify:FireClient(player, "RebirthNeedMemeId", { Count = need, Meme = requirement.Id }, "error")
 				else
-					Remotes.Notify:FireClient(player, "RebirthNeedMemes", { Count = requirement.Count, Rarity = requirement.Rarity }, "error")
+					Remotes.Notify:FireClient(player, "RebirthNeedMemes", { Count = need, Rarity = requirement.Rarity }, "error")
 				end
 				return false, "RebirthNeedMemes"
 			end
@@ -734,6 +737,17 @@ function PlotService.LoadPlayer(player: Player)
 	-- они видны, приносят доход и их можно украсть или продать — просто новых туда не поставить.
 	if #entries == 0 and DataService.IsNew(player) then
 		table.insert(entries, { Id = Config.StarterMeme, Mut = "None", Viral = false, Slot = 1 })
+	end
+	-- Старые сохранения (до этажей слоты шли подряд 1..25): мем на ещё закрытом этаже оказался бы
+	-- за барьером — хозяин не смог бы его продать. Переносим такие мемы на свободные доступные слоты.
+	local floorsUnlocked = PlotService.FloorsUnlocked(player)
+	for _, entry in entries do
+		if Config.FloorOfSlot(entry.Slot) > floorsUnlocked then
+			local free = PlotService.FreeSlot(player)
+			if free then
+				entry.Slot = free
+			end
+		end
 	end
 	for _, entry in entries do
 		spawnModel(player, entry)

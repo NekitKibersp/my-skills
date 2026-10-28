@@ -336,7 +336,8 @@ function RebirthWindow.Start(ctx)
 		if not ok then
 			return
 		end
-		if type(key) == "string" then
+		-- RebirthNeedMemes без {Rarity}/{Meme} не собрать — этот тост с аргументами шлёт сервер (Notify)
+		if type(key) == "string" and key ~= "RebirthNeedMemes" then
 			ctx.Toast(
 				Locale.T(key, { Count = rebirths + 1, Price = Config.RebirthCost(rebirths) }),
 				if success then "success" else "error",
