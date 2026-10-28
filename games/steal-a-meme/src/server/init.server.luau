@@ -14,6 +14,8 @@ local ShopService = require(script.ShopService)
 local RewardService = require(script.RewardService)
 local LeaderboardService = require(script.LeaderboardService)
 local ItemService = require(script.ItemService)
+local QuestService = require(script.QuestService)
+local AdminEventService = require(script.AdminEventService)
 local Remotes = require(script.Remotes)
 
 -- Сезон по дате (UTC): от него зависят ночные мемы, мутации, декор и цвет монстра
@@ -28,6 +30,8 @@ ItemService.Start()
 ConveyorService.Start(MapBuilder.CarpetStart, MapBuilder.CarpetEnd)
 EventService.Start(MapBuilder.HALF_X, MapBuilder.HALF_Z)
 RewardService.Start()
+QuestService.Start()
+AdminEventService.Start()
 LeaderboardService.Start(world.Leaderboards)
 
 -- Связи между сервисами (без циклических require)
@@ -35,8 +39,13 @@ ItemService.OnMonsterHit = EventService.HitMonster
 ShopService.OnSummonGod = function()
 	ConveyorService.SummonGod()
 end
--- Купил «Золотой тапок» — перевыдаём предметы, чтобы тапок стал золотым
-ShopService.OnSlipperChanged = ItemService.GiveTools
+-- Геймпассы предметов (золотой тапок, конфетти-пушка) и предмет из календаря — перевыдаём рюкзак
+ShopService.OnToolsChanged = ItemService.RefreshPasses
+RewardService.OnItemGranted = ItemService.RefreshPasses
+ShopService.OnMemeRain = function(player)
+	return AdminEventService.StartEvent("MemeRain", Config.AdminEvents.MemeRainDuration, player)
+end
+AdminEventService.OnSpawnRarity = ConveyorService.SpawnRarity
 ShopService.Start()
 
 -- Каждый новый персонаж (данные уже загружены): тапок и перенос на свою базу
@@ -67,6 +76,7 @@ local function onPlayerAdded(player: Player)
 	PlotService.LoadPlayer(player)
 	RewardService.OnLoaded(player)
 	ItemService.OnLoaded(player)
+	QuestService.OnLoaded(player)
 	player:SetAttribute("DataLoaded", true)
 
 	-- Персонаж мог появиться раньше, чем загрузились данные.
