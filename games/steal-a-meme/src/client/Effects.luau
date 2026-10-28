@@ -11,6 +11,7 @@ local TweenService = game:GetService("TweenService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Locale = require(Shared:WaitForChild("Locale"))
+local Settings = require(script.Parent:WaitForChild("Settings"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
@@ -157,7 +158,11 @@ local function piece(position: Vector3, size: Vector3, color: Color3, shape: Enu
 end
 
 -- Разлетающиеся кусочки цветов colors
+-- «Слабая графика» (Settings.LowGraphics) — вчетверо меньше кусочков
 local function confetti(position: Vector3, colors: { Color3 }, count: number, spread: number)
+	if Settings.Get("LowGraphics") == true then
+		count = math.ceil(count / 4)
+	end
 	count = math.min(count, MAX_PIECES - livePieces)
 	for _ = 1, count do
 		livePieces += 1

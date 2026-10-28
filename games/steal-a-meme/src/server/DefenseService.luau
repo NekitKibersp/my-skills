@@ -69,12 +69,13 @@ local function destroyVisuals(plot: Model)
 	intruderSince[plot] = nil
 end
 
--- Турель: угол базы у входа, напротив стража (страж стоит в -X углу)
+-- Турель: во дворе у +X стены, рядом с пандусом на 2-й этаж
 local function buildTurret(plot: Model, level: number)
 	local floor = floorOf(plot)
 	local size = floor.Size
-	-- X = край - 4: при «- 8» тумба задевала слот 25 (центр x = 28, радиус 4) и стоящего на нём мема
-	local base = floor.CFrame * CFrame.new(size.X / 2 - 4, size.Y / 2, -size.Z / 2 + 16)
+	-- Во дворе левее пандуса на 2-й этаж (пандус — полоса x > 33 у +X стены, MapBuilder),
+	-- позади кнопки замка и перед рядом слотов геймпасса (z = -2, радиус 4)
+	local base = floor.CFrame * CFrame.new(size.X / 2 - 12, size.Y / 2, -size.Z / 2 + 18)
 
 	local model = Instance.new("Model")
 	model.Name = "Turret"
@@ -238,13 +239,21 @@ local function turretStep(plot: Model, owner: Player, t: number)
 
 	local best: Player? = nil
 	local bestDistance = stats.Range
+	-- Прямая видимость: турель во дворе не стреляет сквозь пол/потолок этажей
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.RespectCanCollide = true
+	local function visible(candidate: Player, root: BasePart): boolean
+		params.FilterDescendantsInstances = { turret :: Model, candidate.Character :: Model }
+		return workspace:Raycast(origin, root.Position - origin, params) == nil
+	end
 	local function consider(candidate: Player)
 		local root = rootOf(candidate)
 		if not root then
 			return
 		end
 		local distance = (root.Position - origin).Magnitude
-		if distance <= bestDistance then
+		if distance <= bestDistance and visible(candidate, root) then
 			best = candidate
 			bestDistance = distance
 		end

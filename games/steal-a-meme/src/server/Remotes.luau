@@ -56,6 +56,10 @@ local Remotes = {
 	BuySkin = make("RemoteFunction", "BuySkin") :: RemoteFunction, -- C→S (skinId) -> (ok, key)
 	EquipSkin = make("RemoteFunction", "EquipSkin") :: RemoteFunction, -- C→S (skinId) -> (ok, key)
 	CheckGroup = make("RemoteEvent", "CheckGroup") :: RemoteEvent, -- C→S () — перепроверить членство в группе
+	-- v5 (фундамент): скорость, «Домой», настройки
+	BuySpeed = make("RemoteFunction", "BuySpeed") :: RemoteFunction, -- C→S () -> (ok, key)
+	GoHome = make("RemoteEvent", "GoHome") :: RemoteEvent, -- C→S () — телепорт на свою базу
+	SetSetting = make("RemoteEvent", "SetSetting") :: RemoteEvent, -- C→S (key: string, value: boolean | number)
 }
 
 folder.Parent = ReplicatedStorage

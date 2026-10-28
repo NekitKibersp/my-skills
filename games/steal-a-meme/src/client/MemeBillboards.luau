@@ -2,6 +2,8 @@
 -- BillboardGui создаются локально в PlayerGui и привязываются к Body (Adornee), поэтому
 -- переживают стриминг: Body ушёл — табличка пустая, вернулся — снова привязываем.
 -- Редкость «Лимит» пульсирует (мем недели), цвета Limited/Exclusive — из Config.Rarities.
+-- Lucky Block (creature.Lucky): «❓ Lucky Block (<редкость>)» и на базе — отсчёт до открытия (OpensAt).
+-- Настройки: HideBillboards — таблички только у своих мемов и на дорожке; LowGraphics — ближе MaxDistance.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -10,6 +12,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Format = require(Shared:WaitForChild("Format"))
 local Locale = require(Shared:WaitForChild("Locale"))
+local Settings = require(script.Parent:WaitForChild("Settings"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
@@ -19,6 +22,7 @@ local player = Players.LocalPlayer
 
 local VIRAL_COLOR = Color3.fromRGB(255, 80, 220)
 local MAX_DISTANCE = 60
+local LOW_MAX_DISTANCE = 35 -- со «слабой графикой»
 local PULSE = TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
 local PULSE_RARITIES = { Limited = true }
 
@@ -69,11 +73,21 @@ local function render(entry: Entry)
 	entry.Tags.Text = table.concat(tags, "  ")
 	entry.Tags.Visible = #tags > 0
 
-	entry.Name.Text = if creature then Locale.Name(creature) else id
-
 	-- Редкость; «Секретный» почти чёрный — белый текст с тёмной обводкой
 	local rarityId = if creature then creature.Rarity else "Common"
 	local rarity = Config.GetRarity(rarityId)
+	local lucky = creature ~= nil and creature.Lucky == true
+
+	if lucky then
+		local luckyRarity = Config.GetRarity(creature.LuckyRarity or rarityId)
+		entry.Name.Text = Locale.T("BbLucky", { Rarity = Locale.Name(luckyRarity) })
+		entry.Name.TextColor3 = luckyRarity.Color
+	else
+		entry.Name.Text = if creature then Locale.Name(creature) else id
+		entry.Name.TextColor3 = COLORS.Text
+	end
+	-- У Lucky Block редкость уже в имени
+	entry.Rarity.Visible = not lucky
 	entry.Rarity.Text = Locale.Name(rarity)
 	if rarityId == "Secret" then
 		entry.Rarity.TextColor3 = Color3.new(1, 1, 1)
@@ -103,7 +117,30 @@ local function render(entry: Entry)
 
 	-- Цена — только на дорожке: зелёная, если хватает денег, иначе красная
 	local price = Util.num(model, "Price")
-	local onCarpet = state == "Carpet" and Util.num(model, "OwnerUserId") == 0 and price > 0
+	local ownerId = Util.num(model, "OwnerUserId")
+	local onCarpet = state == "Carpet" and ownerId == 0 and price > 0
+
+	-- Lucky Block: вместо дохода — отсчёт до открытия на базе или подсказка, что внутри
+	if lucky and creature then
+		local opensAt = Util.num(model, "OpensAt")
+		if opensAt > 0 and ownerId ~= 0 and state ~= "Carpet" and state ~= "Carried" then
+			local left = opensAt - Util.now()
+			entry.Income.Text = if left > 0
+				then "⏳ " .. Locale.T("BbLuckyOpens", { Time = Util.clock(left) })
+				else "✨ " .. Locale.T("BbLuckyOpening")
+			entry.Income.TextColor3 = COLORS.Gold
+		else
+			local luckyRarity = Config.GetRarity(creature.LuckyRarity or rarityId)
+			entry.Income.Text = Locale.T("BbLuckyHint", { Rarity = Locale.Name(luckyRarity) })
+			entry.Income.TextColor3 = COLORS.Muted
+		end
+	end
+
+	-- Видимость: со «скрыть чужие» — только свои, дорожка и мем, которого несу я сам
+	local hide = Settings.Get("HideBillboards") == true
+	local carriedByMe = state == "Carried" and id ~= "" and Util.str(player, "Carrying") == id
+	entry.Gui.Enabled = not hide or ownerId == player.UserId or state == "Carpet" or carriedByMe
+	entry.Gui.MaxDistance = if Settings.Get("LowGraphics") == true then LOW_MAX_DISTANCE else MAX_DISTANCE
 	entry.Price.Visible = onCarpet
 	if onCarpet then
 		entry.Price.Text = "$" .. Format.Number(price)
@@ -151,7 +188,6 @@ local function track(model: Instance): () -> ()
 		Income = row(list, 4, 20, 17),
 		Price = row(list, 5, 24, 21),
 	}
-	entry.Name.TextColor3 = COLORS.Text
 	entry.Name.TextStrokeTransparency = 0
 	entry.Price.TextStrokeTransparency = 0
 	entries[model] = entry
@@ -196,6 +232,21 @@ function MemeBillboards.Start()
 	create("Folder", { Name = "MemeBillboards", Parent = player:WaitForChild("PlayerGui") })
 
 	ReplicatedStorage:GetAttributeChangedSignal("TrendingId"):Connect(renderAll)
+	Settings.Changed:Connect(renderAll)
+	player:GetAttributeChangedSignal("Carrying"):Connect(renderAll)
+
+	-- Отсчёт Lucky Block на базах
+	task.spawn(function()
+		while true do
+			task.wait(0.5)
+			for _, entry in entries do
+				local creature = Config.GetCreature(Util.str(entry.Model, "CreatureId"))
+				if creature and creature.Lucky and entry.Gui.Enabled then
+					render(entry)
+				end
+			end
+		end
+	end)
 	-- Цвет цены зависит от денег игрока
 	player:GetAttributeChangedSignal("Coins"):Connect(function()
 		for _, entry in entries do

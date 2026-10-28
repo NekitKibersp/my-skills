@@ -1,7 +1,9 @@
 -- Эффекты v3 по Remotes.Fx: выстрел турели ("Turret" {From, To}), вспышка лазерных ворот ("Laser"
 -- {Position}), ледяная бомба ("Freeze" {Position, Radius}), ракетные ботинки ("Rocket" {Position}),
 -- дальнее оружие ("Shot" {From, To, Item?}), старт админ-ивента ("AdminEvent" {Id} — большая заставка
--- по центру на 3 с) и мистери-бокс ("MysteryBox" {UserId, Meme}: себе — анимация открытия, другим — тост).
+-- по центру на 3 с), мистери-бокс ("MysteryBox" {UserId, Meme}: себе — анимация открытия, другим — тост)
+-- и открытие Lucky Block ("LuckyOpen" {Position, Meme, UserId}: вспышка + «<Face> <Name>!» цветом редкости,
+-- хозяину — тост).
 -- Всё локально, без звуков и текстур по ID; детали/конфетти — помощники из Effects.
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
@@ -270,6 +272,23 @@ local function mysteryReveal(memeId: string)
 	Debris:AddItem(gui, 4)
 end
 
+-- Lucky Block открылся: вспышка и конфетти цвета редкости, над ним — лицо и имя мема
+local function onLuckyOpen(_ctx, data)
+	local creature = if type(data.Meme) == "string" then Config.GetCreature(data.Meme) else nil
+	if not creature then
+		return
+	end
+	local rarity = Config.GetRarity(creature.Rarity)
+	local color = if creature.Rarity == "Secret" then Color3.new(1, 1, 1) else rarity.Color
+	local position = data.Position
+	if isVector(position) and near(position) then
+		Effects.Flash(position, color, 10, 0.5)
+		Effects.Confetti(position, { color, COLORS.Gold, Color3.new(1, 1, 1) }, 40, 9)
+		Effects.FloatText(position + Vector3.new(0, 4, 0), creature.Face .. " " .. creature.Name .. "!", color)
+	end
+	-- Тост хозяину шлёт сервер (Notify "LuckyOpened"), здесь только эффект
+end
+
 function FxExtra.Start(ctx)
 	local handlers = {
 		Turret = onTurret,
@@ -286,6 +305,8 @@ function FxExtra.Start(ctx)
 			local handler = handlers[kind]
 			if handler then
 				handler(data)
+			elseif kind == "LuckyOpen" then
+				onLuckyOpen(ctx, data)
 			elseif kind == "AdminEvent" and type(data.Id) == "string" then
 				adminSplash(data.Id)
 			elseif kind == "MysteryBox" and type(data.Meme) == "string" and Config.GetCreature(data.Meme) then

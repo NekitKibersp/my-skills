@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
 local Locale = require(Shared:WaitForChild("Locale"))
 local UiKit = require(script.Parent:WaitForChild("UiKit"))
 local Util = require(script.Parent:WaitForChild("Util"))
@@ -16,6 +17,8 @@ local player = Players.LocalPlayer
 
 local INTRO_SECONDS = 90 -- сколько показывать метку над своей базой после входа
 local BEAM_COLOR = Color3.fromRGB(80, 255, 140)
+-- База многоэтажная: метка над верхним этажом (Config.Plot.Floors[*].Height), луч — ко входу на земле (Floor)
+local MARKER_HEIGHT = Config.Plot.Floors[#Config.Plot.Floors].Height + 14
 
 local Carry = {}
 
@@ -106,7 +109,7 @@ function Carry.Start(ctx)
 	local marker = create("BillboardGui", {
 		Name = "YourBase",
 		Size = UDim2.fromOffset(220, 56),
-		StudsOffsetWorldSpace = Vector3.new(0, 14, 0),
+		StudsOffsetWorldSpace = Vector3.new(0, MARKER_HEIGHT, 0),
 		AlwaysOnTop = true,
 		LightInfluence = 0,
 		Enabled = false,

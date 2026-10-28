@@ -31,7 +31,9 @@ local function pickTrend(): string
 			local ok, entries = pcall(PlotService.GetEntries, player)
 			if ok then
 				for _, entry in entries do
-					if not table.find(present, entry.Id) then
+					local creature = Config.GetCreature(entry.Id)
+					-- Lucky Block не бывает «в тренде»: он не приносит дохода
+					if creature and not creature.Lucky and not table.find(present, entry.Id) then
 						table.insert(present, entry.Id)
 					end
 				end
@@ -44,7 +46,8 @@ local function pickTrend(): string
 	end
 	local pool = {}
 	for _, creature in Config.Creatures do
-		if creature.Rarity == "Common" or creature.Rarity == "Rare" or creature.Rarity == "Epic" then
+		local common = creature.Rarity == "Common" or creature.Rarity == "Rare" or creature.Rarity == "Epic"
+		if common and not creature.Lucky then
 			table.insert(pool, creature.Id)
 		end
 	end
@@ -187,16 +190,10 @@ local function rewardBest(state: MonsterState)
 			break
 		end
 	end
-	local pool = {}
-	for _, creature in Config.Creatures do
-		if creature.Rarity == rarity and not creature.Event then
-			table.insert(pool, creature.Id)
-		end
-	end
-	if #pool == 0 then
+	local id = PlotService.RandomMeme(rarity)
+	if not id then
 		return
 	end
-	local id = pool[random:NextInteger(1, #pool)]
 	if PlotService.AddMeme(best, id, "None", false) then
 		Remotes.Notify:FireClient(best, "NightReward", { Meme = id }, "success")
 	else
@@ -257,7 +254,9 @@ local function pickTarget(): (Player?, number?)
 			local ok, entries = pcall(PlotService.GetEntries, player)
 			if ok then
 				for _, entry in entries do
-					if PlotService.GetModel(player, entry.Slot) and not PlotService.IsBusy(player, entry.Slot) then
+					-- Смайлик ходит по земле: мемов с верхних этажей не трогает (иначе крал бы сквозь потолок)
+					if Config.FloorOfSlot(entry.Slot) == 1 and PlotService.GetModel(player, entry.Slot)
+						and not PlotService.IsBusy(player, entry.Slot) then
 						table.insert(candidates, { player, entry.Slot })
 					end
 				end
@@ -333,6 +332,7 @@ local function monsterBrain(state: MonsterState)
 			end
 		end
 		model:SetAttribute("State", "Carried")
+		model:SetAttribute("OpensAt", nil)
 		local body = state.Model.PrimaryPart :: BasePart
 		MemeFactory.AttachTo(model, body, CFrame.new(0, body.Size.Y / 2 + (model.PrimaryPart :: BasePart).Size.Y / 2 + 1, 0))
 		model.Parent = workspace

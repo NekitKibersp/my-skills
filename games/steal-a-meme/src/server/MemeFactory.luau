@@ -16,6 +16,9 @@ local MemeFactory = {}
 
 local BASE_SIZE = 4 -- высота тела мема с Size = 1
 local VIRAL_SCALE = 1.35
+-- Потолок высоты тела: между этажами 13 studs, а модель стоит на 0.3 над полом и поднята на 12% высоты
+-- (11 × 1.12 + 0.3 ≈ 12.6) — иначе крупные вирусные мемы торчат сквозь пол следующего этажа
+local MAX_HEIGHT = 11
 
 local loadedModels: { [number]: Model | false } = {}
 
@@ -220,7 +223,7 @@ function MemeFactory.Create(id: string, mutationId: string, viral: boolean, cfra
 	local creature = Config.GetCreature(id)
 	assert(creature, "Неизвестный мем: " .. tostring(id))
 
-	local height = BASE_SIZE * (creature.Size or 1) * (if viral then VIRAL_SCALE else 1)
+	local height = math.min(BASE_SIZE * (creature.Size or 1) * (if viral then VIRAL_SCALE else 1), MAX_HEIGHT)
 
 	local model = Instance.new("Model")
 	model.Name = id

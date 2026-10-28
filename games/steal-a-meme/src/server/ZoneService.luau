@@ -137,8 +137,12 @@ local function onPad(player: Player, pad: BasePart)
 	if target == "Tower" or target == "TowerDown" then
 		state.Checkpoint = 1
 	end
-	-- StreamingEnabled: сначала подгружаем место назначения клиенту, потом переносим
-	local destinationCFrame = cframe :: CFrame
+	ZoneService.Teleport(player, cframe :: CFrame)
+end
+
+-- Серверный телепорт (площадки, кнопка «Домой»): StreamingEnabled — сначала подгружаем место
+-- назначения клиенту, потом переносим; анти-чит переноски видит ServerMovedAt. Не yield'ит.
+function ZoneService.Teleport(player: Player, destinationCFrame: CFrame)
 	task.spawn(function()
 		pcall(function()
 			player:RequestStreamAroundAsync(destinationCFrame.Position, 2)

@@ -6,6 +6,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Строки UI добавляются в Locale до того, как кто-то их попросит
 local Locale = require(script:WaitForChild("Strings"))
 local UiKit = require(script:WaitForChild("UiKit"))
+local Settings = require(script:WaitForChild("Settings"))
+local Sounds = require(script:WaitForChild("Sounds"))
 
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 
@@ -27,7 +29,8 @@ local rawToast = UiKit.toaster(toastHolder)
 -- Один и тот же текст дважды подряд не показываем: сервер шлёт Notify, а окна ещё
 -- показывают ключ, который вернула RemoteFunction (Rebirth/UpgradeGuard/ClaimDaily/...)
 local recentToasts: { [string]: number } = {}
-local function toast(message: string, kind: string?)
+-- sound — особый звук события (Sounds.ForNotify), иначе звук по kind
+local function toast(message: string, kind: string?, sound: string?)
 	local now = os.clock()
 	if recentToasts[message] and now - recentToasts[message] < 2 then
 		return
@@ -39,14 +42,17 @@ local function toast(message: string, kind: string?)
 		end
 	end
 	rawToast(message, kind)
+	Sounds.Toast(kind, sound)
 end
 
--- Масштаб интерфейса по высоте экрана: телефон в альбомной ориентации ~ 0.6, ПК — 1
+-- Масштаб интерфейса по высоте экрана: телефон в альбомной ориентации ~ 0.6, ПК — 1;
+-- умножается на настройку игрока UiScale (0.7..1.3)
 local scales: { UIScale } = {}
 local function currentScale(): number
 	local camera = workspace.CurrentCamera
 	local height = if camera then camera.ViewportSize.Y else 720
-	return math.clamp(height / 720, 0.6, 1)
+	local userScale = Settings.Get("UiScale")
+	return math.clamp(height / 720, 0.6, 1) * (if type(userScale) == "number" then userScale else 1)
 end
 local function rescale()
 	local value = currentScale()
@@ -63,6 +69,11 @@ local function watchCamera()
 end
 workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(watchCamera)
 watchCamera()
+Settings.Changed:Connect(function(key)
+	if key == "UiScale" then
+		rescale()
+	end
+end)
 
 local windows: { [string]: GuiObject } = {}
 
@@ -103,15 +114,21 @@ Remotes:WaitForChild("Notify").OnClientEvent:Connect(function(key, args, kind)
 	if type(key) ~= "string" then
 		return
 	end
-	toast(Locale.T(key, if type(args) == "table" then args else nil), if type(kind) == "string" then kind else nil)
+	toast(
+		Locale.T(key, if type(args) == "table" then args else nil),
+		if type(kind) == "string" then kind else nil,
+		Sounds.ForNotify(key)
+	)
 end)
 
 -- Модули: окна регистрируются раньше HUD, который их открывает
 local modules = {
+	"Sounds",
 	"Shop",
 	"IndexWindow",
 	"RebirthWindow",
 	"DefenseWindow",
+	"SettingsWindow",
 	"Items",
 	"DailyWindow",
 	"QuestsWindow",
@@ -126,6 +143,7 @@ local modules = {
 	"Social",
 	"Banners",
 	"Carry",
+	"Alarm",
 	"PlotSigns",
 	"Prompts",
 	"MemeBillboards",

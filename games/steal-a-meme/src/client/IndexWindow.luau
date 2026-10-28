@@ -1,7 +1,7 @@
 -- Окно Индекса: сетка всех мемов из Config.Creatures. Открытые — цветные, закрытые — «???».
 -- Источник — атрибут игрока IndexJson (JSON-массив ключей "Id|Mutation", см. Config.IndexKey).
 -- Лимитные мемы помечены «Лимитный» («На этой неделе!» — мем недели WeeklyMeme), эксклюзивы —
--- «Только пропуск / колесо».
+-- «Только пропуск / колесо». Lucky Block (creature.Lucky) — не мем, в Индекс не входит и в сетке не показывается.
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -110,7 +110,12 @@ function IndexWindow.Start(ctx)
 
 	-- Ячейки создаются один раз, render() только перекрашивает
 	local cells = {}
+	local total = 0
 	for order, creature in Config.Creatures do
+		if creature.Lucky then
+			continue
+		end
+		total += 1
 		local cell = create("Frame", {
 			BackgroundColor3 = UNKNOWN_BG,
 			LayoutOrder = order,
@@ -215,7 +220,7 @@ function IndexWindow.Start(ctx)
 			Count = count,
 			Percent = math.floor(count * Config.IndexBonusPerEntry * 100 + 0.5),
 		})
-		sub.Text = Locale.T("IndexSub", { Found = found, Total = #Config.Creatures, Mutated = mutated })
+		sub.Text = Locale.T("IndexSub", { Found = found, Total = total, Mutated = mutated })
 	end
 
 	player:GetAttributeChangedSignal("IndexJson"):Connect(render)

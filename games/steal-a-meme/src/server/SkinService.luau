@@ -1,7 +1,7 @@
 -- Скины базы и тапка (Config.Skins). Покупка за монеты — только скины с Price > 0 и без Source
 -- (скины с Source = "Pass"/"Spin" приходят через Grant.Give из пропуска/колеса).
 -- Данные: DataService.GetTable(player, "Skins") = { Owned = { [id] = true }, Base = id, Slipper = id }.
--- Скин базы: сервер перекрашивает Floor, Wall и GatePillar своей базы; исходный вид хранится в атрибутах
+-- Скин базы: сервер перекрашивает Floor (и детали этажей с атрибутом SkinFloor), Wall и GatePillar своей базы; исходный вид хранится в атрибутах
 -- деталей (OrigColor/OrigMaterial), чтобы вернуть его при смене скина и уходе игрока.
 -- Скин тапка: атрибут игрока SlipperSkin, сам тапок перекрашивает ItemService (через OnSlipperChanged).
 local HttpService = game:GetService("HttpService")
@@ -101,7 +101,7 @@ local function paintPlot(plot: Model, skin: any)
 		if not part:IsA("BasePart") then
 			continue
 		end
-		if part.Name == "Floor" and part.Parent == plot then
+		if (part.Name == "Floor" and part.Parent == plot) or part:GetAttribute("SkinFloor") == true then
 			if custom then
 				remember(part)
 				part.Color = skin.Floor

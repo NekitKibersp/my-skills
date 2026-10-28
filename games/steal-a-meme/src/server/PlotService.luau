@@ -1,4 +1,5 @@
--- Базы игроков: выдача базы, мемы в слотах, доход в секунду, замок, страж, Индекс, перерождения.
+-- Базы игроков: выдача базы, мемы в слотах, доход в секунду, замок, страж, Индекс, перерождения,
+-- этажи (барьеры закрытых этажей) и открытие Lucky Blocks.
 -- Мемы на базе хранятся в DataService (таблица Memes); модели в мире — их отображение.
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
@@ -25,6 +26,24 @@ local away: { [Player]: { [number]: boolean } } = {} -- слоты, чьих м�
 PlotService.OnStealPrompt = nil :: ((thief: Player, owner: Player, slot: number, prompt: ProximityPrompt) -> ())?
 -- Мем выставлен в обмен — его нельзя продать, слить, украсть (выставляет TradeService)
 PlotService.IsTradeLocked = nil :: ((player: Player, slot: number) -> boolean)?
+-- Награды перерождения (спины, предмет): (player, rewards из Config.Rebirth.Tiers[n].Rewards).
+-- Выставляет FoundationService — через Grant, который сам требует PlotService.
+PlotService.OnRebirthRewards = nil :: ((player: Player, rewards: any) -> ())?
+
+-- Порядок заполнения слотов: сначала нижние этажи (слоты геймпасса — на 1-м этаже), внутри этажа по номеру
+local SLOT_ORDER: { number } = {}
+for slot = 1, Config.AbsoluteMaxSlots do
+	table.insert(SLOT_ORDER, slot)
+end
+table.sort(SLOT_ORDER, function(a, b)
+	local floorA, floorB = Config.FloorOfSlot(a), Config.FloorOfSlot(b)
+	if floorA ~= floorB then
+		return floorA < floorB
+	end
+	return a < b
+end)
+
+local LUCKY_CHECK_INTERVAL = 1 -- сек: как часто проверять, не пора ли открыть Lucky Block
 
 -- Мем сейчас недоступен для действий: его несут или он в обмене
 function PlotService.IsBusy(player: Player, slot: number): boolean
@@ -63,7 +82,9 @@ function PlotService.InPlot(plot: Model, position: Vector3): boolean
 	local floor = plot:FindFirstChild("Floor") :: BasePart
 	local localPos = floor.CFrame:PointToObjectSpace(position)
 	local size = floor.Size
-	return math.abs(localPos.X) <= size.X / 2 and math.abs(localPos.Z) <= size.Z / 2 and localPos.Y > -5 and localPos.Y < 40
+	-- По высоте — все этажи и прыжок над верхним
+	local top = Config.Plot.Floors[#Config.Plot.Floors].Height + 22
+	return math.abs(localPos.X) <= size.X / 2 and math.abs(localPos.Z) <= size.Z / 2 and localPos.Y > -5 and localPos.Y < top
 end
 
 -- Точка перед входом в базу (сюда выталкивает с закрытой базы)
@@ -95,6 +116,29 @@ function PlotService.MaxSlots(player: Player): number
 	return Config.MaxSlots(DataService.Get(player, "Rebirths"), player:GetAttribute("Pass_ExtraSlots") == true)
 end
 
+-- Можно ли ставить мема в слот (этаж открыт; слоты геймпасса — с геймпассом)
+function PlotService.SlotAvailable(player: Player, slot: number): boolean
+	return Config.SlotAvailable(slot, DataService.Get(player, "Rebirths"), player:GetAttribute("Pass_ExtraSlots") == true)
+end
+
+function PlotService.FloorsUnlocked(player: Player): number
+	return Config.FloorsUnlocked(DataService.Get(player, "Rebirths"))
+end
+
+-- Случайный обычный мем редкости: без сезонных, лимитированных, эксклюзивов и Lucky Blocks
+function PlotService.RandomMeme(rarity: string): string?
+	local pool = {}
+	for _, creature in Config.Creatures do
+		if creature.Rarity == rarity and not creature.Event and not creature.Limited and not creature.Exclusive and not creature.Lucky then
+			table.insert(pool, creature.Id)
+		end
+	end
+	if #pool == 0 then
+		return nil
+	end
+	return pool[math.random(1, #pool)]
+end
+
 function PlotService.GetEntries(player: Player): { Entry }
 	return DataService.GetTable(player, "Memes")
 end
@@ -116,12 +160,27 @@ function PlotService.FreeSlot(player: Player): number?
 	for _, entry in PlotService.GetEntries(player) do
 		used[entry.Slot] = true
 	end
-	for slot = 1, PlotService.MaxSlots(player) do
-		if not used[slot] then
+	for _, slot in SLOT_ORDER do
+		if not used[slot] and PlotService.SlotAvailable(player, slot) then
 			return slot
 		end
 	end
 	return nil
+end
+
+-- Сколько доступных слотов свободно
+function PlotService.FreeSlotCount(player: Player): number
+	local used = {}
+	for _, entry in PlotService.GetEntries(player) do
+		used[entry.Slot] = true
+	end
+	local free = 0
+	for slot = 1, Config.AbsoluteMaxSlots do
+		if not used[slot] and PlotService.SlotAvailable(player, slot) then
+			free += 1
+		end
+	end
+	return free
 end
 
 function PlotService.IsAway(player: Player, slot: number): boolean
@@ -206,6 +265,10 @@ local function syncIndex(player: Player)
 end
 
 local function discover(player: Player, id: string, mutationId: string)
+	local creature = Config.GetCreature(id)
+	if not creature or creature.Lucky then
+		return -- Lucky Blocks в Индекс не попадают
+	end
 	local index = DataService.GetTable(player, "Index")
 	local key = Config.IndexKey(id, mutationId)
 	if not index[key] then
@@ -221,6 +284,11 @@ local function setupPlacedModel(player: Player, model: Model, slot: number)
 	model:SetAttribute("State", "Placed")
 	model:SetAttribute("OwnerUserId", player.UserId)
 	model:SetAttribute("Slot", slot)
+	model:SetAttribute("Floor", Config.FloorOfSlot(slot))
+	-- Lucky Block: таймер открытия начинается заново при каждой расстановке
+	-- (покупка, возврат после кражи, доставка вору, обмен, перезаход)
+	local creature = Config.GetCreature(model:GetAttribute("CreatureId"))
+	model:SetAttribute("OpensAt", if creature and creature.Lucky then now() + Config.LuckyBlocks.OpenTime else nil)
 
 	local steal = MemeFactory.AddPrompt(model, "StealPrompt", "Steal", Config.Steal.HoldDuration)
 	steal.Triggered:Connect(function(thief)
@@ -286,21 +354,39 @@ function PlotService.ReturnModel(player: Player, slot: number, model: Model)
 	end
 end
 
+-- Барьеры закрытых этажей: открытый этаж — барьер невидим и проходим (floorsUnlocked = 1 — свободная база)
+local function updateFloors(plot: Model, floorsUnlocked: number)
+	plot:SetAttribute("FloorsUnlocked", floorsUnlocked)
+	for floor = 2, #Config.Plot.Floors do
+		local barrier = plot:FindFirstChild("FloorLock" .. floor) :: BasePart?
+		if barrier then
+			local open = floor <= floorsUnlocked
+			barrier.CanCollide = not open
+			barrier.CanQuery = not open
+			barrier.Transparency = if open then 1 else 0.3
+			local gui = barrier:FindFirstChild("LockGui") :: BillboardGui?
+			if gui then
+				gui.Enabled = not open
+			end
+		end
+	end
+end
+
 local function updateSlotsInfo(player: Player)
 	local plot = plotOf[player]
 	if not plot then
 		return
 	end
-	local maxSlots = PlotService.MaxSlots(player)
 	for slot = 1, Config.AbsoluteMaxSlots do
 		local part = slotPart(plot, slot)
-		local unlocked = slot <= maxSlots
+		local unlocked = PlotService.SlotAvailable(player, slot)
 		part:SetAttribute("Unlocked", unlocked)
 		part.Transparency = if unlocked then 0 else 0.75
 		part.Color = if unlocked then Color3.fromRGB(90, 90, 110) else Color3.fromRGB(40, 40, 45)
 	end
+	updateFloors(plot, PlotService.FloorsUnlocked(player))
 	player:SetAttribute("SlotsUsed", #PlotService.GetEntries(player))
-	player:SetAttribute("MaxSlots", maxSlots)
+	player:SetAttribute("MaxSlots", PlotService.MaxSlots(player))
 end
 PlotService.UpdateSlotsInfo = updateSlotsInfo
 
@@ -383,6 +469,10 @@ function PlotService.Merge(player: Player, slot: number)
 	if not entry or entry.Viral or PlotService.IsBusy(player, slot) then
 		return
 	end
+	local creature = Config.GetCreature(entry.Id)
+	if creature and creature.Lucky then
+		return -- Lucky Blocks не сливаются
+	end
 	local same = {}
 	for _, other in PlotService.GetEntries(player) do
 		if other.Id == entry.Id and other.Mut == entry.Mut and not other.Viral and not PlotService.IsBusy(player, other.Slot) then
@@ -412,6 +502,59 @@ function PlotService.Merge(player: Player, slot: number)
 	Remotes.Fx:FireAllClients("Merged", { Position = position })
 	Remotes.Notify:FireClient(player, "Merged", { Meme = entry.Id, Mult = Config.Viral.Mult }, "success")
 	Hooks.Fire(player, "Merge", 1)
+end
+
+-- ===== Lucky Blocks =====
+
+-- Открыть Lucky Block в слоте: на его месте появляется случайный мем редкости LuckyRarity
+-- (мутация блока сохраняется)
+local function openLucky(player: Player, slot: number, model: Model)
+	local entry = PlotService.GetEntry(player, slot)
+	local creature = entry and Config.GetCreature(entry.Id)
+	if not entry or not creature or not creature.Lucky then
+		model:SetAttribute("OpensAt", nil)
+		return
+	end
+	local id = PlotService.RandomMeme(creature.LuckyRarity or creature.Rarity)
+	if not id then
+		model:SetAttribute("OpensAt", nil)
+		warn("[PlotService] Нет мемов редкости для Lucky Block", creature.Id)
+		return
+	end
+	local position = model:GetPivot().Position
+	PlotService.RemoveEntry(player, slot)
+	local opened: Entry = { Id = id, Mut = entry.Mut, Viral = false, Slot = slot }
+	table.insert(PlotService.GetEntries(player), opened)
+	spawnModel(player, opened)
+	discover(player, id, opened.Mut)
+	updateSlotsInfo(player)
+	PlotService.RefreshIncome(player)
+	Remotes.Fx:FireAllClients("LuckyOpen", { Position = position, Meme = id, UserId = player.UserId })
+	Remotes.Notify:FireClient(player, "LuckyOpened", { Meme = id }, "success")
+end
+
+-- Открыть все Lucky Blocks, чьё время пришло (несомые и выставленные в обмен ждут)
+local function luckyStep()
+	local t = now()
+	local due = {}
+	for player, slotModels in models do
+		if not DataService.IsLoaded(player) then
+			continue
+		end
+		for slot, model in slotModels do
+			local opensAt = model:GetAttribute("OpensAt")
+			if type(opensAt) == "number" and opensAt <= t and not PlotService.IsBusy(player, slot) then
+				table.insert(due, { player, slot, model })
+			end
+		end
+	end
+	-- Открываем после обхода: открытие меняет таблицу моделей
+	for _, item in due do
+		local player, slot, model = item[1], item[2], item[3]
+		if PlotService.GetModel(player, slot) == model then
+			openLucky(player, slot, model)
+		end
+	end
 end
 
 -- ===== Замок =====
@@ -504,6 +647,19 @@ end
 
 -- ===== Перерождение =====
 
+-- Сколько мемов на базе подходят под требование. Как у клиента (RebirthWindow.Status): каждое
+-- требование считается отдельно по всем мемам базы, кроме унесённых (вор/Смайлик) — мем в обмене
+-- стоит на базе и считается.
+local function countMatching(player: Player, requirement: any): number
+	local count = 0
+	for _, entry in PlotService.GetEntries(player) do
+		if not PlotService.IsAway(player, entry.Slot) and Config.MatchesRequirement(entry.Id, requirement) then
+			count += 1
+		end
+	end
+	return count
+end
+
 function PlotService.Rebirth(player: Player): (boolean, string)
 	local rebirths = DataService.Get(player, "Rebirths")
 	local cost = Config.RebirthCost(rebirths)
@@ -511,13 +667,43 @@ function PlotService.Rebirth(player: Player): (boolean, string)
 		Remotes.Notify:FireClient(player, "RebirthNeed", { Price = cost }, "error")
 		return false, "RebirthNeed"
 	end
+	-- Требования тира: нужные мемы должны стоять на базе (их не забирают)
+	local tier = Config.RebirthTier(rebirths)
+	if tier and tier.Requires then
+		for _, requirement in tier.Requires do
+			local need = requirement.Count or 1
+			if countMatching(player, requirement) < need then
+				if requirement.Id then
+					Remotes.Notify:FireClient(player, "RebirthNeedMemeId", { Count = need, Meme = requirement.Id }, "error")
+				else
+					Remotes.Notify:FireClient(player, "RebirthNeedMemes", { Count = need, Rarity = requirement.Rarity }, "error")
+				end
+				return false, "RebirthNeedMemes"
+			end
+		end
+	end
+	local floorsBefore = PlotService.FloorsUnlocked(player)
 	DataService.Set(player, "Coins", 0)
 	AnalyticsService.Economy(player, "Sink", cost, "Gameplay", "Rebirth")
 	DataService.Set(player, "Rebirths", rebirths + 1)
+	local rewards = if tier then tier.Rewards else nil
+	local onRewards = PlotService.OnRebirthRewards
+	if rewards and onRewards then
+		-- Ошибка выдачи наград не должна сорвать уже засчитанное перерождение
+		local ok, err = pcall(onRewards, player, rewards)
+		if not ok then
+			warn("[PlotService] Награды перерождения:", err)
+		end
+	end
+	-- Новый этаж (Rewards.Floor) открывается сам: этажи считаются по числу перерождений
 	updateSlotsInfo(player)
 	PlotService.RefreshIncome(player)
 	Remotes.Fx:FireAllClients("Rebirth", { UserId = player.UserId })
 	Remotes.Notify:FireClient(player, "Rebirthed", { Count = rebirths + 1 }, "success")
+	local floorsAfter = PlotService.FloorsUnlocked(player)
+	if floorsAfter > floorsBefore then
+		Remotes.Notify:FireClient(player, "FloorUnlocked", { Floor = floorsAfter }, "success")
+	end
 	return true, "Rebirthed"
 end
 
@@ -547,15 +733,21 @@ function PlotService.LoadPlayer(player: Player)
 		return
 	end
 	local entries = PlotService.GetEntries(player)
-	local maxSlots = PlotService.MaxSlots(player)
-	-- Если геймпасс слотов пропал (возврат), лишние мемы переезжают на свободные места или остаются вне слотов
-	for _, entry in entries do
-		if entry.Slot > maxSlots then
-			warn("[PlotService] Мем за пределами слотов", player.Name, entry.Id)
-		end
-	end
+	-- Мемы в недоступных слотах (геймпасс слотов пропал после возврата) остаются на своих местах:
+	-- они видны, приносят доход и их можно украсть или продать — просто новых туда не поставить.
 	if #entries == 0 and DataService.IsNew(player) then
 		table.insert(entries, { Id = Config.StarterMeme, Mut = "None", Viral = false, Slot = 1 })
+	end
+	-- Старые сохранения (до этажей слоты шли подряд 1..25): мем на ещё закрытом этаже оказался бы
+	-- за барьером — хозяин не смог бы его продать. Переносим такие мемы на свободные доступные слоты.
+	local floorsUnlocked = PlotService.FloorsUnlocked(player)
+	for _, entry in entries do
+		if Config.FloorOfSlot(entry.Slot) > floorsUnlocked then
+			local free = PlotService.FreeSlot(player)
+			if free then
+				entry.Slot = free
+			end
+		end
 	end
 	for _, entry in entries do
 		spawnModel(player, entry)
@@ -591,6 +783,7 @@ function PlotService.Release(player: Player)
 		part:SetAttribute("Unlocked", false)
 		part.Transparency = 0.6
 	end
+	updateFloors(plot, 1)
 	plotOf[player] = nil
 	models[player] = nil
 	away[player] = nil
@@ -598,6 +791,10 @@ end
 
 function PlotService.Start(builtPlots: { Model })
 	plots = builtPlots
+
+	for _, plot in plots do
+		updateFloors(plot, 1)
+	end
 
 	for _, plot in plots do
 		local prompt = plot:FindFirstChild("LockButton"):FindFirstChild("LockPrompt") :: ProximityPrompt
@@ -639,6 +836,17 @@ function PlotService.Start(builtPlots: { Model })
 						Hooks.Fire(player, "Earn", income)
 					end
 				end
+			end
+		end
+	end)
+
+	-- Lucky Blocks на базах
+	task.spawn(function()
+		while true do
+			task.wait(LUCKY_CHECK_INTERVAL)
+			local ok, err = pcall(luckyStep)
+			if not ok then
+				warn("[PlotService] Lucky Blocks:", err)
 			end
 		end
 	end)
