@@ -22,13 +22,24 @@ local DEFAULT_NUMBERS: { [string]: number } = {
 	LastSeen = 0,
 	DailyStreak = 0,
 	LastDailyDay = 0,
+	TutorialDone = 0,
+	GiftDay = 0, -- день (os.time() // 86400), к которому относятся PlayedToday и GiftsClaimed
+	GiftsClaimed = 0,
+	PlayedToday = 0, -- секунд сыграно за день (для подарков за время)
 }
 
 -- Табличные поля:
 --   Memes    — массив { Id, Mut, Viral, Slot } (мемы на базе)
 --   Index    — { ["Id|Mut"] = true } (открытые записи Индекса)
 --   Receipts — массив PurchaseId обработанных покупок за Robux (защита от двойной выдачи)
-local TABLE_KEYS = { "Memes", "Index", "Receipts" }
+--   Items    — { [itemId] = true } купленные предметы (Config.Items)
+local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items" }
+
+-- Блокировка сессии: пока игрок на одном сервере, другой сервер не загрузит его данные
+-- (иначе при быстром переходе между серверами можно задублировать мемов).
+local LOCK_STALE_AFTER = 300 -- сек: блокировку упавшего сервера считаем протухшей
+local LOCK_RETRIES = 6
+local LOCK_RETRY_DELAY = 4
 
 -- Поля в таблице игроков: ключ данных -> подпись
 local LEADERSTATS: { { Key: string, Label: string } } = {
@@ -138,6 +149,18 @@ local function sanitize(saved: any): ({ [string]: any }, boolean)
 			end
 		end
 	end
+	data.Items = {}
+	if type(savedTable.Items) == "table" then
+		for key, value in savedTable.Items do
+			if type(key) == "string" and value == true and Config.GetItem(key) then
+				data.Items[key] = true
+			end
+		end
+	end
+	-- Старые сохранения (до туториала) — туториал не показываем
+	if not isNew and saved.TutorialDone == nil then
+		data.TutorialDone = 1
+	end
 	data.Receipts = {}
 	if type(savedTable.Receipts) == "table" then
 		for _, id in savedTable.Receipts do
@@ -154,15 +177,44 @@ function DataService.Load(player: Player)
 	local canSave = store ~= nil
 
 	if store then
-		local ok, result = withRetries(function()
-			return (store :: DataStore):GetAsync(keyFor(player))
-		end)
-		if ok then
-			saved = result
-		else
+		local loaded = false
+		for attempt = 1, LOCK_RETRIES do
+			local lockedElsewhere = false
+			local ok, result = withRetries(function()
+				return (store :: DataStore):UpdateAsync(keyFor(player), function(old)
+					lockedElsewhere = false
+					local session = type(old) == "table" and old.Session
+					if type(session) == "table" and session.JobId ~= game.JobId
+						and os.time() - (tonumber(session.Time) or 0) < LOCK_STALE_AFTER
+						and attempt < LOCK_RETRIES then
+						lockedElsewhere = true
+						return nil -- не трогаем: данные ещё держит другой сервер
+					end
+					local value = if type(old) == "table" then old else {}
+					value.Session = { JobId = game.JobId, Time = os.time() }
+					return value
+				end)
+			end)
+			if not ok then
+				warn("[DataService] Не удалось загрузить данные", player.Name, result)
+				break
+			end
+			if not lockedElsewhere then
+				saved = result
+				loaded = true
+				break
+			end
+			-- Прошлый сервер ещё сохраняет игрока — подождём
+			task.wait(LOCK_RETRY_DELAY)
+			if not player.Parent then
+				return
+			end
+		end
+		if not loaded then
 			-- Не сохраняем поверх, иначе пустые данные затрут настоящий прогресс.
 			canSave = false
-			warn("[DataService] Не удалось загрузить данные", player.Name, result)
+		elseif type(saved) == "table" and next(saved) and saved.Coins == nil then
+			saved = nil -- в хранилище только блокировка, данных ещё не было
 		end
 	end
 
@@ -242,10 +294,12 @@ local function snapshot(data: { [string]: any }): { [string]: any }
 	end
 	copy.Index = table.clone(data.Index)
 	copy.Receipts = table.clone(data.Receipts)
+	copy.Items = table.clone(data.Items)
 	return copy
 end
 
-function DataService.Save(player: Player): boolean
+-- release = true снимает блокировку сессии (игрок уходит с сервера)
+function DataService.Save(player: Player, release: boolean?): boolean
 	local profile = profiles[player]
 	if not profile or not profile.CanSave or not store then
 		return false
@@ -253,9 +307,25 @@ function DataService.Save(player: Player): boolean
 
 	profile.Data.LastSeen = os.time()
 	local copy = snapshot(profile.Data)
+	copy.Session = if release then nil else { JobId = game.JobId, Time = os.time() }
+	local lostLock = false
 	local ok, err = withRetries(function()
-		return (store :: DataStore):SetAsync(keyFor(player), copy, { player.UserId })
+		return (store :: DataStore):UpdateAsync(keyFor(player), function(old)
+			lostLock = false
+			local session = type(old) == "table" and old.Session
+			if type(session) == "table" and session.JobId ~= game.JobId then
+				-- Данные уже забрал другой сервер — не затираем их устаревшей копией
+				lostLock = true
+				return nil
+			end
+			return copy
+		end, { player.UserId })
 	end)
+	if lostLock then
+		warn("[DataService] Сессия игрока открыта на другом сервере, сохранение пропущено", player.Name)
+		profile.CanSave = false
+		return false
+	end
 	if not ok then
 		warn("[DataService] Не удалось сохранить", player.Name, err)
 	end
@@ -265,7 +335,7 @@ end
 -- Вызывается из init.server после того, как другие сервисы отработали выход игрока
 -- (например, вернули украденного мема хозяину), чтобы сохранить итоговое состояние.
 function DataService.Release(player: Player)
-	DataService.Save(player)
+	DataService.Save(player, true)
 	profiles[player] = nil
 end
 
@@ -275,7 +345,7 @@ function DataService.Start()
 		for player in profiles do
 			pending += 1
 			task.spawn(function()
-				DataService.Save(player)
+				DataService.Save(player, true)
 				pending -= 1
 			end)
 		end

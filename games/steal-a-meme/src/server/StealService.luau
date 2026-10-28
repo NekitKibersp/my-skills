@@ -1,6 +1,6 @@
 -- Кражи: удержание «Украсть», переноска мема над головой, доставка на свою базу,
--- возврат хозяину (удар тапком, смерть, таймер, выход). Тапок и страж-котёнок тоже здесь.
-local Players = game:GetService("Players")
+-- возврат хозяину (удар оружием, смерть, таймер, выход), отброс и скорость персонажа, страж-котёнок.
+-- Само оружие и гаджеты — в ItemService.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Config = require(ReplicatedStorage.Shared.Config)
@@ -15,11 +15,12 @@ type Carry = { Owner: Player, Slot: number, Model: Model, Id: string, EndsAt: nu
 
 local carries: { [Player]: Carry } = {} -- вор -> что несёт
 local holdStart: { [Player]: number } = {}
-local lastSlap: { [Player]: number } = {}
 local guardLastHit: { [Model]: number } = {}
 
--- Колбэк удара по Смайлику (выставляет init.server): (player, position) -> boolean (попал ли)
-StealService.OnMonsterSlap = nil :: ((player: Player, origin: Vector3, range: number) -> boolean)?
+local BASE_WALK_SPEED = 16
+
+-- Колбэк начала кражи (выставляет init.server): снять шапку-невидимку и т.п.
+StealService.OnStealStarted = nil :: ((thief: Player) -> ())?
 
 local function now(): number
 	return workspace:GetServerTimeNow()
@@ -44,6 +45,20 @@ function StealService.IsCarrying(player: Player): boolean
 	return carries[player] ~= nil
 end
 
+-- Скорость персонажа: с мемом медленнее, энергетик (атрибут BoostUntil на персонаже) быстрее
+function StealService.UpdateSpeed(player: Player)
+	local humanoid = humanoidOf(player)
+	if not humanoid then
+		return
+	end
+	local speed = if carries[player] then Config.Steal.CarryWalkSpeed else BASE_WALK_SPEED
+	local character = player.Character :: Model
+	if (character:GetAttribute("BoostUntil") or 0) > now() then
+		speed += character:GetAttribute("BoostSpeed") or 0
+	end
+	humanoid.WalkSpeed = speed
+end
+
 -- Перенос закончился неудачей: мем возвращается хозяину
 function StealService.Fail(thief: Player)
 	local carry = carries[thief]
@@ -52,10 +67,7 @@ function StealService.Fail(thief: Player)
 	end
 	carries[thief] = nil
 	setCarryAttributes(thief, "", 0)
-	local humanoid = humanoidOf(thief)
-	if humanoid then
-		humanoid.WalkSpeed = 16
-	end
+	StealService.UpdateSpeed(thief)
 
 	local owner = carry.Owner
 	if owner.Parent and PlotService.GetPlot(owner) and DataService.IsLoaded(owner) and PlotService.GetEntry(owner, carry.Slot) then
@@ -88,10 +100,7 @@ local function deliver(thief: Player)
 	end
 	carries[thief] = nil
 	setCarryAttributes(thief, "", 0)
-	local humanoid = humanoidOf(thief)
-	if humanoid then
-		humanoid.WalkSpeed = 16
-	end
+	StealService.UpdateSpeed(thief)
 
 	local position = carry.Model:GetPivot().Position
 	carry.Model:Destroy()
@@ -166,7 +175,10 @@ function StealService.TryStart(thief: Player, owner: Player, slot: number, promp
 	local endsAt = now() + Config.Steal.CarryTimeout
 	carries[thief] = { Owner = owner, Slot = slot, Model = model, Id = id, EndsAt = endsAt }
 	setCarryAttributes(thief, id, endsAt)
-	humanoid.WalkSpeed = Config.Steal.CarryWalkSpeed
+	StealService.UpdateSpeed(thief)
+	if StealService.OnStealStarted then
+		StealService.OnStealStarted(thief)
+	end
 
 	Remotes.Fx:FireAllClients("Stolen", { Position = root.Position })
 	Remotes.Notify:FireClient(thief, "StealStarted", { Meme = id }, "success")
@@ -182,8 +194,8 @@ function StealService.CancelFromOwner(owner: Player)
 	end
 end
 
--- Отбросить игрока и выбить у него мема
-function StealService.Knock(target: Player, from: Vector3, power: number)
+-- Отбросить игрока (stun — сколько секунд он лежит) и выбить у него мема
+function StealService.Knock(target: Player, from: Vector3, power: number, stun: number?)
 	local root = rootOf(target)
 	if not root then
 		return
@@ -191,115 +203,10 @@ function StealService.Knock(target: Player, from: Vector3, power: number)
 	local direction = root.Position - from
 	direction = Vector3.new(direction.X, 0, direction.Z)
 	direction = if direction.Magnitude > 0.01 then direction.Unit else Vector3.new(1, 0, 0)
-	Remotes.Knockback:FireClient(target, direction * power + Vector3.new(0, power * 0.45, 0))
+	Remotes.Knockback:FireClient(target, direction * power + Vector3.new(0, power * 0.45, 0), stun or 0.6)
 	if carries[target] then
 		StealService.Fail(target)
 	end
-end
-
--- ===== Тапок =====
-
-local slipperTemplate: Tool
-do
-	slipperTemplate = Instance.new("Tool")
-	slipperTemplate.Name = "Slipper"
-	slipperTemplate.ToolTip = "Slap! / Шлёп!"
-	slipperTemplate.CanBeDropped = false
-	slipperTemplate.Grip = CFrame.new(0, -0.9, 0) * CFrame.Angles(0, math.rad(90), 0)
-	local handle = Instance.new("Part")
-	handle.Name = "Handle"
-	handle.Size = Vector3.new(1.2, 2.6, 0.35)
-	handle.Color = Color3.fromRGB(70, 90, 200)
-	handle.Material = Enum.Material.Fabric
-	handle.CanCollide = false
-	handle.Massless = true
-	handle.Parent = slipperTemplate
-	local strap = Instance.new("Part")
-	strap.Name = "Strap"
-	strap.Size = Vector3.new(1.25, 0.35, 0.5)
-	strap.Color = Color3.fromRGB(240, 240, 240)
-	strap.CanCollide = false
-	strap.Massless = true
-	strap.CFrame = handle.CFrame * CFrame.new(0, 0.6, -0.3)
-	local weldConstraint = Instance.new("WeldConstraint")
-	weldConstraint.Part0 = handle
-	weldConstraint.Part1 = strap
-	weldConstraint.Parent = strap
-	strap.Parent = slipperTemplate
-end
-
-local function slap(player: Player, tool: Tool)
-	local t = os.clock()
-	if t - (lastSlap[player] or 0) < Config.Slap.Cooldown then
-		return
-	end
-	lastSlap[player] = t
-	local root = rootOf(player)
-	local humanoid = humanoidOf(player)
-	if not root or not humanoid or humanoid.Health <= 0 then
-		return
-	end
-
-	-- Взмах: быстро меняем хват туда и обратно
-	local baseGrip = slipperTemplate.Grip
-	tool.Grip = baseGrip * CFrame.Angles(math.rad(-80), 0, 0)
-	task.delay(0.15, function()
-		if tool.Parent then
-			tool.Grip = baseGrip
-		end
-	end)
-
-	local gold = player:GetAttribute("Pass_GoldSlipper") == true
-	local range = if gold then Config.Slap.GoldRange else Config.Slap.Range
-	local power = if gold then Config.Slap.GoldKnockback else Config.Slap.Knockback
-	local look = root.CFrame.LookVector
-
-	local best: Player? = nil
-	local bestDistance = range
-	for _, other in Players:GetPlayers() do
-		if other == player then
-			continue
-		end
-		local otherRoot = rootOf(other)
-		local otherHumanoid = humanoidOf(other)
-		if not otherRoot or not otherHumanoid or otherHumanoid.Health <= 0 then
-			continue
-		end
-		local offset = otherRoot.Position - root.Position
-		local distance = offset.Magnitude
-		if distance <= bestDistance and (distance < 3 or offset.Unit:Dot(look) > 0.2) then
-			best, bestDistance = other, distance
-		end
-	end
-
-	if best then
-		local targetRoot = rootOf(best) :: BasePart
-		StealService.Knock(best, root.Position, power)
-		Remotes.Fx:FireAllClients("Slap", { Position = targetRoot.Position })
-	elseif StealService.OnMonsterSlap then
-		StealService.OnMonsterSlap(player, root.Position, range + 4)
-	end
-end
-
-function StealService.GiveSlipper(player: Player)
-	local backpack = player:FindFirstChildOfClass("Backpack")
-	if not backpack or backpack:FindFirstChild("Slipper") then
-		return
-	end
-	local character = player.Character
-	if character and character:FindFirstChild("Slipper") then
-		return
-	end
-	local tool = slipperTemplate:Clone()
-	local handle = tool:FindFirstChild("Handle") :: BasePart
-	if player:GetAttribute("Pass_GoldSlipper") then
-		handle.Color = Color3.fromRGB(255, 205, 50)
-		handle.Material = Enum.Material.Foil
-	end
-	tool.Activated:Connect(function()
-		slap(player, tool)
-	end)
-	tool.Parent = backpack
 end
 
 -- ===== Персонажи =====
@@ -312,14 +219,12 @@ function StealService.OnCharacter(player: Player, character: Model)
 			StealService.Fail(player)
 		end)
 	end
-	StealService.GiveSlipper(player)
 end
 
 function StealService.OnPlayerRemoving(player: Player)
 	StealService.Fail(player)
 	StealService.CancelFromOwner(player)
 	holdStart[player] = nil
-	lastSlap[player] = nil
 end
 
 -- ===== Цикл: доставка, таймеры, страж =====

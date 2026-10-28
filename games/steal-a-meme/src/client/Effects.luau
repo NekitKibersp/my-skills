@@ -1,5 +1,6 @@
--- Клиентские эффекты: отбрасывание от тапка (Remotes.Knockback), разовые вспышки/конфетти
--- (Remotes.Fx), лёгкий красноватый оттенок Ночью Смайлика и табличка со здоровьем монстра.
+-- Клиентские эффекты: отбрасывание с оглушением (Remotes.Knockback), разовые вспышки/конфетти
+-- (Remotes.Fx), оттенок Ночью Смайлика по сезону (Хэллоуин — красноватый, Зима — холодный синий)
+-- и табличка со здоровьем монстра.
 -- Всё создаётся локально, без звуков и текстур по ID.
 local Debris = game:GetService("Debris")
 local Lighting = game:GetService("Lighting")
@@ -18,11 +19,22 @@ local create = UiKit.create
 local player = Players.LocalPlayer
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 
-local KNOCKBACK_TIME = 0.6
+local KNOCKBACK_TIME = 0.6 -- оглушение по умолчанию (старый вызов без второго аргумента)
+local MAX_STUN = 4
+local DIZZY_STUN = 1.5 -- с такого оглушения над головой крутятся звёздочки
 local MAX_KNOCKBACK = 300 -- защита от странных значений: клиент не улетит за карту
 local MAX_PIECES = 250 -- не больше стольких частиц конфетти одновременно
 local VIRAL_COLOR = Color3.fromRGB(255, 80, 220)
 local MONSTER_COLOR = Color3.fromRGB(255, 220, 40)
+local BANANA_COLOR = Color3.fromRGB(255, 225, 50)
+local ENERGY_COLOR = Color3.fromRGB(80, 255, 120)
+
+-- Оттенок ночи по сезону (Season в ReplicatedStorage); без сезона — как на Хэллоуин
+local NIGHT_TINTS = {
+	Halloween = { TintColor = Color3.fromRGB(255, 222, 215), Saturation = -0.15, Contrast = 0.12, Brightness = -0.03 },
+	Winter = { TintColor = Color3.fromRGB(205, 225, 255), Saturation = -0.1, Contrast = 0.1, Brightness = -0.02 },
+}
+local NO_TINT = { TintColor = Color3.new(1, 1, 1), Saturation = 0, Contrast = 0, Brightness = 0 }
 
 local Effects = {}
 
@@ -43,16 +55,56 @@ local function shakeCamera(humanoid: Humanoid, duration: number, strength: numbe
 	end)
 end
 
+-- «💫» над своей головой на время оглушения (только у себя)
+local dizzyGui: BillboardGui? = nil
+local function showDizzy(character: Model, duration: number)
+	if dizzyGui then
+		dizzyGui:Destroy()
+	end
+	local head = character:FindFirstChild("Head")
+	if not head or not head:IsA("BasePart") then
+		return
+	end
+	local gui = create("BillboardGui", {
+		Name = "Dizzy",
+		Adornee = head,
+		Size = UDim2.fromOffset(60, 60),
+		StudsOffsetWorldSpace = Vector3.new(0, 2.2, 0),
+		AlwaysOnTop = true,
+		LightInfluence = 0,
+		ResetOnSpawn = false,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	local label = UiKit.text({
+		Text = "💫",
+		TextScaled = true,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromScale(1, 1),
+		Parent = gui,
+	})
+	TweenService:Create(label, TweenInfo.new(0.6, Enum.EasingStyle.Linear, Enum.EasingDirection.In, -1), { Rotation = 360 }):Play()
+	dizzyGui = gui
+	task.delay(duration, function()
+		if dizzyGui == gui then
+			dizzyGui = nil
+		end
+		gui:Destroy()
+	end)
+end
+
 local knockToken = 0
-local function onKnockback(velocity: any)
+local function onKnockback(velocity: any, stun: any)
 	if typeof(velocity) ~= "Vector3" or velocity ~= velocity then
 		return
 	end
+	local duration = if type(stun) == "number" and stun == stun then math.clamp(stun, 0, MAX_STUN) else KNOCKBACK_TIME
 	if velocity.Magnitude > MAX_KNOCKBACK then
 		velocity = velocity.Unit * MAX_KNOCKBACK
 	end
-	local _, root, humanoid = Util.character()
-	if not root or not humanoid or humanoid.Health <= 0 then
+	local character, root, humanoid = Util.character()
+	if not character or not root or not humanoid or humanoid.Health <= 0 then
 		return
 	end
 	knockToken += 1
@@ -60,7 +112,10 @@ local function onKnockback(velocity: any)
 	humanoid:ChangeState(Enum.HumanoidStateType.Physics)
 	root.AssemblyLinearVelocity = velocity
 	shakeCamera(humanoid, 0.35, 0.6)
-	task.delay(KNOCKBACK_TIME, function()
+	if duration >= DIZZY_STUN then
+		showDizzy(character, duration)
+	end
+	task.delay(duration, function()
 		-- Новый удар за это время продлевает полёт
 		if token == knockToken and humanoid.Parent and humanoid.Health > 0 then
 			humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
@@ -122,6 +177,35 @@ local function flash(position: Vector3, color: Color3, size: number, duration: n
 		Transparency = 1,
 	}):Play()
 	Debris:AddItem(ball, duration + 0.1)
+end
+
+-- Всплывающая надпись в мире (поднимается и тает)
+local function floatText(position: Vector3, text: string, color: Color3)
+	local anchor = piece(position, Vector3.one * 0.2, color)
+	anchor.Transparency = 1
+	local gui = create("BillboardGui", {
+		Size = UDim2.fromOffset(160, 50),
+		AlwaysOnTop = true,
+		LightInfluence = 0,
+		MaxDistance = 120,
+		Parent = anchor,
+	})
+	local label = UiKit.text({
+		Text = text,
+		TextScaled = true,
+		TextColor3 = color,
+		TextStrokeTransparency = 0,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		Size = UDim2.fromScale(1, 1),
+		Parent = gui,
+	})
+	local rise = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	TweenService:Create(anchor, rise, { CFrame = CFrame.new(position + Vector3.new(0, 4, 0)) }):Play()
+	TweenService:Create(label, TweenInfo.new(0.4, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, 0.6), {
+		TextTransparency = 1,
+		TextStrokeTransparency = 1,
+	}):Play()
+	Debris:AddItem(anchor, 1.1)
 end
 
 -- Белая вспышка экрана и крупный текст при своём перерождении
@@ -197,6 +281,16 @@ local function onFx(kind: any, data: any)
 	elseif kind == "MonsterHit" and hasPosition then
 		flash(position, MONSTER_COLOR, 4, 0.2)
 		confetti(position, { MONSTER_COLOR, Color3.new(1, 1, 1) }, 8, 4)
+	elseif kind == "Invisible" and hasPosition then
+		flash(position, Color3.fromRGB(170, 170, 180), 8, 0.5)
+		confetti(position, { Color3.fromRGB(150, 150, 160), Color3.fromRGB(210, 210, 220), Color3.new(1, 1, 1) }, 18, 5)
+	elseif kind == "Banana" and hasPosition then
+		flash(position, BANANA_COLOR, 6, 0.3)
+		confetti(position, { BANANA_COLOR, Color3.fromRGB(255, 240, 150), Color3.fromRGB(120, 90, 30) }, 16, 6)
+		floatText(position + Vector3.new(0, 3, 0), Locale.T("FxSlip"), BANANA_COLOR)
+	elseif kind == "Energy" and hasPosition then
+		flash(position, ENERGY_COLOR, 5, 0.25)
+		confetti(position, { ENERGY_COLOR, Color3.fromRGB(200, 255, 120), Color3.new(1, 1, 1) }, 20, 9)
 	elseif kind == "Rebirth" then
 		if data.UserId == player.UserId then
 			rebirthScreen()
@@ -211,7 +305,7 @@ local function onFx(kind: any, data: any)
 	end
 end
 
--- ===== Ночь Смайлика: лёгкий тёплый/красный оттенок поверх освещения сервера =====
+-- ===== Ночь Смайлика: лёгкий оттенок по сезону поверх освещения сервера =====
 local function startNightTint()
 	local tint = create("ColorCorrectionEffect", {
 		Name = "SmileyNightLocal",
@@ -221,14 +315,11 @@ local function startNightTint()
 	local fade = TweenInfo.new(2.5, Enum.EasingStyle.Sine)
 	local function render()
 		local active = Util.bool(ReplicatedStorage, "NightActive")
-		TweenService:Create(tint, fade, {
-			TintColor = if active then Color3.fromRGB(255, 222, 215) else Color3.new(1, 1, 1),
-			Saturation = if active then -0.15 else 0,
-			Contrast = if active then 0.12 else 0,
-			Brightness = if active then -0.03 else 0,
-		}):Play()
+		local goal = if active then NIGHT_TINTS[Util.str(ReplicatedStorage, "Season")] or NIGHT_TINTS.Halloween else NO_TINT
+		TweenService:Create(tint, fade, goal):Play()
 	end
 	ReplicatedStorage:GetAttributeChangedSignal("NightActive"):Connect(render)
+	ReplicatedStorage:GetAttributeChangedSignal("Season"):Connect(render)
 	render()
 end
 

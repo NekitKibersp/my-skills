@@ -112,6 +112,7 @@ local modules = {
 	"IndexWindow",
 	"RebirthWindow",
 	"GuardWindow",
+	"Items",
 	"Popups",
 	"Hud",
 	"Banners",
@@ -120,6 +121,8 @@ local modules = {
 	"Prompts",
 	"MemeBillboards",
 	"Effects",
+	"Status",
+	"Tutorial",
 }
 for _, name in modules do
 	local ok, err = pcall(function()

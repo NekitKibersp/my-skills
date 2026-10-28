@@ -1,5 +1,6 @@
--- Баннеры сверху по центру: «В ТРЕНДЕ», Ночь Смайлика (идёт / до следующей), Удача сервера.
--- Источник — атрибуты ReplicatedStorage (TrendingId, TrendEndsAt, NightActive, NightEndsAt, NextNightAt, LuckEndsAt).
+-- Баннеры сверху по центру: «В ТРЕНДЕ», Ночь Смайлика (идёт / до следующей, с эмодзи сезона), Удача сервера.
+-- Источник — атрибуты ReplicatedStorage (TrendingId, TrendEndsAt, NightActive, NightEndsAt, NextNightAt,
+-- LuckEndsAt, Season).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -13,6 +14,7 @@ local create = UiKit.create
 
 local NIGHT_COLOR = Color3.fromRGB(255, 220, 40)
 local LUCK_COLOR = Color3.fromRGB(80, 230, 120)
+local SEASON_EMOJI = { Halloween = "🎃", Winter = "❄️" } -- по атрибуту Season в ReplicatedStorage
 
 local Banners = {}
 
@@ -73,13 +75,16 @@ function Banners.Start(ctx)
 			})
 		end
 
+		local seasonEmoji = SEASON_EMOJI[Util.str(ReplicatedStorage, "Season")]
+		local prefix = if seasonEmoji then seasonEmoji .. " " else ""
+
 		if Util.bool(ReplicatedStorage, "NightActive") then
 			night.Visible = true
 			night.TextSize = 22
 			night.Size = UDim2.fromOffset(0, 34)
 			night.TextColor3 = NIGHT_COLOR
 			night.BackgroundColor3 = Color3.fromRGB(40, 10, 30)
-			night.Text = Locale.T("BannerNight", { Time = Util.clock(Util.num(ReplicatedStorage, "NightEndsAt") - now) })
+			night.Text = prefix .. Locale.T("BannerNight", { Time = Util.clock(Util.num(ReplicatedStorage, "NightEndsAt") - now) })
 		else
 			local nextAt = Util.num(ReplicatedStorage, "NextNightAt")
 			night.Visible = nextAt > now
@@ -87,7 +92,7 @@ function Banners.Start(ctx)
 			night.Size = UDim2.fromOffset(0, 24)
 			night.TextColor3 = COLORS.Muted
 			night.BackgroundColor3 = COLORS.Panel
-			night.Text = Locale.T("BannerNextNight", { Time = Util.clock(nextAt - now) })
+			night.Text = prefix .. Locale.T("BannerNextNight", { Time = Util.clock(nextAt - now) })
 		end
 
 		local luckLeft = Util.num(ReplicatedStorage, "LuckEndsAt") - now

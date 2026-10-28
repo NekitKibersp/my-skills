@@ -90,7 +90,38 @@ Locale.Add({
 
 	-- эффекты
 	FxRebirth = { "REBIRTH!", "ПЕРЕРОЖДЕНИЕ!" },
+	FxSlip = { "SLIP!", "БАЦ!" },
 	MonsterName = { "😃 Smiley", "😃 Smiley" },
+
+	-- предметы (ответы BuyItem + окно)
+	ItemBought = { "Bought! Check your hotbar", "Куплено! Смотри в панели предметов" },
+	ItemOwned = { "You already own this item", "Этот предмет уже есть" },
+	BtnItems = { "Items", "Предметы" },
+	ItemsTitle = { "🗡️ Items", "🗡️ Предметы" },
+	ItemsWeapons = { "Weapons", "Оружие" },
+	ItemsGadgets = { "Gadgets", "Гаджеты" },
+	ItemStatsWeapon = { "📏 {Range} · ⏱ {Cooldown}s · 💫 {Stun}s", "📏 {Range} · ⏱ {Cooldown} сек · 💫 {Stun} сек" },
+	ItemStatsGadget = { "⌛ {Duration}s · ⏱ {Cooldown}s", "⌛ {Duration} сек · ⏱ {Cooldown} сек" },
+	ItemArea = { "💥 area", "💥 по площади" },
+	ItemFree = { "Free", "Бесплатно" },
+
+	-- состояние персонажа (над панелью предметов)
+	StatusCooldown = { "⏳ {Seconds}s", "⏳ {Seconds} сек" },
+	StatusInvisible = { "🎩 Invisible {Time}", "🎩 Невидимка {Time}" },
+	StatusBoost = { "🥤 Boost {Time}", "🥤 Ускорение {Time}" },
+
+	-- туториал
+	TutorialStep = { "Tutorial {Step}/{Total}", "Обучение {Step}/{Total}" },
+	TutorialBuy = { "Walk to the red carpet and buy a meme (press E)", "Подойди к красной дорожке и купи мема (нажми E)" },
+	TutorialIncome = { "Nice! Memes earn cash every second. Buy more and watch your Cash grow", "Отлично! Мемы приносят деньги каждую секунду. Покупай ещё и смотри, как растут деньги" },
+	TutorialSteal = { "Steal: go to another player's base and HOLD E on their meme, then run home", "Кража: иди на чужую базу, ЗАЖМИ E на меме и беги домой" },
+	TutorialProtect = { "Protect: press 🔒 Lock when thieves come. Hit them with your Slipper!", "Защита: жми 🔒 Замок, когда идут воры. Бей их тапком!" },
+	TutorialSkip = { "Skip", "Пропустить" },
+	TutorialFinished = { "Tutorial complete! Go get rich! 🚀", "Обучение пройдено! Вперёд к богатству! 🚀" },
+
+	-- сезоны
+	IndexSeasonHalloween = { "Halloween night", "Ночь Хэллоуина" },
+	IndexSeasonWinter = { "Winter night", "Зимняя ночь" },
 })
 
 return Locale

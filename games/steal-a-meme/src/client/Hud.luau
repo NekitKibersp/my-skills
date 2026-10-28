@@ -1,5 +1,5 @@
 -- HUD: деньги/доход/слоты слева сверху, таймер подарка за игру и боковые кнопки
--- (Магазин, Индекс, Перерождение, Замок базы, Страж). Всё рисуется из атрибутов игрока.
+-- (Магазин, Предметы, Индекс, Перерождение, Замок базы, Страж). Всё рисуется из атрибутов игрока.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -185,15 +185,19 @@ function Hud.Start(ctx)
 	ctx.Scale(side)
 
 	local shop = sideButton(side, 1, "🛒", Locale.T("BtnShop"))
-	local index = sideButton(side, 2, "📖", Locale.T("BtnIndex"))
-	local rebirth, rebirthCaption = sideButton(side, 3, "♻️", Locale.T("BtnRebirth"))
-	local lock, lockCaption = sideButton(side, 4, "🔒", Locale.T("BtnLock"))
-	local guard, guardCaption = sideButton(side, 5, "🐱⚔️", Locale.T("BtnGuard"))
+	local items = sideButton(side, 2, "🗡️", Locale.T("BtnItems"))
+	local index = sideButton(side, 3, "📖", Locale.T("BtnIndex"))
+	local rebirth, rebirthCaption = sideButton(side, 4, "♻️", Locale.T("BtnRebirth"))
+	local lock, lockCaption = sideButton(side, 5, "🔒", Locale.T("BtnLock"))
+	local guard, guardCaption = sideButton(side, 6, "🐱⚔️", Locale.T("BtnGuard"))
 	local lockIcon = lock:FindFirstChild("Icon") :: TextLabel
 
 	shop.BackgroundColor3 = COLORS.Green
 	shop.Activated:Connect(function()
 		ctx.Open("Shop")
+	end)
+	items.Activated:Connect(function()
+		ctx.Open("Items")
 	end)
 	index.Activated:Connect(function()
 		ctx.Open("Index")

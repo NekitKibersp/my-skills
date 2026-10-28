@@ -83,6 +83,11 @@ local function buildMonster(position: Vector3): Model
 	body.Name = "Body"
 	body.Size = Vector3.new(8, 8, 8)
 	body.Color = Color3.fromRGB(255, 220, 30)
+	for _, season in Config.Seasons do
+		if season.Id == ReplicatedStorage:GetAttribute("Season") then
+			body.Color = season.MonsterColor
+		end
+	end
 	body.Material = Enum.Material.SmoothPlastic
 	body.Anchored = true
 	body.CanCollide = false

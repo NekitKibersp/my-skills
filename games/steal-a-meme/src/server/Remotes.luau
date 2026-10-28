@@ -17,7 +17,7 @@ local Remotes = {
 	-- сервер -> клиент: (key: string, args: { [string]: any }?, kind: "success" | "error" | "info"?)
 	-- key — ключ из Shared.Locale, клиент сам переводит текст на язык игрока.
 	Notify = make("RemoteEvent", "Notify") :: RemoteEvent,
-	-- сервер -> клиент: (velocity: Vector3) — отбросить своего персонажа (удар тапком)
+	-- сервер -> клиент: (velocity: Vector3, stun: number?) — отбросить своего персонажа и уронить на stun секунд
 	Knockback = make("RemoteEvent", "Knockback") :: RemoteEvent,
 	-- сервер -> все: (kind: string, data: { [string]: any }) — разовые эффекты, см. README
 	Fx = make("RemoteEvent", "Fx") :: RemoteEvent,
@@ -29,6 +29,10 @@ local Remotes = {
 	Rebirth = make("RemoteFunction", "Rebirth") :: RemoteFunction,
 	-- клиент -> сервер: () -> (ok: boolean, key: string)
 	UpgradeGuard = make("RemoteFunction", "UpgradeGuard") :: RemoteFunction,
+	-- клиент -> сервер: (itemId: string) -> (ok: boolean, key: string) — купить предмет за монеты
+	BuyItem = make("RemoteFunction", "BuyItem") :: RemoteFunction,
+	-- клиент -> сервер: () — туториал пройден или пропущен
+	TutorialDone = make("RemoteEvent", "TutorialDone") :: RemoteEvent,
 }
 
 folder.Parent = ReplicatedStorage

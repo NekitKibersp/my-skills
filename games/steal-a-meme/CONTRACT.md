@@ -70,3 +70,25 @@
 
 Покупки за Robux клиент начинает сам: `MarketplaceService:PromptGamePassPurchase(player, Config.GamePasses[k].Id)`
 / `PromptProductPurchase(player, Config.Products[k].Id)`. Если `Id == 0` — показать `Locale.T("NotConfigured")`.
+
+## Дополнения v2 (сезоны, туториал, предметы)
+| Где | Что | Тип | Смысл |
+|---|---|---|---|
+| `ReplicatedStorage` | `Season` | string | "Halloween" / "Winter" / "None" — текущий сезон (`Config.SeasonFor`) |
+| игрок | `ItemsJson` | string | JSON-массив Id купленных предметов (`Config.Items`); `Slipper` есть всегда |
+| игрок | `TutorialDone` | number | 0 — показать туториал, 1 — пройден |
+| игрок | `SessionStart` | number | теперь = `GetServerTimeNow() - сыграно_сегодня`: подарки за время копятся за день, а не за сессию (формула на клиенте та же) |
+| персонаж | `Invisible` | bool | надета шапка-невидимка |
+| персонаж | `BoostUntil` | number | до какого времени действует энергетик |
+| Tool | `ItemId` | string | Id предмета (`Config.Items`); имя Tool = Id |
+| Tool | `CooldownEndsAt` | number | серверное время конца перезарядки (клиент показывает таймер у экипированного предмета) |
+
+Remotes:
+| Имя | Направление | Аргументы |
+|---|---|---|
+| `Knockback` | S→C | `(velocity: Vector3, stun: number?)` — лежать в Physics `stun` секунд (по умолчанию 0.6) |
+| `BuyItem` | C→S (RF) | `(itemId: string) -> (ok, key)`; ключи: "ItemBought", "ItemOwned", "NotEnoughCash" |
+| `TutorialDone` | C→S | `()` — туториал пройден/пропущен |
+
+Новые `Fx`: `"Invisible"` {Position} (облачко), `"Banana"` {Position} (поскользнулся), `"Energy"` {Position}.
+Банановые кожуры — `workspace.Bananas` (детали, тег `"Banana"`, атрибут `OwnerUserId`).

@@ -58,6 +58,8 @@ local STRINGS: { [string]: { string } } = {
 	LockExtended = { "Lock extended!", "Замок продлён!" },
 	SaveDisabled = { "Saving is unavailable (Studio: enable API Services in Game Settings → Security).", "Сохранение недоступно (Studio: включите API Services в Game Settings → Security)." },
 	NotConfigured = { "This item is not set up yet", "Этот товар ещё не настроен" },
+	ItemBought = { "Bought! Check your hotbar", "Куплено! Смотри в панели предметов" },
+	ItemOwned = { "You already own this", "Уже куплено" },
 	NewIndex = { "New in Index: {Meme}! +1% income", "Новое в Индексе: {Meme}! +1% дохода" },
 }
 

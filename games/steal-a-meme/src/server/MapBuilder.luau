@@ -36,17 +36,17 @@ local function part(props: { [string]: any }): Part
 	return p
 end
 
-local function setupLighting()
-	Lighting.ClockTime = 17.2
+local function setupLighting(winter: boolean)
+	Lighting.ClockTime = if winter then 15.5 else 17.2
 	Lighting.Brightness = 2.2
-	Lighting.Ambient = Color3.fromRGB(90, 70, 100)
-	Lighting.OutdoorAmbient = Color3.fromRGB(150, 120, 140)
+	Lighting.Ambient = if winter then Color3.fromRGB(90, 100, 130) else Color3.fromRGB(90, 70, 100)
+	Lighting.OutdoorAmbient = if winter then Color3.fromRGB(150, 165, 200) else Color3.fromRGB(150, 120, 140)
 	Lighting.GlobalShadows = true
 	if not Lighting:FindFirstChildOfClass("Atmosphere") then
 		local atmosphere = Instance.new("Atmosphere")
 		atmosphere.Density = 0.3
-		atmosphere.Color = Color3.fromRGB(255, 190, 150)
-		atmosphere.Decay = Color3.fromRGB(120, 70, 110)
+		atmosphere.Color = if winter then Color3.fromRGB(200, 220, 255) else Color3.fromRGB(255, 190, 150)
+		atmosphere.Decay = if winter then Color3.fromRGB(110, 130, 170) else Color3.fromRGB(120, 70, 110)
 		atmosphere.Glare = 0.3
 		atmosphere.Haze = 1.2
 		atmosphere.Parent = Lighting
@@ -83,6 +83,98 @@ local function buildPumpkin(position: Vector3, size: number, parent: Instance)
 	light.Range = size * 3
 	light.Brightness = 1.2
 	light.Parent = pumpkin
+end
+
+local function buildSnowman(position: Vector3, size: number, parent: Instance)
+	local radii = { size, size * 0.75, size * 0.5 }
+	local y = position.Y
+	local head: Part? = nil
+	for _, radius in radii do
+		y += radius * 0.85
+		head = part({
+			Name = "Snowman",
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.one * radius * 2,
+			Color = Color3.fromRGB(245, 250, 255),
+			Material = Enum.Material.Snow,
+			CFrame = CFrame.new(position.X, y, position.Z),
+			CanCollide = false,
+			Parent = parent,
+		})
+		y += radius * 0.85
+	end
+	if head then
+		part({
+			Name = "Nose",
+			Size = Vector3.new(size * 0.15, size * 0.15, size * 0.6),
+			Color = Color3.fromRGB(255, 130, 30),
+			CFrame = head.CFrame * CFrame.new(0, 0, -size * 0.6),
+			CanCollide = false,
+			Parent = parent,
+		})
+	end
+end
+
+local function buildTree(position: Vector3, height: number, random: Random, parent: Instance)
+	part({
+		Name = "TreeTrunk",
+		Size = Vector3.new(1.5, height * 0.25, 1.5),
+		Color = Color3.fromRGB(90, 60, 40),
+		Material = Enum.Material.Wood,
+		CFrame = CFrame.new(position + Vector3.new(0, height * 0.125, 0)),
+		Parent = parent,
+	})
+	for layer = 0, 2 do
+		local width = height * (0.7 - layer * 0.18)
+		local cone = part({
+			Name = "TreeLayer",
+			Size = Vector3.new(width, height * 0.3, width),
+			Color = Color3.fromRGB(30, 110, 60),
+			Material = Enum.Material.Grass,
+			CFrame = CFrame.new(position + Vector3.new(0, height * (0.35 + layer * 0.22), 0)) * CFrame.Angles(0, math.rad(layer * 30), 0),
+			CanCollide = false,
+			Parent = parent,
+		})
+		local light = Instance.new("PointLight")
+		light.Color = Color3.fromHSV(random:NextNumber(), 0.6, 1)
+		light.Range = 8
+		light.Brightness = 0.8
+		light.Parent = cone
+	end
+	part({
+		Name = "TreeStar",
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.one * 1.4,
+		Color = Color3.fromRGB(255, 220, 60),
+		Material = Enum.Material.Neon,
+		CFrame = CFrame.new(position + Vector3.new(0, height * 0.95, 0)),
+		CanCollide = false,
+		Parent = parent,
+	})
+end
+
+-- Снегопад: большой невидимый «потолок» с частицами
+local function buildSnowfall(parent: Instance)
+	local sky = part({
+		Name = "Snowfall",
+		Size = Vector3.new(MapBuilder.HALF_X * 2, 1, MapBuilder.HALF_Z * 2),
+		CFrame = CFrame.new(0, 70, 0),
+		Transparency = 1,
+		CanCollide = false,
+		CanQuery = false,
+		CanTouch = false,
+		Parent = parent,
+	})
+	local snow = Instance.new("ParticleEmitter")
+	snow.Color = ColorSequence.new(Color3.new(1, 1, 1))
+	snow.LightEmission = 0.3
+	snow.Size = NumberSequence.new(0.35)
+	snow.Rate = 220
+	snow.Lifetime = NumberRange.new(9, 12)
+	snow.Speed = NumberRange.new(6, 9)
+	snow.SpreadAngle = Vector2.new(15, 15)
+	snow.EmissionDirection = Enum.NormalId.Bottom
+	snow.Parent = sky
 end
 
 local function buildLamp(position: Vector3, parent: Instance)
@@ -358,8 +450,10 @@ local function buildLeaderboard(name: string, title: string, cframe: CFrame, par
 end
 
 -- Строит мир. Возвращает { Plots = { Model }, Leaderboards = { Earned = Part, Stolen = Part } }.
-function MapBuilder.Build()
-	setupLighting()
+-- season: "Halloween" | "Winter" | "None" — от него зависит декор и освещение
+function MapBuilder.Build(season: string)
+	local winter = season == "Winter"
+	setupLighting(winter)
 
 	local map = Instance.new("Folder")
 	map.Name = "Map"
@@ -371,8 +465,8 @@ function MapBuilder.Build()
 		Name = "Ground",
 		Size = Vector3.new(halfX * 2 + 40, 2, halfZ * 2 + 40),
 		CFrame = CFrame.new(0, -0.5, 0),
-		Color = Color3.fromRGB(55, 70, 45),
-		Material = Enum.Material.Grass,
+		Color = if winter then Color3.fromRGB(235, 240, 250) else Color3.fromRGB(55, 70, 45),
+		Material = if winter then Enum.Material.Snow else Enum.Material.Grass,
 		Parent = map,
 	})
 
@@ -399,20 +493,34 @@ function MapBuilder.Build()
 	spawnLocation.Material = Enum.Material.Neon
 	spawnLocation.Parent = map
 
-	-- Декор: тыквы и фонари вдоль дорожки
+	-- Декор по сезону: тыквы (Хэллоуин) или снеговики и ёлки (Зима), фонари вдоль дорожки всегда
 	local decor = Instance.new("Folder")
 	decor.Name = "Decor"
 	decor.Parent = map
+	local function seasonal(position: Vector3, size: number)
+		if season == "Halloween" then
+			buildPumpkin(position, size, decor)
+		elseif winter then
+			if random:NextNumber() < 0.5 then
+				buildSnowman(position, size * 0.6, decor)
+			else
+				buildTree(position, size * 3, random, decor)
+			end
+		end
+	end
 	for x = -MapBuilder.CARPET_LENGTH / 2 + 10, MapBuilder.CARPET_LENGTH / 2, 30 do
 		for _, side in { -1, 1 } do
 			buildLamp(Vector3.new(x, 0.5, side * 14), decor)
-			buildPumpkin(Vector3.new(x + random:NextNumber(6, 14), 0.5, side * random:NextNumber(12, 18)), random:NextNumber(1.6, 3), decor)
+			seasonal(Vector3.new(x + random:NextNumber(6, 14), 0.5, side * random:NextNumber(12, 18)), random:NextNumber(1.6, 3))
 		end
 	end
 	for _ = 1, 30 do
 		local x = random:NextNumber(-halfX, halfX)
 		local z = random:NextNumber(halfZ - 25, halfZ) * (if random:NextNumber() < 0.5 then -1 else 1)
-		buildPumpkin(Vector3.new(x, 0.5, z), random:NextNumber(2, 5), decor)
+		seasonal(Vector3.new(x, 0.5, z), random:NextNumber(2, 5))
+	end
+	if winter then
+		buildSnowfall(decor)
 	end
 
 	local leaderboards = Instance.new("Folder")

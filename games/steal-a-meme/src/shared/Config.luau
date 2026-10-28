@@ -15,10 +15,12 @@ Config.Rarities = {
 	{ Id = "God", Name = "Meme God", NameRu = "Мем-Бог", Color = Color3.fromRGB(255, 120, 230), Weight = 0.25 },
 	{ Id = "Secret", Name = "SECRET", NameRu = "СЕКРЕТНЫЙ", Color = Color3.fromRGB(30, 30, 30), Weight = 0.05 },
 	{ Id = "Halloween", Name = "Halloween", NameRu = "Хэллоуин", Color = Color3.fromRGB(255, 130, 20), Weight = 0 },
+	{ Id = "Winter", Name = "Winter", NameRu = "Зимний", Color = Color3.fromRGB(120, 210, 255), Weight = 0 },
 }
 
 -- Мемы. Face — эмодзи-«лицо», Shape — форма тела (Ball/Block/Cylinder), Size — масштаб.
--- Event = true — появляются только Ночью Смайлика (сезонные), EventWeight — шанс среди сезонных.
+-- Event = true — сезонные: появляются только ночью и только в своём сезоне (Season),
+-- EventWeight — шанс среди сезонных. Купленные сезонные мемы остаются у игроков навсегда.
 -- ModelId — ID модели из Creator Store (0 = собрать из примитивов). Модель должна лежать
 -- в инвентаре владельца игры; скрипты из неё вырезаются при загрузке.
 -- Чтобы заменить или удалить персонажа (например, по жалобе правообладателя), правьте только этот список.
@@ -47,19 +49,25 @@ Config.Creatures = {
 
 	{ Id = "GreatCheremsha", Name = "The Great Cheremsha", Face = "🦁🐰👑", Rarity = "Secret", Price = 30000000, Income = 150000, Color = Color3.fromRGB(15, 15, 15), Shape = "Ball", Size = 2.4, ModelId = 0 },
 
-	{ Id = "PumpkinCat", Name = "Pumpkin Cat", Face = "🎃🐈‍⬛", Rarity = "Halloween", Price = 2500, Income = 60, Color = Color3.fromRGB(255, 120, 20), Shape = "Ball", Size = 1.1, Event = true, EventWeight = 60, ModelId = 0 },
-	{ Id = "SkeletonClap", Name = "Clapping Skeleton", Face = "💀👏", Rarity = "Halloween", Price = 25000, Income = 400, Color = Color3.fromRGB(235, 235, 225), Shape = "Block", Size = 1.3, Event = true, EventWeight = 28, ModelId = 0 },
-	{ Id = "WitchSixSeven", Name = "Witch 67", Face = "🧙‍♀️6️⃣7️⃣", Rarity = "Halloween", Price = 250000, Income = 2800, Color = Color3.fromRGB(90, 30, 120), Shape = "Cylinder", Size = 1.6, Event = true, EventWeight = 10, ModelId = 0 },
-	{ Id = "GhostCheremsha", Name = "Ghost Cheremsha", Face = "👻🦁", Rarity = "Halloween", Price = 2000000, Income = 18000, Color = Color3.fromRGB(200, 230, 255), Shape = "Ball", Size = 1.9, Event = true, EventWeight = 2, ModelId = 0 },
+	{ Id = "PumpkinCat", Name = "Pumpkin Cat", Face = "🎃🐈‍⬛", Rarity = "Halloween", Price = 2500, Income = 60, Color = Color3.fromRGB(255, 120, 20), Shape = "Ball", Size = 1.1, Event = true, Season = "Halloween", EventWeight = 60, ModelId = 0 },
+	{ Id = "SkeletonClap", Name = "Clapping Skeleton", Face = "💀👏", Rarity = "Halloween", Price = 25000, Income = 400, Color = Color3.fromRGB(235, 235, 225), Shape = "Block", Size = 1.3, Event = true, Season = "Halloween", EventWeight = 28, ModelId = 0 },
+	{ Id = "WitchSixSeven", Name = "Witch 67", Face = "🧙‍♀️6️⃣7️⃣", Rarity = "Halloween", Price = 250000, Income = 2800, Color = Color3.fromRGB(90, 30, 120), Shape = "Cylinder", Size = 1.6, Event = true, Season = "Halloween", EventWeight = 10, ModelId = 0 },
+	{ Id = "GhostCheremsha", Name = "Ghost Cheremsha", Face = "👻🦁", Rarity = "Halloween", Price = 2000000, Income = 18000, Color = Color3.fromRGB(200, 230, 255), Shape = "Ball", Size = 1.9, Event = true, Season = "Halloween", EventWeight = 2, ModelId = 0 },
+	{ Id = "SnowCat", Name = "Snow Cat Clapping", Face = "❄️🐈‍⬛", Rarity = "Winter", Price = 2500, Income = 60, Color = Color3.fromRGB(230, 245, 255), Shape = "Ball", Size = 1.1, Event = true, Season = "Winter", EventWeight = 60, ModelId = 0 },
+	{ Id = "GingerSahur", Name = "Gingerbread Sahur", Face = "🍪🏏", Rarity = "Winter", Price = 25000, Income = 400, Color = Color3.fromRGB(180, 110, 60), Shape = "Cylinder", Size = 1.3, Event = true, Season = "Winter", EventWeight = 28, ModelId = 0 },
+	{ Id = "SantaSixSeven", Name = "Santa 67", Face = "🎅6️⃣7️⃣", Rarity = "Winter", Price = 250000, Income = 2800, Color = Color3.fromRGB(220, 40, 50), Shape = "Block", Size = 1.6, Event = true, Season = "Winter", EventWeight = 10, ModelId = 0 },
+	{ Id = "FrostVerity", Name = "Frost Verity", Face = "🥶", Rarity = "Winter", Price = 2000000, Income = 18000, Color = Color3.fromRGB(140, 210, 255), Shape = "Block", Size = 1.9, Event = true, Season = "Winter", EventWeight = 2, ModelId = 0 },
 }
 
--- Мутации умножают доход и цену. Event = true — только Ночью Смайлика.
+-- Мутации умножают доход и цену. Event = true — только ночью и только в своём сезоне (Season).
 Config.Mutations = {
 	{ Id = "None", Name = "", NameRu = "", Mult = 1, Weight = 88 },
 	{ Id = "Gold", Name = "Gold", NameRu = "Золотой", Mult = 1.5, Weight = 10, Color = Color3.fromRGB(255, 210, 60) },
 	{ Id = "Diamond", Name = "Diamond", NameRu = "Алмазный", Mult = 3, Weight = 2, Color = Color3.fromRGB(120, 230, 255) },
-	{ Id = "Pumpkin", Name = "Pumpkin", NameRu = "Тыквенный", Mult = 2, Weight = 15, Color = Color3.fromRGB(255, 120, 20), Event = true },
-	{ Id = "Ghost", Name = "Ghost", NameRu = "Призрачный", Mult = 4, Weight = 5, Color = Color3.fromRGB(190, 255, 240), Event = true },
+	{ Id = "Pumpkin", Name = "Pumpkin", NameRu = "Тыквенный", Mult = 2, Weight = 15, Color = Color3.fromRGB(255, 120, 20), Event = true, Season = "Halloween" },
+	{ Id = "Ghost", Name = "Ghost", NameRu = "Призрачный", Mult = 4, Weight = 5, Color = Color3.fromRGB(190, 255, 240), Event = true, Season = "Halloween" },
+	{ Id = "Frozen", Name = "Frozen", NameRu = "Ледяной", Mult = 2, Weight = 15, Color = Color3.fromRGB(150, 220, 255), Event = true, Season = "Winter" },
+	{ Id = "Festive", Name = "Festive", NameRu = "Новогодний", Mult = 4, Weight = 5, Color = Color3.fromRGB(255, 70, 90), Event = true, Season = "Winter" },
 }
 
 -- Дорожка с мемами
@@ -185,6 +193,68 @@ Config.Products = {
 	LockExtend = { Id = 0, Robux = 19, Name = "Lock +60s", NameRu = "Замок +60 сек" },
 }
 Config.ServerLuckDuration = 15 * 60
+
+-- Сезоны: определяются по дате на сервере (месяц/день включительно, может переходить через Новый год).
+-- От сезона зависят ночные мемы и мутации, декор карты и цвет монстра. Override = "Winter" — включить вручную.
+Config.SeasonOverride = nil :: string?
+Config.Seasons = {
+	{ Id = "Halloween", From = { 10, 1 }, To = { 11, 5 }, MonsterColor = Color3.fromRGB(255, 220, 30) },
+	{ Id = "Winter", From = { 11, 6 }, To = { 2, 28 }, MonsterColor = Color3.fromRGB(150, 220, 255) },
+}
+
+-- Сезон для даты (month 1..12, day 1..31); "None" — вне сезонов (ночные мемы не появляются)
+function Config.SeasonFor(month: number, day: number): string
+	if Config.SeasonOverride then
+		return Config.SeasonOverride
+	end
+	local value = month * 100 + day
+	for _, season in Config.Seasons do
+		local from = season.From[1] * 100 + season.From[2]
+		local to = season.To[1] * 100 + season.To[2]
+		local inside = if from <= to then value >= from and value <= to else value >= from or value <= to
+		if inside then
+			return season.Id
+		end
+	end
+	return "None"
+end
+
+-- Предметы: оружие (бьёт игроков и монстра) и гаджеты. Покупаются за монеты навсегда.
+-- Weapon: Range — дальность, Cooldown — перезарядка, Knockback — сила отброса, Stun — сколько
+-- секунд жертва лежит, Area = true — бьёт всех вокруг, а не одного.
+-- Gadget: Duration — сколько действует, Cooldown — перезарядка.
+Config.Items = {
+	{ Id = "Slipper", Kind = "Weapon", Name = "Slipper", NameRu = "Тапок", Face = "🩴", Price = 0,
+		Desc = "Slap thieves to make them drop memes", DescRu = "Выбивает украденных мемов",
+		Range = 9, Cooldown = 0.9, Knockback = 70, Stun = 0.6 },
+	{ Id = "Bat", Kind = "Weapon", Name = "Tung Tung Bat", NameRu = "Бита Tung Tung", Face = "🏏", Price = 25000,
+		Desc = "Huge knockback, slower swing", DescRu = "Отбрасывает дальше, бьёт медленнее",
+		Range = 10, Cooldown = 1.6, Knockback = 135, Stun = 1 },
+	{ Id = "Pan", Kind = "Weapon", Name = "Frying Pan", NameRu = "Сковородка", Face = "🍳", Price = 120000,
+		Desc = "Stuns the target for 2.5s", DescRu = "Оглушает цель на 2,5 сек",
+		Range = 9, Cooldown = 1.4, Knockback = 50, Stun = 2.5 },
+	{ Id = "BanHammer", Kind = "Weapon", Name = "Ban Hammer", NameRu = "Бан-молот", Face = "🔨", Price = 2500000,
+		Desc = "Hits everyone around you", DescRu = "Бьёт всех вокруг",
+		Range = 14, Cooldown = 2.4, Knockback = 150, Stun = 1.5, Area = true },
+	{ Id = "Energy", Kind = "Gadget", Name = "Energy Drink", NameRu = "Энергетик", Face = "🥤", Price = 8000,
+		Desc = "+12 speed for 6s", DescRu = "+12 к скорости на 6 сек",
+		Duration = 6, Cooldown = 25, Speed = 12 },
+	{ Id = "Banana", Kind = "Gadget", Name = "Banana Peel", NameRu = "Банановая кожура", Face = "🍌", Price = 50000,
+		Desc = "Drop a trap: enemies slip and drop memes", DescRu = "Ловушка: враги падают и роняют мемов",
+		Duration = 60, Cooldown = 12, Stun = 2, MaxActive = 3 },
+	{ Id = "InvisHat", Kind = "Gadget", Name = "Invisibility Hat", NameRu = "Шапка-невидимка", Face = "🎩", Price = 400000,
+		Desc = "Invisible for 8s (ends when you steal)", DescRu = "Невидимость на 8 сек (пропадает при краже)",
+		Duration = 8, Cooldown = 45 },
+}
+
+local itemById = {}
+for _, item in Config.Items do
+	itemById[item.Id] = item
+end
+
+function Config.GetItem(id: string)
+	return itemById[id]
+end
 
 -- ===== Функции-помощники (общие для сервера и клиента) =====
 

@@ -1,5 +1,8 @@
 -- Точка входа сервера. Порядок: сервисы -> карта -> игроки.
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
 
 local DataService = require(script.DataService)
 local MapBuilder = require(script.MapBuilder)
@@ -10,35 +13,36 @@ local EventService = require(script.EventService)
 local ShopService = require(script.ShopService)
 local RewardService = require(script.RewardService)
 local LeaderboardService = require(script.LeaderboardService)
+local ItemService = require(script.ItemService)
+local Remotes = require(script.Remotes)
+
+-- Сезон по дате (UTC): от него зависят ночные мемы, мутации, декор и цвет монстра
+local today = os.date("!*t")
+ReplicatedStorage:SetAttribute("Season", Config.SeasonFor(today.month, today.day))
 
 DataService.Start()
-local world = MapBuilder.Build()
+local world = MapBuilder.Build(ReplicatedStorage:GetAttribute("Season"))
 PlotService.Start(world.Plots)
 StealService.Start()
+ItemService.Start()
 ConveyorService.Start(MapBuilder.CarpetStart, MapBuilder.CarpetEnd)
 EventService.Start(MapBuilder.HALF_X, MapBuilder.HALF_Z)
 RewardService.Start()
 LeaderboardService.Start(world.Leaderboards)
 
 -- Связи между сервисами (без циклических require)
-StealService.OnMonsterSlap = EventService.HitMonster
+ItemService.OnMonsterHit = EventService.HitMonster
 ShopService.OnSummonGod = function()
 	ConveyorService.SummonGod()
 end
-ShopService.OnSlipperChanged = function(player)
-	for _, container in { player:FindFirstChildOfClass("Backpack"), player.Character } do
-		local old = container and container:FindFirstChild("Slipper")
-		if old then
-			old:Destroy()
-		end
-	end
-	StealService.GiveSlipper(player)
-end
+-- Купил «Золотой тапок» — перевыдаём предметы, чтобы тапок стал золотым
+ShopService.OnSlipperChanged = ItemService.GiveTools
 ShopService.Start()
 
 -- Каждый новый персонаж (данные уже загружены): тапок и перенос на свою базу
 local function setupCharacter(player: Player, character: Model)
 	task.spawn(StealService.OnCharacter, player, character)
+	ItemService.OnCharacter(player, character)
 	local plot = PlotService.GetPlot(player)
 	local root = character:WaitForChild("HumanoidRootPart", 10)
 	if plot and root and character.Parent then
@@ -62,6 +66,7 @@ local function onPlayerAdded(player: Player)
 	end
 	PlotService.LoadPlayer(player)
 	RewardService.OnLoaded(player)
+	ItemService.OnLoaded(player)
 	player:SetAttribute("DataLoaded", true)
 
 	-- Персонаж мог появиться раньше, чем загрузились данные.
@@ -69,6 +74,12 @@ local function onPlayerAdded(player: Player)
 		setupCharacter(player, player.Character)
 	end
 end
+
+Remotes.TutorialDone.OnServerEvent:Connect(function(player)
+	if DataService.IsLoaded(player) and DataService.Get(player, "TutorialDone") == 0 then
+		DataService.Set(player, "TutorialDone", 1)
+	end
+end)
 
 Players.PlayerAdded:Connect(onPlayerAdded)
 for _, player in Players:GetPlayers() do
@@ -81,6 +92,7 @@ Players.PlayerRemoving:Connect(function(player)
 	-- начать новую кражу с базы уходящего игрока (а его данные потом пропадут из памяти).
 	StealService.OnPlayerRemoving(player)
 	EventService.OnPlayerRemoving(player)
+	ItemService.OnPlayerRemoving(player)
 	PlotService.Release(player)
 	DataService.Release(player)
 end)

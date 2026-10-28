@@ -17,6 +17,7 @@ local player = Players.LocalPlayer
 local UNKNOWN_BG = Color3.fromRGB(14, 15, 22)
 local CELL_HEIGHT = 132
 local GAP = 8
+local SEASON_TAGS = { Halloween = "IndexSeasonHalloween", Winter = "IndexSeasonWinter" }
 
 local IndexWindow = {}
 
@@ -193,7 +194,8 @@ function IndexWindow.Start(ctx)
 			if #dots > 0 then
 				cell.Extra.Text = table.concat(dots, " ")
 			elseif creature.Event then
-				cell.Extra.Text = Locale.T("IndexEvent")
+				-- Сезонные: «Ночь Хэллоуина» / «Зимняя ночь», без сезона — просто «Только ночью»
+				cell.Extra.Text = Locale.T(SEASON_TAGS[creature.Season or ""] or "IndexEvent")
 			else
 				cell.Extra.Text = ""
 			end

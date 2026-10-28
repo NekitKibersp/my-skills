@@ -40,13 +40,14 @@ end
 
 local function rollCreature(): string
 	local night = ReplicatedStorage:GetAttribute("NightActive") == true
-	if night and random:NextNumber() < Config.Conveyor.EventChance then
-		local seasonal = {}
-		for _, creature in Config.Creatures do
-			if creature.Event then
-				table.insert(seasonal, creature)
-			end
+	local season = ReplicatedStorage:GetAttribute("Season")
+	local seasonal = {}
+	for _, creature in Config.Creatures do
+		if creature.Event and creature.Season == season then
+			table.insert(seasonal, creature)
 		end
+	end
+	if night and #seasonal > 0 and random:NextNumber() < Config.Conveyor.EventChance then
 		return weightedPick(seasonal, function(creature)
 			return creature.EventWeight or 1
 		end).Id
@@ -70,9 +71,10 @@ end
 
 local function rollMutation(): string
 	local night = ReplicatedStorage:GetAttribute("NightActive") == true
+	local season = ReplicatedStorage:GetAttribute("Season")
 	local pool = {}
 	for _, mutation in Config.Mutations do
-		if night or not mutation.Event then
+		if not mutation.Event or (night and mutation.Season == season) then
 			table.insert(pool, mutation)
 		end
 	end
