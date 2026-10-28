@@ -49,6 +49,13 @@ local Remotes = {
 	TradeReady = make("RemoteEvent", "TradeReady") :: RemoteEvent, -- C→S (ready: boolean)
 	TradeCancel = make("RemoteEvent", "TradeCancel") :: RemoteEvent, -- C→S ()
 	TradeState = make("RemoteEvent", "TradeState") :: RemoteEvent, -- S→C (state | nil)
+	-- v4: коды, колесо, пропуск, скины, группа
+	RedeemCode = make("RemoteFunction", "RedeemCode") :: RemoteFunction, -- C→S (code: string) -> (ok, key)
+	Spin = make("RemoteFunction", "Spin") :: RemoteFunction, -- C→S () -> (ok, key, segmentIndex?)
+	ClaimPass = make("RemoteFunction", "ClaimPass") :: RemoteFunction, -- C→S (level: number, track: "Free" | "Premium") -> (ok, key)
+	BuySkin = make("RemoteFunction", "BuySkin") :: RemoteFunction, -- C→S (skinId) -> (ok, key)
+	EquipSkin = make("RemoteFunction", "EquipSkin") :: RemoteFunction, -- C→S (skinId) -> (ok, key)
+	CheckGroup = make("RemoteEvent", "CheckGroup") :: RemoteEvent, -- C→S () — перепроверить членство в группе
 }
 
 folder.Parent = ReplicatedStorage

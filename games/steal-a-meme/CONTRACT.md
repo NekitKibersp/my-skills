@@ -131,3 +131,28 @@ Remotes (созданы в `Remotes.luau`):
 Новые Fx: `"Emote"` {UserId, Emote}, `"Turret"` {From, To} (выстрел), `"Laser"` {Position}, `"Freeze"` {Position, Radius},
 `"Rocket"` {Position}, `"Shot"` {From, To} (дальнее оружие), `"AdminEvent"` {Id} (старт ивента — большой баннер), `"MysteryBox"` {UserId, Meme}.
 `Knockback` теперь используется и для ракетных ботинок (stun = 0: просто толчок).
+
+## Дополнения v4 (коды, друзья/группа, аналитика, анти-чит, Мем-пропуск, колесо, мем недели, скины)
+| Где | Атрибут | Тип | Смысл |
+|---|---|---|---|
+| игрок | `FriendBoost` | number | бонус дохода за друзей на сервере (0..`Config.Social.FriendBoostMax`) |
+| игрок | `InGroup` | bool | состоит в группе `Config.Social.GroupId` (бонус `GroupBoost`) |
+| игрок | `BPJson` | string | JSON `{ Season, Xp, Level, XpInLevel, Free = { уровни }, Premium = { уровни }, EndsAt }` (Free/Premium — массивы забранных уровней) |
+| игрок | `Pass_BattlePass` | bool | премиум-пропуск куплен |
+| игрок | `Spins` | number | вращений колеса в запасе (без бесплатного) |
+| игрок | `FreeSpinReady` | bool | бесплатное вращение сегодня доступно |
+| игрок | `SkinsJson` | string | JSON `{ Owned = { id… }, Base = id, Slipper = id }` |
+| ReplicatedStorage | `WeeklyMeme` | string | Id мема недели (`Config.Weekly`) |
+| ReplicatedStorage | `WeeklyEndsAt` | number | конец недели (os.time) |
+
+Remotes:
+| Имя | Направление | Аргументы |
+|---|---|---|
+| `RedeemCode` | C→S RF | `(code) -> (ok, key)`; ключи: CodeRedeemed, CodeInvalid, CodeUsed, CodeExpired |
+| `Spin` | C→S RF | `() -> (ok, key, segmentIndex)` — индекс в `Config.Spin.Segments` (клиент крутит колесо до него), награда приходит Popup `"Spin"` { Coins?, Meme?, Item?, Spins? } |
+| `ClaimPass` | C→S RF | `(level, "Free" \| "Premium") -> (ok, key)`; награда — Popup `"Pass"` { Level, Track, Coins?, Meme?, Spins?, Skin?, Item? } |
+| `BuySkin` / `EquipSkin` | C→S RF | `(skinId) -> (ok, key)` |
+| `CheckGroup` | C→S | `()` — после вступления в группу (клиент: `GroupService:PromptJoinAsync`) |
+
+Скины: база — сервер перекрашивает Floor/Wall своей базы; тапок — цвет/материал Handle (`ItemService`).
+Приглашение друзей и «Добавить в избранное» — только клиент (`SocialService:PromptGameInvite`, `AvatarEditorService:PromptSetFavorite`).

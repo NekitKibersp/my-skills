@@ -28,6 +28,8 @@ local DEFAULT_NUMBERS: { [string]: number } = {
 	PlayedToday = 0, -- секунд сыграно за день (для подарков за время)
 	TurretLevel = 0, -- уровень турели на базе (Config.Defense.Turret)
 	LaserLevel = 0, -- уровень лазерных ворот (Config.Defense.LaserGate)
+	Spins = 0, -- купленные/выигранные вращения колеса
+	LastFreeSpinDay = 0, -- UTC-день последнего бесплатного вращения
 }
 
 -- Табличные поля:
@@ -36,7 +38,12 @@ local DEFAULT_NUMBERS: { [string]: number } = {
 --   Receipts — массив PurchaseId обработанных покупок за Robux (защита от двойной выдачи)
 --   Items    — { [itemId] = true } купленные предметы (Config.Items)
 --   Quests   — { Day, List = { { Id, Goal, Progress, Claimed } }, AllClaimed } ежедневные квесты (проверяет QuestService)
-local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items", "Quests" }
+--   BattlePass — { Season, Xp, Free = { [level] = true }, Premium = { [level] = true } } (BattlePassService)
+--   Skins    — { Owned = { [skinId] = true }, Base = id, Slipper = id } (SkinService)
+--   Codes    — { [CODE] = true } введённые коды (SocialService)
+local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items", "Quests", "BattlePass", "Skins", "Codes" }
+-- Таблицы, которые хранятся как есть (проверяют их сами сервисы)
+local FREEFORM_TABLES = { "Quests", "BattlePass", "Skins", "Codes" }
 
 -- Блокировка сессии: пока игрок на одном сервере, другой сервер не загрузит его данные
 -- (иначе при быстром переходе между серверами можно задублировать мемов).
@@ -160,7 +167,9 @@ local function sanitize(saved: any): ({ [string]: any }, boolean)
 			end
 		end
 	end
-	data.Quests = if type(savedTable.Quests) == "table" then savedTable.Quests else {}
+	for _, key in FREEFORM_TABLES do
+		data[key] = if type(savedTable[key]) == "table" then savedTable[key] else {}
+	end
 	-- Старые сохранения (до туториала) — туториал не показываем
 	if not isNew and saved.TutorialDone == nil then
 		data.TutorialDone = 1
@@ -323,7 +332,9 @@ local function snapshot(data: { [string]: any }): { [string]: any }
 	copy.Index = table.clone(data.Index)
 	copy.Receipts = table.clone(data.Receipts)
 	copy.Items = table.clone(data.Items)
-	copy.Quests = deepCopy(data.Quests)
+	for _, key in FREEFORM_TABLES do
+		copy[key] = deepCopy(data[key])
+	end
 	return copy
 end
 

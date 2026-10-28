@@ -16,6 +16,8 @@ Config.Rarities = {
 	{ Id = "Secret", Name = "SECRET", NameRu = "СЕКРЕТНЫЙ", Color = Color3.fromRGB(30, 30, 30), Weight = 0.05 },
 	{ Id = "Halloween", Name = "Halloween", NameRu = "Хэллоуин", Color = Color3.fromRGB(255, 130, 20), Weight = 0 },
 	{ Id = "Winter", Name = "Winter", NameRu = "Зимний", Color = Color3.fromRGB(120, 210, 255), Weight = 0 },
+	{ Id = "Limited", Name = "LIMITED", NameRu = "ЛИМИТ", Color = Color3.fromRGB(0, 255, 170), Weight = 0 },
+	{ Id = "Exclusive", Name = "EXCLUSIVE", NameRu = "ЭКСКЛЮЗИВ", Color = Color3.fromRGB(255, 215, 0), Weight = 0 },
 }
 
 -- Мемы. Face — эмодзи-«лицо», Shape — форма тела (Ball/Block/Cylinder), Size — масштаб.
@@ -73,6 +75,14 @@ Config.Creatures = {
 	{ Id = "GingerSahur", Name = "Gingerbread Sahur", Face = "🍪🏏", Rarity = "Winter", Price = 25000, Income = 400, Color = Color3.fromRGB(180, 110, 60), Shape = "Cylinder", Size = 1.3, Event = true, Season = "Winter", EventWeight = 28, ModelId = 0 },
 	{ Id = "SantaSixSeven", Name = "Santa 67", Face = "🎅6️⃣7️⃣", Rarity = "Winter", Price = 250000, Income = 2800, Color = Color3.fromRGB(220, 40, 50), Shape = "Block", Size = 1.6, Event = true, Season = "Winter", EventWeight = 10, ModelId = 0 },
 	{ Id = "FrostVerity", Name = "Frost Verity", Face = "🥶", Rarity = "Winter", Price = 2000000, Income = 18000, Color = Color3.fromRGB(140, 210, 255), Shape = "Block", Size = 1.9, Event = true, Season = "Winter", EventWeight = 2, ModelId = 0 },
+	-- Лимитированные мемы недели: на дорожке только свою неделю (Config.Weekly), потом пропадают навсегда
+	{ Id = "AuraFarmer", Name = "Aura Farmer", Face = "🚣✨", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(70, 120, 200), Shape = "Cylinder", Size = 1.4, Limited = true, ModelId = 0 },
+	{ Id = "PedroRaccoon", Name = "Pedro Raccoon", Face = "🦝🎶", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(120, 120, 130), Shape = "Ball", Size = 1.3, Limited = true, ModelId = 0 },
+	{ Id = "MooDeng", Name = "Moo Deng", Face = "🦛💢", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(150, 110, 130), Shape = "Ball", Size = 1.4, Limited = true, ModelId = 0 },
+	{ Id = "MewingCat", Name = "Mewing Cat", Face = "😼🤫", Rarity = "Limited", Price = 180000, Income = 1700, Color = Color3.fromRGB(240, 200, 160), Shape = "Ball", Size = 1.2, Limited = true, ModelId = 0 },
+	-- Эксклюзивы боевого пропуска и колеса (на дорожке не появляются)
+	{ Id = "Golden67", Name = "Golden 67", Face = "🥇6️⃣7️⃣", Rarity = "Exclusive", Price = 900000, Income = 7000, Color = Color3.fromRGB(255, 205, 50), Shape = "Block", Size = 1.7, Exclusive = true, ModelId = 0 },
+	{ Id = "DiamondSahur", Name = "Diamond Sahur", Face = "💎🏏", Rarity = "Exclusive", Price = 5000000, Income = 32000, Color = Color3.fromRGB(130, 230, 255), Shape = "Cylinder", Size = 2, Exclusive = true, ModelId = 0 },
 }
 
 -- Мутации умножают доход и цену. Event = true — только ночью и только в своём сезоне (Season).
@@ -199,6 +209,7 @@ Config.GamePasses = {
 	OfflinePlus = { Id = 0, Robux = 199, Name = "Offline+ (100%, 12h)", NameRu = "Оффлайн+ (100%, 12ч)" },
 	EmotePack = { Id = 0, Robux = 199, Name = "Meme Emote Pack", NameRu = "Пак мем-эмоций" },
 	ConfettiCannon = { Id = 0, Robux = 349, Name = "Confetti Cannon", NameRu = "Конфетти-пушка" },
+	BattlePass = { Id = 0, Robux = 399, Name = "Premium Meme Pass", NameRu = "Премиум Мем-пропуск" },
 }
 Config.VipIncomeMult = 2
 
@@ -211,6 +222,9 @@ Config.Products = {
 	LockExtend = { Id = 0, Robux = 19, Name = "Lock +60s", NameRu = "Замок +60 сек" },
 	MysteryBox = { Id = 0, Robux = 79, Name = "Mystery Meme Box", NameRu = "Мистери-бокс мемов" },
 	MemeRain = { Id = 0, Robux = 299, Name = "Start Meme Rain (whole server)", NameRu = "Запустить Мем-дождь (весь сервер)" },
+	Spins3 = { Id = 0, Robux = 49, Name = "3 Wheel Spins", NameRu = "3 вращения колеса", Spins = 3 },
+	Spins10 = { Id = 0, Robux = 129, Name = "10 Wheel Spins", NameRu = "10 вращений колеса", Spins = 10 },
+	PassLevels = { Id = 0, Robux = 99, Name = "Meme Pass +5 levels", NameRu = "Мем-пропуск +5 уровней", Levels = 5 },
 }
 -- Мистери-бокс: редкость случайного мема
 Config.MysteryBox = {
@@ -395,6 +409,101 @@ Config.Trade = {
 	RequestCooldown = 5,
 }
 
+-- ===== Коды (вводятся в окне «Коды», регистр не важен). Expires — os.time() окончания или nil =====
+-- Reward.Kind: "Coins" (IncomeSeconds/MinCoins), "Meme" (Rarity), "Spins" (Amount), "Item" (ItemId)
+Config.Codes = {
+	RELEASE = { Reward = { Kind = "Coins", IncomeSeconds = 600, MinCoins = 2500 } },
+	SIXSEVEN = { Reward = { Kind = "Meme", Rarity = "Rare" } },
+	MEMEGOD = { Reward = { Kind = "Spins", Amount = 2 } },
+	SLIPPER = { Reward = { Kind = "Item", ItemId = "RubberChicken" } },
+}
+
+-- ===== Друзья и группа =====
+Config.Social = {
+	FriendBoostPer = 0.1, -- +10% дохода за каждого друга на сервере
+	FriendBoostMax = 0.3,
+	GroupId = 0, -- ID вашей Roblox-группы (0 — бонус выключен)
+	GroupBoost = 0.1, -- +10% дохода участникам группы
+	FavoritePromptAfter = 10 * 60, -- через сколько секунд игры попросить добавить игру в избранное
+}
+
+-- ===== Анти-чит переноски =====
+Config.AntiCheat = {
+	CarrySpeedSlack = 1.6, -- во сколько раз можно превысить скорость (пинг, физика)
+	CarryExtraStuds = 8, -- запас в studs на тик
+	MaxStrikes = 3, -- столько нарушений за переноску — мем возвращается хозяину
+}
+
+-- ===== Мем-пропуск (боевой пропуск сезона) =====
+-- XP за события (Hooks): за каждую единицу Stat. Play — за каждые 60 секунд.
+-- Награда уровня: Free для всех, Premium — с геймпассом BattlePass. Kind как у кодов + "Skin" (SkinId).
+Config.BattlePass = {
+	Season = "S1",
+	Name = "Season 1: Meme Wars",
+	NameRu = "Сезон 1: Мем-войны",
+	EndsAt = 1798761600, -- 2027-01-01 00:00 UTC; после — пропуск нового сезона (смените Season)
+	XpPerLevel = 150,
+	Xp = { Buy = 5, Steal = 30, Slap = 2, MonsterHit = 2, Merge = 30, Defend = 25, Lock = 3, Play = 3, Quest = 60 },
+	Levels = {
+		{ Free = { Kind = "Coins", IncomeSeconds = 120, MinCoins = 500 }, Premium = { Kind = "Spins", Amount = 1 } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 180, MinCoins = 800 }, Premium = { Kind = "Coins", IncomeSeconds = 600, MinCoins = 3000 } },
+		{ Free = { Kind = "Spins", Amount = 1 }, Premium = { Kind = "Meme", Rarity = "Epic" } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 240, MinCoins = 1200 }, Premium = { Kind = "Skin", SkinId = "SlipperFire" } },
+		{ Free = { Kind = "Meme", Rarity = "Rare" }, Premium = { Kind = "Spins", Amount = 2 } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 300, MinCoins = 2000 }, Premium = { Kind = "Coins", IncomeSeconds = 900, MinCoins = 6000 } },
+		{ Free = { Kind = "Spins", Amount = 1 }, Premium = { Kind = "Meme", Rarity = "Legendary" } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 360, MinCoins = 3000 }, Premium = { Kind = "Skin", SkinId = "BaseNeon" } },
+		{ Free = { Kind = "Meme", Rarity = "Epic" }, Premium = { Kind = "Spins", Amount = 2 } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 420, MinCoins = 4000 }, Premium = { Kind = "Meme", Id = "Golden67" } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 480, MinCoins = 5000 }, Premium = { Kind = "Coins", IncomeSeconds = 1200, MinCoins = 10000 } },
+		{ Free = { Kind = "Spins", Amount = 1 }, Premium = { Kind = "Meme", Rarity = "Legendary" } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 540, MinCoins = 6000 }, Premium = { Kind = "Skin", SkinId = "SlipperRainbow" } },
+		{ Free = { Kind = "Meme", Rarity = "Legendary" }, Premium = { Kind = "Spins", Amount = 3 } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 600, MinCoins = 8000 }, Premium = { Kind = "Meme", Rarity = "Mythic" } },
+		{ Free = { Kind = "Spins", Amount = 2 }, Premium = { Kind = "Coins", IncomeSeconds = 1800, MinCoins = 20000 } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 720, MinCoins = 10000 }, Premium = { Kind = "Skin", SkinId = "BaseGalaxy" } },
+		{ Free = { Kind = "Meme", Rarity = "Legendary" }, Premium = { Kind = "Meme", Rarity = "Mythic" } },
+		{ Free = { Kind = "Coins", IncomeSeconds = 900, MinCoins = 15000 }, Premium = { Kind = "Spins", Amount = 3 } },
+		{ Free = { Kind = "Meme", Rarity = "Mythic" }, Premium = { Kind = "Meme", Id = "DiamondSahur" } },
+	},
+}
+
+-- ===== Колесо удачи: 1 бесплатное вращение в день, остальные — за Robux, из пропуска и кодов =====
+Config.Spin = {
+	FreePerDay = 1,
+	Segments = {
+		{ Weight = 30, Reward = { Kind = "Coins", IncomeSeconds = 120, MinCoins = 300 } },
+		{ Weight = 22, Reward = { Kind = "Coins", IncomeSeconds = 300, MinCoins = 800 } },
+		{ Weight = 14, Reward = { Kind = "Meme", Rarity = "Rare" } },
+		{ Weight = 12, Reward = { Kind = "Coins", IncomeSeconds = 900, MinCoins = 3000 } },
+		{ Weight = 9, Reward = { Kind = "Meme", Rarity = "Epic" } },
+		{ Weight = 6, Reward = { Kind = "Item", ItemId = "Energy" } },
+		{ Weight = 4, Reward = { Kind = "Meme", Rarity = "Legendary" } },
+		{ Weight = 2.5, Reward = { Kind = "Meme", Rarity = "Mythic" } },
+		{ Weight = 0.5, Reward = { Kind = "Meme", Id = "Golden67" } },
+	},
+}
+
+-- ===== Лимитированный мем недели =====
+-- Неделя = os.time() // 604800; мем недели = Weekly.Memes[неделя % #Memes + 1]. На дорожке с шансом Chance.
+Config.Weekly = {
+	Memes = { "AuraFarmer", "PedroRaccoon", "MooDeng", "MewingCat" },
+	Chance = 0.025,
+}
+
+-- ===== Скины (база и тапок). Price > 0 — за монеты; Source = "Pass"/"Spin" — только из пропуска/колеса =====
+Config.Skins = {
+	{ Id = "BaseDefault", Kind = "Base", Name = "Classic", NameRu = "Классика", Price = 0 },
+	{ Id = "BaseCandy", Kind = "Base", Name = "Candy", NameRu = "Конфетная", Price = 150000, Floor = Color3.fromRGB(255, 170, 210), Wall = Color3.fromRGB(255, 255, 255), Material = "SmoothPlastic" },
+	{ Id = "BaseGold", Kind = "Base", Name = "Golden", NameRu = "Золотая", Price = 2000000, Floor = Color3.fromRGB(255, 200, 60), Wall = Color3.fromRGB(200, 150, 30), Material = "Foil" },
+	{ Id = "BaseNeon", Kind = "Base", Name = "Neon", NameRu = "Неоновая", Price = 0, Source = "Pass", Floor = Color3.fromRGB(30, 20, 60), Wall = Color3.fromRGB(0, 255, 200), Material = "Neon" },
+	{ Id = "BaseGalaxy", Kind = "Base", Name = "Galaxy", NameRu = "Галактика", Price = 0, Source = "Pass", Floor = Color3.fromRGB(40, 10, 80), Wall = Color3.fromRGB(150, 60, 255), Material = "Glass" },
+	{ Id = "SlipperDefault", Kind = "Slipper", Name = "Classic", NameRu = "Классика", Price = 0 },
+	{ Id = "SlipperCamo", Kind = "Slipper", Name = "Camo", NameRu = "Камуфляж", Price = 40000, Color = Color3.fromRGB(80, 110, 60), Material = "Fabric" },
+	{ Id = "SlipperFire", Kind = "Slipper", Name = "Fire", NameRu = "Огненный", Price = 0, Source = "Pass", Color = Color3.fromRGB(255, 90, 20), Material = "Neon" },
+	{ Id = "SlipperRainbow", Kind = "Slipper", Name = "Rainbow", NameRu = "Радужный", Price = 0, Source = "Pass", Color = Color3.fromRGB(255, 80, 200), Material = "Neon", Rainbow = true },
+}
+
 -- ===== Функции-помощники (общие для сервера и клиента) =====
 
 local creatureById = {}
@@ -486,6 +595,21 @@ function Config.GetAdminEvent(id: string)
 		end
 	end
 	return nil
+end
+
+function Config.GetSkin(id: string)
+	for _, skin in Config.Skins do
+		if skin.Id == id then
+			return skin
+		end
+	end
+	return nil
+end
+
+-- Мем текущей недели (Config.Weekly) и время её окончания (os.time)
+function Config.WeeklyMeme(time: number): (string, number)
+	local week = time // 604800
+	return Config.Weekly.Memes[week % #Config.Weekly.Memes + 1], (week + 1) * 604800
 end
 
 return Config
