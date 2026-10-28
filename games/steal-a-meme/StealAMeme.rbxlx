@@ -443,7 +443,8 @@ Config.Social = {
 Config.AntiCheat = {
 	CarrySpeedSlack = 1.6, -- во сколько раз можно превысить скорость (пинг, физика)
 	CarryExtraStuds = 8, -- запас в studs на тик
-	MaxStrikes = 3, -- столько нарушений за переноску — мем возвращается хозяину
+	MaxStrikes = 3, -- столько нарушений подряд — мем возвращается хозяину
+	GraceSpeed = 80, -- studs/сек: допуск скорости во время рывка ракетных ботинок (MoveGraceUntil)
 }
 
 -- ===== Мем-пропуск (боевой пропуск сезона) =====
@@ -3987,8 +3988,10 @@ local function useRocket(player: Player, item: any, tool: Tool)
 	end
 	local look = root.CFrame.LookVector
 	-- Толчок делает клиент владельца (персонажем управляет он), stun = 0 — без падения.
-	-- MoveGraceUntil: анти-чит переноски не считает этот рывок телепортом.
-	(player.Character :: Model):SetAttribute("MoveGraceUntil", now() + 3)
+	-- MoveGraceUntil: анти-чит переноски даёт на рывок повышенный допуск скорости.
+	-- (через local: строка, начинающаяся с «(», в Luau — неоднозначный синтаксис и ошибка разбора)
+	local character = player.Character :: Model
+	character:SetAttribute("MoveGraceUntil", now() + 3)
 	Remotes.Knockback:FireClient(player, Vector3.new(look.X, 0, look.Z) * item.Forward + Vector3.new(0, item.Jump, 0), 0)
 	Remotes.Fx:FireAllClients("Rocket", { Position = root.Position })
 end
@@ -5717,7 +5720,10 @@ function PlotService.Start(builtPlots: { Model })
 					local character = other.Character
 					local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
 					if root and PlotService.InPlot(plot, root.Position) then
-						(character :: Model):PivotTo(PlotService.OutsidePoint(plot))
+						-- Анти-чит переноски (StealService): это серверный перенос, не телепорт читера
+						local pushed = character :: Model
+						pushed:SetAttribute("ServerMovedAt", workspace:GetServerTimeNow())
+						pushed:PivotTo(PlotService.OutsidePoint(plot))
 					end
 				end
 			end
@@ -7262,33 +7268,39 @@ function StealService.TryStart(thief: Player, owner: Player, slot: number, promp
 end
 
 -- Анти-чит переноски: вор не может двигаться быстрее своей скорости (телепорт домой с мемом).
--- Возвращает false, если перенос сорван. Отброс и ракетные ботинки ставят персонажу
--- атрибут MoveGraceUntil — в это время скорость не проверяем.
+-- Возвращает false, если в этот тик доставлять нельзя (нарушение или перенос сорван).
+-- При нарушении опорная точка НЕ сдвигается: телепорт на свою базу так и останется нарушением,
+-- а честный игрок после лага догонит допуск (он растёт со временем) — счётчик сбрасывается.
+-- Ракетные ботинки ставят персонажу MoveGraceUntil — в это время допуск выше, но не бесконечный
+-- (иначе читер телепортируется в окно ракеты). Серверный перенос персонажа (вытолкнули из
+-- запертой базы) ставит ServerMovedAt — опорная точка сбрасывается.
 function checkMovement(thief: Player, carry: Carry, root: BasePart, t: number): boolean
 	local position = root.Position
 	local lastPos, lastTime = carry.LastPos, carry.LastTime
-	carry.LastPos, carry.LastTime = position, t
-	if not lastPos or not lastTime then
-		return true
-	end
 	local character = thief.Character
-	if character and (character:GetAttribute("MoveGraceUntil") or 0) > t then
+	if not lastPos or not lastTime
+		or (character and (character:GetAttribute("ServerMovedAt") or -math.huge) >= lastTime) then
+		carry.LastPos, carry.LastTime = position, t
 		return true
 	end
 	local humanoid = humanoidOf(thief)
 	local speed = math.max(if humanoid then humanoid.WalkSpeed else BASE_WALK_SPEED, BASE_WALK_SPEED)
+	if character and (character:GetAttribute("MoveGraceUntil") or 0) > lastTime then
+		speed = math.max(speed, Config.AntiCheat.GraceSpeed)
+	end
 	local flat = Vector3.new(position.X - lastPos.X, 0, position.Z - lastPos.Z).Magnitude
 	local allowed = speed * (t - lastTime) * Config.AntiCheat.CarrySpeedSlack + Config.AntiCheat.CarryExtraStuds
 	if flat <= allowed then
+		carry.LastPos, carry.LastTime = position, t
+		carry.Strikes = 0
 		return true
 	end
 	carry.Strikes = (carry.Strikes or 0) + 1
 	warn(string.format("[AntiCheat] %s двигается слишком быстро с мемом: %.1f studs (можно %.1f)", thief.Name, flat, allowed))
 	if carry.Strikes >= Config.AntiCheat.MaxStrikes then
 		StealService.Fail(thief)
-		return false
 	end
-	return true
+	return false
 end
 
 -- Отменить все кражи мемов этого хозяина (хозяин выходит из игры)
@@ -15168,11 +15180,17 @@ local function run(ctx)
 
 	-- Ковёр ищем в фоне (при StreamingEnabled может подгрузиться позже)
 	local carpet: BasePart? = nil
+	-- Ждём без предела по времени (пока туториал идёт): игрок мог заспавниться далеко от дорожки,
+	-- и ковёр придёт только когда он подойдёт ближе. Позицию запоминаем — после выгрузки она та же.
 	task.spawn(function()
-		local map = workspace:WaitForChild("Map", 60)
-		local found = map and map:WaitForChild("Carpet", 60)
-		if found and found:IsA("BasePart") then
-			carpet = found
+		while not finished and not carpet do
+			local map = workspace:FindFirstChild("Map")
+			local found = map and map:FindFirstChild("Carpet")
+			if found and found:IsA("BasePart") then
+				carpet = found
+			else
+				task.wait(1)
+			end
 		end
 	end)
 
