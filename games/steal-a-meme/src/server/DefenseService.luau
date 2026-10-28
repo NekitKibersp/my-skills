@@ -73,8 +73,9 @@ end
 local function buildTurret(plot: Model, level: number)
 	local floor = floorOf(plot)
 	local size = floor.Size
-	-- X = край - 4: при «- 8» тумба задевала слот 25 (центр x = 28, радиус 4) и стоящего на нём мема
-	local base = floor.CFrame * CFrame.new(size.X / 2 - 4, size.Y / 2, -size.Z / 2 + 16)
+	-- Во дворе левее пандуса на 2-й этаж (пандус — полоса x > 33 у +X стены, MapBuilder),
+	-- позади кнопки замка и перед рядом слотов геймпасса (z = -2, радиус 4)
+	local base = floor.CFrame * CFrame.new(size.X / 2 - 12, size.Y / 2, -size.Z / 2 + 18)
 
 	local model = Instance.new("Model")
 	model.Name = "Turret"

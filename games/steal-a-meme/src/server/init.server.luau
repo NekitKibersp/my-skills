@@ -27,6 +27,7 @@ local SpinService = require(script.SpinService)
 local SkinService = require(script.SkinService)
 local WeeklyService = require(script.WeeklyService)
 local ZoneService = require(script.ZoneService)
+local FoundationService = require(script.FoundationService)
 local Remotes = require(script.Remotes)
 
 -- Сезон по дате (UTC): от него зависят ночные мемы, мутации, декор и цвет монстра
@@ -56,6 +57,7 @@ SkinService.Start()
 WeeklyService.Start()
 LeaderboardService.Start(world.Leaderboards)
 ZoneService.Start(world.Zones)
+FoundationService.Start() -- скорость, «Домой», настройки, награды перерождений
 
 -- Связи между сервисами (без циклических require)
 ItemService.OnMonsterHit = EventService.HitMonster
@@ -70,6 +72,7 @@ Grant.OnSkinGranted = SkinService.Refresh
 SkinService.OnSlipperChanged = ItemService.GiveTools
 ShopService.OnSpins = SpinService.AddSpins
 ShopService.OnPassLevels = BattlePassService.AddLevels
+ShopService.IsPassMaxed = BattlePassService.IsMaxed
 ShopService.OnBattlePass = BattlePassService.Sync
 ShopService.OnMemeRain = function(player)
 	return AdminEventService.StartEvent("MemeRain", Config.AdminEvents.MemeRainDuration, player)
@@ -112,6 +115,8 @@ local function onPlayerAdded(player: Player)
 	QuestService.OnLoaded(player)
 	DefenseService.OnLoaded(player)
 	ZoneService.OnLoaded(player)
+	StealService.OnLoaded(player) -- тревога StolenBy/StolenMeme и скорость с прокачкой
+	FoundationService.OnLoaded(player)
 	player:SetAttribute("DataLoaded", true)
 
 	-- Персонаж мог появиться раньше, чем загрузились данные.
@@ -145,6 +150,7 @@ Players.PlayerRemoving:Connect(function(player)
 	AnalyticsService.OnPlayerRemoving(player)
 	SkinService.OnPlayerRemoving(player)
 	ZoneService.OnPlayerRemoving(player)
+	FoundationService.OnPlayerRemoving(player)
 	PlotService.Release(player)
 	DataService.Release(player)
 end)

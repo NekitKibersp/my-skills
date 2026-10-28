@@ -180,7 +180,6 @@ Config.Night = {
 	RewardWeights = { 70, 25, 5 },
 }
 
--- Перерождение: цена ×4 каждый раз, +50% к доходу и +2 слота
 -- Перерождение: деньги обнуляются, мемы остаются. Каждое даёт +IncomeBonus к множителю дохода.
 -- Tiers[n] — n-е перерождение: цена, нужные мемы на базе (Rarity — эта редкость или выше по Rank,
 -- Id — конкретный мем; мемы НЕ забираются) и награды. После последнего тира цена растёт ×CostMult.
@@ -250,7 +249,7 @@ Config.Daily = {
 -- и впишите сюда его ID. Цены (Robux) здесь только для витрины — настоящая цена задаётся в Creator Hub.
 Config.GamePasses = {
 	VIP = { Id = 0, Robux = 249, Name = "VIP: x2 Cash", NameRu = "VIP: ×2 денег" },
-	ExtraSlots = { Id = 0, Robux = 199, Name = "+5 Base Slots", NameRu = "+5 слотов на базе" },
+	ExtraSlots = { Id = 0, Robux = 199, Name = "+6 Base Slots", NameRu = "+6 слотов на базе" },
 	FastSteal = { Id = 0, Robux = 149, Name = "Fast Steal", NameRu = "Быстрая кража" },
 	GoldSlipper = { Id = 0, Robux = 99, Name = "Golden Slipper", NameRu = "Золотой тапок" },
 	OfflinePlus = { Id = 0, Robux = 199, Name = "Offline+ (100%, 12h)", NameRu = "Оффлайн+ (100%, 12ч)" },

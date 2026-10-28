@@ -30,6 +30,7 @@ local DEFAULT_NUMBERS: { [string]: number } = {
 	LaserLevel = 0, -- уровень лазерных ворот (Config.Defense.LaserGate)
 	Spins = 0, -- купленные/выигранные вращения колеса
 	LastFreeSpinDay = 0, -- UTC-день последнего бесплатного вращения
+	SpeedLevel = 0, -- уровень прокачки скорости (Config.Speed)
 }
 
 -- Табличные поля:
@@ -42,9 +43,10 @@ local DEFAULT_NUMBERS: { [string]: number } = {
 --   Skins    — { Owned = { [skinId] = true }, Base = id, Slipper = id } (SkinService)
 --   Codes    — { [CODE] = true } введённые коды (SocialService)
 --   Zones    — { Tower1 = day, Tower2 = day, Tower3 = day, Cave = day } UTC-дни забранных призов зон (ZoneService)
-local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items", "Quests", "BattlePass", "Skins", "Codes", "Zones" }
+--   Settings — { Sound, LowGraphics, HideBillboards, UiScale } настройки игрока (FoundationService)
+local TABLE_KEYS = { "Memes", "Index", "Receipts", "Items", "Quests", "BattlePass", "Skins", "Codes", "Zones", "Settings" }
 -- Таблицы, которые хранятся как есть (проверяют их сами сервисы)
-local FREEFORM_TABLES = { "Quests", "BattlePass", "Skins", "Codes", "Zones" }
+local FREEFORM_TABLES = { "Quests", "BattlePass", "Skins", "Codes", "Zones", "Settings" }
 
 -- Блокировка сессии: пока игрок на одном сервере, другой сервер не загрузит его данные
 -- (иначе при быстром переходе между серверами можно задублировать мемов).
@@ -126,7 +128,7 @@ local function sanitizeMemes(saved: any): { any }
 	end
 	for _, entry in saved do
 		if type(entry) == "table" and type(entry.Id) == "string" and Config.GetCreature(entry.Id)
-			and type(entry.Slot) == "number" and entry.Slot >= 1 and entry.Slot <= Config.AbsoluteMaxSlots
+			and type(entry.Slot) == "number" and entry.Slot % 1 == 0 and entry.Slot >= 1 and entry.Slot <= Config.AbsoluteMaxSlots
 			and not usedSlots[entry.Slot] then
 			usedSlots[entry.Slot] = true
 			table.insert(result, {

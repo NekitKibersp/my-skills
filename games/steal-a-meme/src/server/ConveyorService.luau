@@ -21,6 +21,14 @@ local random = Random.new()
 
 local LUCKY_RARITIES = { Legendary = true, Mythic = true, God = true, Secret = true }
 
+-- Lucky Blocks (Config.LuckyBlocks): отдельный пул, в обычные пулы редкостей не попадают
+local luckyPool = {}
+for _, creature in Config.Creatures do
+	if creature.Lucky then
+		table.insert(luckyPool, creature)
+	end
+end
+
 local function weightedPick<T>(items: { T }, weightOf: (T) -> number): T
 	local total = 0
 	for _, item in items do
@@ -61,6 +69,13 @@ local function rollCreature(): string
 		return weekly
 	end
 
+	-- Lucky Block — редкий гость на дорожке (какой именно — по LuckyWeight)
+	if #luckyPool > 0 and random:NextNumber() < Config.LuckyBlocks.Chance then
+		return weightedPick(luckyPool, function(creature)
+			return creature.LuckyWeight or 1
+		end).Id
+	end
+
 	-- Удача: покупка «Удача сервера» и множитель админ-ивента складываются
 	local luck = (if isLucky() then Config.Conveyor.LuckMult else 1) * (ReplicatedStorage:GetAttribute("EventLuckMult") or 1)
 	local rarity = weightedPick(Config.Rarities, function(r)
@@ -68,7 +83,7 @@ local function rollCreature(): string
 	end)
 	local pool = {}
 	for _, creature in Config.Creatures do
-		if creature.Rarity == rarity.Id and not creature.Event and not creature.Limited and not creature.Exclusive then
+		if creature.Rarity == rarity.Id and not creature.Event and not creature.Limited and not creature.Exclusive and not creature.Lucky then
 			table.insert(pool, creature)
 		end
 	end
@@ -174,7 +189,7 @@ end
 function ConveyorService.SpawnRarity(rarityId: string)
 	local pool = {}
 	for _, creature in Config.Creatures do
-		if creature.Rarity == rarityId and not creature.Event then
+		if creature.Rarity == rarityId and not creature.Event and not creature.Lucky then
 			table.insert(pool, creature.Id)
 		end
 	end
@@ -186,7 +201,7 @@ end
 function ConveyorService.SummonGod()
 	local gods = {}
 	for _, creature in Config.Creatures do
-		if creature.Rarity == "God" then
+		if creature.Rarity == "God" and not creature.Lucky then
 			table.insert(gods, creature.Id)
 		end
 	end

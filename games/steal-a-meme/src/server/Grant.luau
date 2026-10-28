@@ -22,18 +22,9 @@ local function coins(player: Player, amount: number, result: { [string]: any })
 	result.Coins = (result.Coins or 0) + amount
 end
 
--- Случайный обычный мем редкости (без сезонных, лимитированных и эксклюзивов)
+-- Случайный обычный мем редкости (без сезонных, лимитированных, эксклюзивов и Lucky Blocks)
 function Grant.RandomMeme(rarity: string): string?
-	local pool = {}
-	for _, creature in Config.Creatures do
-		if creature.Rarity == rarity and not creature.Event and not creature.Limited and not creature.Exclusive then
-			table.insert(pool, creature.Id)
-		end
-	end
-	if #pool == 0 then
-		return nil
-	end
-	return pool[math.random(1, #pool)]
+	return PlotService.RandomMeme(rarity)
 end
 
 function Grant.Give(player: Player, reward: any): { [string]: any }

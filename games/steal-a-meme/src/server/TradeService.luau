@@ -109,22 +109,6 @@ end
 
 -- ===== Проверки и сам обмен =====
 
--- Сколько свободных слотов у игрока (в пределах его лимита)
-local function freeSlotCount(player: Player): number
-	local maxSlots = PlotService.MaxSlots(player)
-	local used = {}
-	for _, entry in PlotService.GetEntries(player) do
-		used[entry.Slot] = true
-	end
-	local free = 0
-	for slot = 1, maxSlots do
-		if not used[slot] then
-			free += 1
-		end
-	end
-	return free
-end
-
 -- Выставленные мемы на месте и не изменились с момента показа
 local function offerStillValid(player: Player, offer: { Shown }): boolean
 	for _, item in offer do
@@ -139,16 +123,16 @@ local function offerStillValid(player: Player, offer: { Shown }): boolean
 	return true
 end
 
--- Хватит ли места: свободные + освободившиеся (свои отданные в пределах лимита) >= входящие
+-- Хватит ли места: свободные + освободившиеся (свои отданные из доступных слотов) >= входящие.
+-- Мем из недоступного слота (закрытый этаж, пропавший геймпасс) места не освобождает.
 local function hasRoom(player: Player, ownOffer: { Shown }, incoming: number): boolean
-	local maxSlots = PlotService.MaxSlots(player)
 	local freed = 0
 	for _, item in ownOffer do
-		if item.Slot <= maxSlots then
+		if PlotService.SlotAvailable(player, item.Slot) then
 			freed += 1
 		end
 	end
-	return freeSlotCount(player) + freed >= incoming
+	return PlotService.FreeSlotCount(player) + freed >= incoming
 end
 
 local function execute(session: Session)

@@ -21,6 +21,11 @@ ShopService.OnMemeRain = nil :: ((player: Player) -> boolean)?
 -- Вращения колеса и уровни Мем-пропуска за Robux: (player, n) -> boolean (false — данные не загружены)
 ShopService.OnSpins = nil :: ((player: Player, n: number) -> boolean)?
 ShopService.OnPassLevels = nil :: ((player: Player, n: number) -> boolean)?
+-- Мем-пропуск уже на максимуме: (player) -> boolean
+ShopService.IsPassMaxed = nil :: ((player: Player) -> boolean)?
+
+-- Сколько вращений колеса выдать вместо уровней пропуска, если он уже на максимуме
+local PASS_MAXED_SPINS = 3
 -- Куплен премиум Мем-пропуск
 ShopService.OnBattlePass = nil :: ((player: Player) -> ())?
 
@@ -84,16 +89,10 @@ local function openMysteryBox(player: Player): boolean
 			break
 		end
 	end
-	local pool = {}
-	for _, creature in Config.Creatures do
-		if creature.Rarity == rarity and not creature.Event then
-			table.insert(pool, creature.Id)
-		end
-	end
-	if #pool == 0 then
+	local id = PlotService.RandomMeme(rarity)
+	if not id then
 		return false
 	end
-	local id = pool[math.random(1, #pool)]
 	if not PlotService.AddMeme(player, id, "None", false) then
 		local coins = math.floor(Config.PriceOf(id, "None") * 0.5)
 		PlotService.AddCoins(player, coins)
@@ -135,6 +134,14 @@ local function grantProduct(player: Player, key: string): boolean
 	elseif key == "Spins3" or key == "Spins10" then
 		return ShopService.OnSpins ~= nil and ShopService.OnSpins(player, product.Spins)
 	elseif key == "PassLevels" then
+		-- Пропуск уже на последнем уровне: уровни сгорели бы — даём вращения колеса
+		if ShopService.IsPassMaxed and ShopService.IsPassMaxed(player) then
+			if ShopService.OnSpins ~= nil and ShopService.OnSpins(player, PASS_MAXED_SPINS) then
+				Remotes.Notify:FireClient(player, "PassMaxedSpins", { Count = PASS_MAXED_SPINS }, "success")
+				return true
+			end
+			return false
+		end
 		return ShopService.OnPassLevels ~= nil and ShopService.OnPassLevels(player, product.Levels)
 	elseif key == "MemeRain" then
 		return ShopService.OnMemeRain ~= nil and ShopService.OnMemeRain(player)

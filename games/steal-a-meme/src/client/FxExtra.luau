@@ -286,9 +286,7 @@ local function onLuckyOpen(ctx, data)
 		Effects.Confetti(position, { color, COLORS.Gold, Color3.new(1, 1, 1) }, 40, 9)
 		Effects.FloatText(position + Vector3.new(0, 4, 0), creature.Face .. " " .. creature.Name .. "!", color)
 	end
-	if data.UserId == player.UserId then
-		ctx.Toast(Locale.T("LuckyOpenedYou", { Meme = creature.Id }), "success", "LuckyOpen")
-	end
+	-- Тост хозяину шлёт сервер (Notify "LuckyOpened"), здесь только эффект
 end
 
 function FxExtra.Start(ctx)

@@ -216,3 +216,29 @@ Remotes:
 | `SetSetting` | C→S | `(key, value)` — Sound/LowGraphics/HideBillboards (bool), UiScale (0.7..1.3) |
 
 Новые Fx: `"LuckyOpen"` {Position, Meme, UserId}.
+
+### Уточнения сервера (v5, фундамент)
+- Геометрия базы (система координат базы: `Floor.CFrame`, -Z — вход): верх пола этажа n = `0.5 + Config.Plot.Floors[n].Height`
+  (0.5 / 14.5 / 28.5). `Floor2` — платформа во всю ширину, z от -12 до задней стены; `Floor3` — то же без полосы x < -33
+  (проём над пандусом), за проёмом — `Floor3Landing`. Пандусы — `Stairs` (наклонная плита ≈30°): на 2-й этаж во дворе
+  у +X стены (z -36 → -12), на 3-й — на 2-м этаже у -X стены (z -6 → 18). Перила — `Railing`. Детали этажей с атрибутом
+  `SkinFloor = true` перекрашивает скин базы. Стены — до высоты ≈36.
+- `FloorLock2`/`FloorLock3` — блок ForceField над **всем** пандусом (CanCollide, атрибуты `Floor`, `UnlockRebirth`),
+  внутри `BillboardGui` `LockGui` с `TextLabel` `Text` = «🔒 Rebirth N». Открытый этаж: `CanCollide = false`,
+  `Transparency = 1`, `LockGui.Enabled = false`. У свободной базы `FloorsUnlocked = 1`.
+- Слоты: 1..36 — сетка 4×3 на этажах 1..3 (ряды z = 30 / 19.5 / 9), 37..42 (геймпасс) — ряд из 6 на 1-м этаже (z = -2).
+  Атрибуты слота: `Index`, `Floor`, `Unlocked` (= `Config.SlotAvailable`). Новые мемы встают на нижний доступный этаж.
+  Мемы из недоступных слотов (пропал геймпасс) остаются на месте и приносят доход. `MaxSlots` = `Config.MaxSlots`, `SlotsUsed` = все мемы.
+- Кража: вор должен стоять на этаже мема (по высоте), сквозь пол/потолок украсть нельзя.
+- `OpensAt` снимается, пока Lucky Block несут (вор/Смайлик); ставится заново при любой расстановке на базу.
+  Блок в обмене или в руках не открывается — откроется, когда освободится.
+- `StolenBy`/`StolenMeme` ставятся после загрузки данных (0/""). При нескольких ворах — самая свежая из идущих краж.
+- `SettingsJson` по умолчанию `{ Sound = true, LowGraphics = false, HideBillboards = false, UiScale = 1 }`;
+  `SetSetting` — не больше 30 изменений за 10 сек, неверные ключи/типы молча игнорируются.
+- `HomeReadyAt` = 0 после загрузки; «Домой» использует тот же серверный перенос, что телепорт-площадки (`ServerMovedAt`).
+- `BuySpeed` — не чаще раза в 0.3 сек (ключ `TooFast`).
+- Продукт `PassLevels` при пропуске на максимуме даёт 3 вращения колеса (Notify `PassMaxedSpins` {Count}).
+- `Notify` (строки в `src/shared/Strings/Foundation.luau`): `Rebirthed` {Count} (текст переопределён), `RebirthNeedMemes`
+  {Count, Rarity}, `RebirthNeedMemeId` {Count, Meme} (требование по Id; RF всё равно вернёт ключ `RebirthNeedMemes`),
+  `RebirthSpins` {Count}, `RebirthItem` {Item}, `FloorUnlocked` {Floor}, `SpeedUpgraded` {Level, Bonus}, `SpeedMax`,
+  `TooFast`, `HomeCarrying`, `HomeCooldown` {Seconds}, `LuckyOpened` {Meme} (хозяину, вместе с Fx `LuckyOpen`), `PassMaxedSpins` {Count}.

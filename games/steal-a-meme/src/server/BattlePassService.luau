@@ -160,6 +160,14 @@ function BattlePassService.AddLevels(player: Player, n: number): boolean
 	return true
 end
 
+-- Пропуск уже на последнем уровне (купленные уровни сгорели бы) — ShopService выдаёт вместо них спины
+function BattlePassService.IsMaxed(player: Player): boolean
+	if not DataService.IsLoaded(player) then
+		return false
+	end
+	return ensure(player).Xp >= maxXp()
+end
+
 local function onStat(player: Player, stat: string, amount: number)
 	if not isReady(player) or not isActive() or type(amount) ~= "number" or amount ~= amount or amount <= 0 then
 		return

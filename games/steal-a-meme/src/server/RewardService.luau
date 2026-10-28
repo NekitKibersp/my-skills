@@ -45,18 +45,9 @@ local function incomeCoins(player: Player, incomeSeconds: number, minCoins: numb
 	return math.max(minCoins, math.floor(PlotService.IncomeOf(player) * incomeSeconds))
 end
 
--- Случайный обычный (не сезонный) мем нужной редкости
+-- Случайный обычный (не сезонный, не Lucky Block) мем нужной редкости
 local function randomMemeOf(rarity: string): string?
-	local pool = {}
-	for _, creature in Config.Creatures do
-		if creature.Rarity == rarity and not creature.Event then
-			table.insert(pool, creature.Id)
-		end
-	end
-	if #pool == 0 then
-		return nil
-	end
-	return pool[math.random(1, #pool)]
+	return PlotService.RandomMeme(rarity)
 end
 
 local function claimDaily(player: Player): (boolean, string)
