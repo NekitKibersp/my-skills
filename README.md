@@ -141,13 +141,27 @@
   ```
 Теперь в каждой новой сессии этого окружения скиллы установятся автоматически, какой бы проект вы ни открыли.
 
-### 2. Свой компьютер, один раз для всех проектов
-```bash
-git clone https://github.com/NekitKibersp/my-skills
-cd my-skills && ./install.sh
+### 2. Свой компьютер, один раз — дальше обновляется само
+
+**Windows (PowerShell).** Нужен Git for Windows (он же нужен самому Claude Code) и, для титульников/рефератов, Python.
+```powershell
+git clone https://github.com/NekitKibersp/my-skills $HOME\my-skills
+powershell -ExecutionPolicy Bypass -File $HOME\my-skills\install.ps1
 ```
-Скиллы попадут в `~/.claude/skills/` и будут доступны во всех проектах.
-Обновить: `git pull && ./install.sh`.
+`install.ps1` ставит скиллы, агентов и правила и прописывает в `%USERPROFILE%\.claude\settings.json`
+хук `SessionStart`: при каждом запуске `claude` выполняется `update.ps1` — `git pull` и установка новых скиллов
+из этого репозитория (пара секунд), а раз в сутки в фоне — полная установка со свежими наборами Anthropic и др.
+
+**Linux / macOS.**
+```bash
+git clone https://github.com/NekitKibersp/my-skills ~/my-skills
+~/my-skills/install.sh --hook
+```
+То же самое: `--hook` прописывает в `~/.claude/settings.json` запуск `update.sh` при каждом старте `claude`.
+
+Скилл, добавленный в репозиторий, скачивается при ближайшем запуске `claude` и гарантированно виден
+со следующего запуска. Повторный запуск установщика ничего не дублирует. На каждом новом компьютере
+установщик нужно запустить один раз.
 
 ### 3. Шаблон для новых проектов
 В настройках репозитория на GitHub включите **Template repository**.
