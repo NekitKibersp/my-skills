@@ -4,7 +4,7 @@
 
 | Что | Сколько | Откуда |
 |---|---|---|
-| **Скиллы** | **317** | 251 лежат в этом репозитории (`.claude/skills/`), ещё 66 `install.sh` скачивает свежими: Anthropic, HyperFrames, Эмиль Ковальски, Impeccable, ElevenLabs, Remotion |
+| **Скиллы** | **318** | 252 лежат в этом репозитории (`.claude/skills/`), ещё 66 `install.sh` скачивает свежими: Anthropic, HyperFrames, Эмиль Ковальски, Impeccable, ElevenLabs, Remotion |
 | **Агенты (субагенты)** | **58** | 53 из VoltAgent, `unity-developer` из wshobson, 4 своих: `roblox-developer`, `telegram-bot-developer`, `academic-writer`, `presentation-designer` |
 
 Плюс встроенные возможности Claude Code, которые не нужно ставить (скиллы вроде `code-review`, `simplify`,
@@ -117,6 +117,8 @@
   - `agent-team` — как раздавать задачи субагентам и запускать их параллельно.
   - `prompt-enhancer` — превращает короткую идею в подробный промпт: для Claude, картинок (Midjourney, Nano Banana,
     GPT Image, Flux), видео (Sora, Veo, Kling), музыки и голоса (Suno, ElevenLabs) и других чат-ботов (ChatGPT, Gemini).
+  - `title-page` — титульный лист учебной работы (реферат, отчёт, курсовая) по данным студента из `student.json`;
+    спрашивает только предмет, преподавателя и тему, может вставить титульный первой страницей в готовую работу.
 - **субагенты** (`.claude/agents/` → `~/.claude/agents/`): 53 из
   [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) (MIT, `LICENSE-VoltAgent`),
   `unity-developer` из [wshobson/agents](https://github.com/wshobson/agents) (MIT, `LICENSE-wshobson`) и свои:
