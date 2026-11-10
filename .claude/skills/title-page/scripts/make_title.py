@@ -34,7 +34,7 @@ def build_lines(a):
     C, L = "center", "left"
     R = 11.0  # отступ правого блока «Выполнил»
     lines = [(a.college, C, 0, False)]
-    lines += [("", C, 0, False)] * 6
+    lines += [("", C, 0, False)] * 5
     lines += [(a.type.upper(), C, 0, False)]
     lines += [(a.discipline_label, C, 0, False)]
     lines += [(f"«{a.subject}»", C, 0, False)]
@@ -43,13 +43,13 @@ def build_lines(a):
         lines += [(f"на тему: «{a.topic}»", C, 0, False)]
     if a.qualification:
         lines += [(f"Квалификация: {a.qualification}", C, 0, False)]
-    lines += [("", C, 0, False)] * (7 - bool(a.topic) - bool(a.qualification))
+    lines += [("", C, 0, False)] * (6 - bool(a.topic) - bool(a.qualification))
     lines += [("Выполнил:", L, R, False), (a.student, L, R, False),
               (f"Студент: {a.course} курса", L, R, False)]
     if a.group:
         lines += [(f"Группы: {a.group}", L, R, False)]
     lines += [("Руководитель:", L, R, False), (short_name(a.teacher), L, R, False)]
-    lines += [("", C, 0, False)] * (5 if a.group else 6)
+    lines += [("", C, 0, False)] * (4 if a.group else 5)
     lines += [(a.city, C, 0, False), (f"{a.year} год", C, 0, False)]
     return lines
 
@@ -63,6 +63,15 @@ def fmt(p, text, align, indent, bold):
     pf.space_before = Pt(0)
     pf.space_after = Pt(0)
     pf.line_spacing = 1.5
+    # размер шрифта знака абзаца — чтобы пустые строки были той же высоты (14 пт) в любом документе
+    rpr = p._p.get_or_add_pPr().get_or_add_rPr() if hasattr(p._p.get_or_add_pPr(), "get_or_add_rPr") else None
+    if rpr is None:
+        ppr = p._p.get_or_add_pPr()
+        rpr = ppr.find(qn("w:rPr"))
+        if rpr is None:
+            rpr = OxmlElement("w:rPr"); ppr.append(rpr)
+    for tag in ("w:sz", "w:szCs"):
+        e = OxmlElement(tag); e.set(qn("w:val"), "28"); rpr.append(e)
     if text:
         r = p.add_run(text)
         r.bold = bold
@@ -113,11 +122,12 @@ def main():
             p = doc.add_paragraph()  # добавится в конец — переносим в начало
             fmt(p, text, align, ind, bold)
             first.addprevious(p._p)
-        # разрыв страницы после титульного
-        br = doc.add_paragraph()
-        br.paragraph_format.space_after = Pt(0)
-        br.add_run().add_break(WD_BREAK.PAGE)
-        first.addprevious(br._p)
+        # разрыв страницы после титульного (если работа и так начинается с новой страницы — не нужен)
+        if not first.xpath(".//w:pageBreakBefore"):
+            br = doc.add_paragraph()
+            br.paragraph_format.space_after = Pt(0)
+            br.add_run().add_break(WD_BREAK.PAGE)
+            first.addprevious(br._p)
         set_title_pg(doc.sections[0])
         out = a.out or a.into
     else:
