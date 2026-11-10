@@ -43,7 +43,7 @@ def build_lines(a):
         lines += [(f"на тему: «{a.topic}»", C, 0, False)]
     if a.qualification:
         lines += [(f"Квалификация: {a.qualification}", C, 0, False)]
-    lines += [("", C, 0, False)] * (5 if a.topic else 6)
+    lines += [("", C, 0, False)] * (7 - bool(a.topic) - bool(a.qualification))
     lines += [("Выполнил:", L, R, False), (a.student, L, R, False),
               (f"Студент: {a.course} курса", L, R, False)]
     if a.group:
@@ -94,7 +94,7 @@ def main():
     ap.add_argument("--course", default=data.get("course"))
     ap.add_argument("--group", default=data.get("group"))
     ap.add_argument("--college", default=data.get("ministry_and_college"))
-    ap.add_argument("--qualification", default=data.get("qualification"))
+    ap.add_argument("--qualification", default=data.get("qualification"), help="строка «Квалификация: …»; по умолчанию не ставится")
     ap.add_argument("--city", default=data.get("city", "Донецк"))
     ap.add_argument("--year", default=str(datetime.date.today().year))
     ap.add_argument("--into", help="готовая работа .docx: титульный вставляется первой страницей")
