@@ -1,6 +1,6 @@
-﻿# Установка my-skills на Windows одной командой (PowerShell):
-#   irm https://raw.githubusercontent.com/NekitKibersp/my-skills/main/install.ps1 | iex
-# или из скачанного репозитория:  powershell -ExecutionPolicy Bypass -File .\install.ps1
+﻿# Установка my-skills на Windows (PowerShell):
+#   git clone https://github.com/NekitKibersp/my-skills $HOME\my-skills
+#   powershell -ExecutionPolicy Bypass -File $HOME\my-skills\install.ps1
 #
 # Что делает:
 #   1. скачивает (или обновляет) репозиторий в %USERPROFILE%\my-skills;
@@ -16,18 +16,33 @@ $repo = Join-Path $HOME 'my-skills'
 $claudeDir = Join-Path $HOME '.claude'
 
 function Find-GitBash {
-    $git = Get-Command git -ErrorAction SilentlyContinue
+    $git = Get-Command git -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
     if (-not $git) { throw 'Не найден git. Установи Git for Windows: https://git-scm.com/download/win' }
-    # ...\Git\cmd\git.exe или ...\Git\bin\git.exe -> ...\Git\bin\bash.exe
-    $gitRoot = Split-Path (Split-Path $git.Source -Parent) -Parent
-    foreach ($c in @((Join-Path $gitRoot 'bin\bash.exe'), (Join-Path $gitRoot 'usr\bin\bash.exe'),
-                     'C:\Program Files\Git\bin\bash.exe')) {
-        if (Test-Path $c) { return $c }
+    # git.exe лежит в ...\Git\cmd, ...\Git\bin или ...\Git\mingw64\bin -> ищем ...\Git\bin\bash.exe выше по дереву;
+    # git --exec-path (...\Git\mingw64\libexec\git-core) выручает, если git на PATH — это шим (scoop и т.п.)
+    $roots = @()
+    $starts = @($git.Source)
+    try { $starts += @(& $git.Source --exec-path 2>$null) -replace '/', '\' } catch { }
+    foreach ($d in $starts) {
+        for ($i = 0; $i -lt 4 -and $d; $i++) { $d = Split-Path $d -Parent; if ($d) { $roots += $d } }
+    }
+    $roots += @("$env:ProgramFiles\Git", 'C:\Program Files\Git', "$env:LOCALAPPDATA\Programs\Git")
+    foreach ($r in $roots) {
+        foreach ($c in @((Join-Path $r 'bin\bash.exe'), (Join-Path $r 'usr\bin\bash.exe'))) {
+            if (Test-Path -LiteralPath $c) { return $c }
+        }
     }
     throw 'Не найден bash.exe из Git for Windows.'
 }
 
 $bash = Find-GitBash
+# Claude Code ищет ~/.claude в %USERPROFILE%; Git Bash взял бы $HOME из переменной HOME, если она задана иначе
+$env:HOME = $HOME
+$env:GIT_TERMINAL_PROMPT = '0'
+
+# git, bash и pip пишут в stderr; при 'Stop' Windows PowerShell 5.1 (если вывод перенаправлен) счёл бы это ошибкой.
+# Коды возврата проверяем сами через $LASTEXITCODE.
+$ErrorActionPreference = 'Continue'
 
 # 1. Репозиторий
 if (Test-Path (Join-Path $repo '.git')) {
@@ -40,7 +55,10 @@ if (Test-Path (Join-Path $repo '.git')) {
 if ($LASTEXITCODE -ne 0) { throw 'git завершился с ошибкой' }
 
 # 2. Установка скиллов, агентов, правил
-& $bash -lc "~/my-skills/install.sh"
+# Абсолютный путь в одинарных кавычках bash (пробелы, кириллица); внутри не должно быть двойных кавычек,
+# иначе PowerShell 5.1 испортит аргумент. bash -l может сменить каталог, поэтому путь абсолютный.
+$installSh = ((Join-Path $repo 'install.sh') -replace '\\', '/') -replace "'", "'\''"
+& $bash -lc "'$installSh'"
 if ($LASTEXITCODE -ne 0) { Write-Warning 'install.sh завершился с ошибкой — смотри вывод выше' }
 
 # python-docx и edge-tts (на Windows python обычно называется python, а не python3)
@@ -52,6 +70,9 @@ if ($py -and $py.Source -notlike '*WindowsApps*') {
 }
 
 # 3. Хук автообновления в ~/.claude/settings.json
+$ErrorActionPreference = 'Stop'
+# PS 5.1: без этого массив, обёрнутый в PSObject, может записаться как {"value":[...],"Count":N}
+if ($PSVersionTable.PSVersion.Major -lt 6) { Remove-TypeData System.Array -ErrorAction SilentlyContinue }
 New-Item -ItemType Directory -Force -Path $claudeDir | Out-Null
 $settingsPath = Join-Path $claudeDir 'settings.json'
 $updateScript = (Join-Path $repo 'update.ps1') -replace '\\', '/'
@@ -67,12 +88,14 @@ if (Test-Path $settingsPath) {
 }
 if (-not $settings.PSObject.Properties['hooks']) {
     $settings | Add-Member -NotePropertyName hooks -NotePropertyValue ([pscustomobject]@{})
+} elseif ($null -eq $settings.hooks) {
+    $settings.hooks = [pscustomobject]@{}
 }
 $old = @()
 if ($settings.hooks.PSObject.Properties['SessionStart']) { $old = @($settings.hooks.SessionStart) }
-# убрать прежние записи my-skills, чужие хуки оставить
+# убрать прежние записи my-skills (и null), чужие хуки оставить
 $kept = @($old | Where-Object {
-    -not (@($_.hooks) | Where-Object { $_.command -like '*my-skills*' })
+    $null -ne $_ -and -not (@($_.hooks) | Where-Object { $_ -and "$($_.command)" -like '*my-skills*' })
 })
 $entry = [pscustomobject]@{
     hooks = @([pscustomobject]@{ type = 'command'; command = $hookCmd; timeout = 60 })
