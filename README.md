@@ -4,7 +4,7 @@
 
 | Что | Сколько | Откуда |
 |---|---|---|
-| **Скиллы** | **318** | 252 лежат в этом репозитории (`.claude/skills/`), ещё 66 `install.sh` скачивает свежими: Anthropic, HyperFrames, Эмиль Ковальски, Impeccable, ElevenLabs, Remotion |
+| **Скиллы** | **319** | 253 лежат в этом репозитории (`.claude/skills/`), ещё 66 `install.sh` скачивает свежими: Anthropic, HyperFrames, Эмиль Ковальски, Impeccable, ElevenLabs, Remotion |
 | **Агенты (субагенты)** | **58** | 53 из VoltAgent, `unity-developer` из wshobson, 4 своих: `roblox-developer`, `telegram-bot-developer`, `academic-writer`, `presentation-designer` |
 
 Плюс встроенные возможности Claude Code, которые не нужно ставить (скиллы вроде `code-review`, `simplify`,
@@ -119,6 +119,9 @@
     GPT Image, Flux), видео (Sora, Veo, Kling), музыки и голоса (Suno, ElevenLabs) и других чат-ботов (ChatGPT, Gemini).
   - `title-page` — титульный лист учебной работы (реферат, отчёт, курсовая) по данным студента из `student.json`;
     спрашивает только предмет, преподавателя и тему, может вставить титульный первой страницей в готовую работу.
+  - `football-betting` — анализ футбольных матчей для ставок: статистика (голы, xG, угловые, ЖК, судья, составы),
+    коэффициенты и движение линии, мнения капперов (stavka.tv, legalbet), модель Пуассона, EV, оценки 1–10 событий и купона,
+    ординар/экспресс, размер ставки, журнал ставок (ROI, CLV); честно и с аргументами «против».
 - **субагенты** (`.claude/agents/` → `~/.claude/agents/`): 53 из
   [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) (MIT, `LICENSE-VoltAgent`),
   `unity-developer` из [wshobson/agents](https://github.com/wshobson/agents) (MIT, `LICENSE-wshobson`) и свои:
