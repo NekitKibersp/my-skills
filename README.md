@@ -4,7 +4,7 @@
 
 | Что | Сколько | Откуда |
 |---|---|---|
-| **Скиллы** | **319** | 253 лежат в этом репозитории (`.claude/skills/`), ещё 66 `install.sh` скачивает свежими: Anthropic, HyperFrames, Эмиль Ковальски, Impeccable, ElevenLabs, Remotion |
+| **Скиллы** | **335** | 269 лежат в этом репозитории (`.claude/skills/`), ещё 66 `install.sh` скачивает свежими: Anthropic, HyperFrames, Эмиль Ковальски, Impeccable, ElevenLabs, Remotion |
 | **Агенты (субагенты)** | **58** | 53 из VoltAgent, `unity-developer` из wshobson, 4 своих: `roblox-developer`, `telegram-bot-developer`, `academic-writer`, `presentation-designer` |
 
 Плюс встроенные возможности Claude Code, которые не нужно ставить (скиллы вроде `code-review`, `simplify`,
@@ -106,6 +106,12 @@
     `camera-systems`, `audio-design`, `dialogue-systems`, `game-ui-ux`, `input-systems`, `physics-tuning`, `performance-optimization`,
     `create-game-assets`), жанры (`platformer`, `roguelike`, `rpg`, `fps-shooter`, `tower-defense`, `card-game`, `visual-novel`,
     `survival-crafting`, `puzzle`) и выпуск игры (`game-jam`, `prototype-fast`, `steam-publish`, `itch-publish`);
+
+  - [affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT, коммит d2ef268), 16 отобранных из 314 — только `SKILL.md`, без скриптов
+    и привязки к экосистеме ECC: `python-patterns`, `python-testing`, `typescript-patterns`, `fastapi-patterns`,
+    `react-patterns`, `backend-patterns`, `error-handling`, `e2e-testing`, `regex-vs-llm-structured-text`,
+    `codebase-onboarding`, `click-path-audit`, `scientific-thinking-literature-review`, `generating-python-installer`,
+    `vite-patterns`, `search-first`, `council`;
 
 - **свои скиллы:**
   - `ru-voiceover` — русская озвучка видео голосом `ru-RU-DmitryNeural` через edge-tts + ffmpeg
