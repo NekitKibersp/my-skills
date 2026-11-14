@@ -75,8 +75,11 @@ def rating(p, odds, quality=2, legs=1, coupon=False):
             r = min(r, 7)
             note = "EV > 20% — подозрительно: перепроверь данные (составы, мотивация, ошибка в средних)"
         elif gap > 0.10:
-            r = min(r, 7)
+            r = min(r, 5)
             note = f"модель на {gap*100:.0f} п.п. выше рынка — рынок обычно умнее, ищи, что не учтено"
+        elif gap > 0.06 and quality < 3:
+            r = min(r, 6)
+            note = f"спор с рынком на {gap*100:.0f} п.п. при неполных данных — не выше 6/10"
     return max(1, min(10, r)), note
 
 
